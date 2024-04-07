@@ -1,0 +1,683 @@
+<template>
+  <div class="main">
+    <div class="left_tree">
+      <el-checkbox v-model="isAllChecked" @change="handleAllCheckedChange"
+        >全选</el-checkbox
+      >
+      <el-tree
+        ref="tree"
+        :data="treeData"
+        :show-checkbox="true"
+        node-key="id"
+        default-expand-all
+        :expand-on-click-node="false"
+        :check-on-click-node="true"
+        :highlight-current="true"
+        @check-change="handleCheckChange"
+      >
+      </el-tree>
+    </div>
+
+    <div class="right">
+      <div>
+        <span class="lineStyle">▍</span
+        ><span class="featureTitle"
+          >请选择一个训练好的任务，点击任务可以查看对应任务详情</span
+        >
+        <el-popover placement="right" trigger="hover">
+          <div>
+            可根据疾病名称、数据集、任务名称、任务负责人、所用算法对任务进行筛选
+          </div>
+          <el-icon slot="reference" class="el-icon-warning-outline"></el-icon>
+        </el-popover>
+      </div>
+      <div class="right_top">
+        <div class="algorithmSelect_box">
+          <div class="algorithmSelect_title">强化学习算法选择</div>
+          <div class="algorithmSelect">
+            <div>
+              <el-icon
+                slot="reference"
+                class="el-icon-data-analysis"
+                style="font-size: 20px; margin-right: 10px"
+              ></el-icon>
+              <el-switch
+                v-model="DQN_selected"
+                active-text="DQN"
+                style="margin-right: 20px; font-size: 40px"
+                @change="handleSwitchChange('DQN', $event)"
+              >
+              </el-switch>
+            </div>
+            <div>
+              <el-icon
+                slot="reference"
+                class="el-icon-data-analysis"
+                style="font-size: 20px; margin-right: 10px"
+              ></el-icon>
+              <el-switch
+                v-model="DDPG_selected"
+                active-text="DDPG"
+                style="margin-right: 20px; font-size: 40px"
+                @change="handleSwitchChange('DDPG', $event)"
+              >
+              </el-switch>
+            </div>
+            <div>
+              <el-icon
+                slot="reference"
+                class="el-icon-data-analysis"
+                style="font-size: 20px; margin-right: 10px"
+              ></el-icon>
+              <el-switch
+                v-model="PPO_selected"
+                active-text="PPO"
+                style="margin-right: 20px; font-size: 40px"
+                @change="handleSwitchChange('PPO', $event)"
+              >
+              </el-switch>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top: 10%"></div>
+
+        <div class="algorithmSelect_box">
+          <div class="algorithmSelect_title">非强化学习算法选择</div>
+          <div class="algorithmSelect">
+            <div>
+              <el-icon
+                slot="reference"
+                class="el-icon-data-analysis"
+                style="font-size: 20px; margin-right: 10px"
+              ></el-icon>
+              <el-switch
+                v-model="KNN_selected"
+                active-text="KNN"
+                style="margin-right: 20px; font-size: 40px"
+                disabled
+              >
+              </el-switch>
+            </div>
+            <div>
+              <el-icon
+                slot="reference"
+                class="el-icon-data-analysis"
+                style="font-size: 20px; margin-right: 10px"
+              ></el-icon>
+              <el-switch
+                v-model="SVM_selected"
+                active-text="SVM"
+                style="margin-right: 20px; font-size: 40px"
+                disabled
+              >
+              </el-switch>
+            </div>
+            <div>
+              <el-icon
+                slot="reference"
+                class="el-icon-data-analysis"
+                style="font-size: 20px; margin-right: 10px"
+              ></el-icon>
+              <el-switch
+                v-model="RF_selected"
+                active-text="RF"
+                style="margin-right: 20px; font-size: 40px"
+                disabled
+              >
+              </el-switch>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="right_middle">
+        <span
+          >任务名称：
+          <el-input
+            v-model="taskName"
+            placeholder="请输入任务名称进行搜索"
+            clearable
+            :style="{ width: '300px' }"
+          >
+          </el-input
+        ></span>
+        <span
+          >任务负责人：
+          <el-input
+            v-model="leader"
+            placeholder="请输入任务负责人进行搜索"
+            clearable
+            :style="{ width: '300px' }"
+          >
+          </el-input
+        ></span>
+      </div>
+
+      <div class="right_bottom">
+        <div class="cardGroup"
+        v-for="item in taskList"
+            :key="item.id"
+        >
+          <el-card
+            class="taskCard"
+            
+            shadow="always"
+            v-show="displayedCard(item)"
+          >
+            <div class="cardInfo">
+              <div><span class="ttl">任务名称：</span>{{ item.taskName }}</div>
+              <div><span class="ttl">负责人：</span>{{ item.leader }}</div>
+              <div><span class="ttl">所属疾病：</span>{{ item.disease }}</div>
+              <div><span class="ttl">所用算法：</span>{{ item.model }}</div>
+              <div><span class="ttl">数据表：</span>{{ item.dataset }}</div>
+              <div>
+                <span class="ttl">创建时间：</span>{{ item.createtime }}
+              </div>
+            </div>
+            <span class="buttonGroup">
+              <el-button type="success" @click="handleCheck(item)" round
+                >查看</el-button
+              >
+              <el-button type="primary" @click="submit(item)" round
+                >确认</el-button
+              >
+            </span>
+          </el-card>
+        </div>
+        <!-- <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="currentPage"
+          :page-sizes="pageSizes"
+          :page-size="pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="totalTasks"
+          style="margin-top: 10px; margin-left: 30%"
+        >
+        </el-pagination> -->
+        <el-dialog
+          :visible.sync="resultDialogShow"
+          v-if="resultDialogShow"
+          style="width: 90%; height: auto"
+          center
+        >
+          <div class="taskInfoBox principal">
+            <span class="lineStyle">▍</span
+            ><span class="featureTitle">任务负责人：</span>
+            <span class="text">{{ result.leader }}</span>
+          </div>
+          <div
+            class="taskInfoBox participants"
+            v-if="result.participant !== null"
+          >
+            <span class="lineStyle">▍</span
+            ><span class="featureTitle">参与人：</span>
+            <span class="text">{{ result.participant }}</span>
+          </div>
+          <div class="taskInfoBox disease">
+            <span class="lineStyle">▍</span
+            ><span class="featureTitle">研究病种：</span>
+            <span class="text">{{ result.disease }}</span>
+          </div>
+          <div class="taskInfoBox dataset">
+            <span class="lineStyle">▍</span
+            ><span class="featureTitle">所用数据：</span>
+            <span class="text">{{ result.dataset }}</span>
+          </div>
+          <div class="taskInfoBox algorithm">
+            <span class="lineStyle">▍</span
+            ><span class="featureTitle">所用算法：</span>
+            <span class="text">{{ result.model }}</span>
+          </div>
+          <div class="taskInfoBox algorithmValue">
+            <span class="lineStyle">▍</span
+            ><span class="featureTitle">算法参数：</span>
+            <span v-if="result.para[0] == ''">本算法没有参数</span>
+            <div v-if="result.para[0] != ''">
+              <div v-for="(item, index) in result.para" :key="index">
+                <span class="text"
+                  >{{ result.para[index] }}：{{ result.paraValue[index] }}</span
+                >
+              </div>
+            </div>
+          </div>
+          <div class="taskInfoBox target_features">
+            <span class="lineStyle">▍</span
+            ><span class="featureTitle">目标因素：</span>
+            <span class="text">{{ result.targetcolumn.toString() }}</span>
+          </div>
+          <div class="taskInfoBox use_features">
+            <span class="lineStyle">▍</span
+            ><span class="featureTitle">所用特征：</span>
+            <span class="text">{{ result.feature.toString() }}</span>
+          </div>
+          <!-- <div class="taskInfoBox result">
+          <span class="lineStyle">▍</span
+          ><span class="featureTitle">挖掘结果：</span>
+          <div v-for="(item, index) in result.res" :key="index">
+            <span
+              >{{ result.targetcolumn[index] }} -> {{ item.toString() }}</span
+            >
+          </div>
+        </div> -->
+          <!-- <div class="taskInfoBox result">
+          <span class="lineStyle">▍</span
+          ><span class="featureTitle">专家知识匹配度：</span>
+          <span>{{ (result.ratio * 100).toFixed(2) }}%</span>
+        </div> -->
+
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="resultDialogShow = false">关 闭</el-button>
+          </span>
+        </el-dialog>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import vuex_mixin from "@/components/mixins/vuex_mixin";
+import { mapGetters, mapMutations, mapState, mapActions } from "vuex";
+import { getRequest, postRequest } from "@/utils/api";
+import { getCategory } from "@/api/category";
+import { getTableData } from "@/api/tableDescribe.js";
+import { FALSE } from "sass";
+// import { taskList } from "@/components/tab/constTaskList.js";
+
+export default {
+  name: "TaskSelect",
+  mixins: [vuex_mixin],
+  props: {
+    moduleName: {
+      type: String,
+      default: "diseaPredict",
+    },
+  },
+  computed: {
+    ...mapState([
+      "taskList",
+      // ,"treeData"
+    ]),
+    ...mapGetters(["taskLeaderList", "taskDiseaseList"]),
+
+    // totalTasks() {
+    //   return this.taskList.filter((item) => this.displayedCard(item)).length;
+    // },
+  },
+  data() {
+    return {
+      isAllChecked: false, // 全选按钮的状态
+      resultDialogShow: false,
+      result: {},
+      treeData: [],
+      disease: "",
+      leader: "",
+      taskName: "",
+      modelList: [],
+      diseaseList: [],
+      datasetList: [],
+      // taskList: JSON.parse(JSON.stringify(taskList)),
+      DQN_selected: false,
+      DDPG_selected: false,
+      PPO_selected: false,
+      KNN_selected: false,
+      SVM_selected: false,
+      RF_selected: false,
+      predict_features: [],
+
+      //分页数据
+      pageSize: 20,
+      pageSizes: [20, 30, 40, 50],
+      currentPage: 1,
+    };
+  },
+
+  created() {
+    this.init();
+    this.getCatgory();
+    this.getTaskList();
+  },
+
+  methods: {
+    ...mapActions([
+      "getTaskList",
+      // ,"getTreeData"
+    ]),
+    ...mapMutations(["SetTaskList"]),
+    //和vuex内数据同步
+    init() {
+      this.predict_features = this.m_predict_features;
+      console.log("当前模块名👉", this.moduleName);
+      console.log("this.m_predict_features111   ", this.m_predict_features);
+    },
+
+    getCatgory() {
+      getCategory("/api/category").then((response) => {
+        this.treeData = response.data;
+        console.log("222222");
+      });
+    },
+
+    getTableData(tableId, tableName) {
+      getTableData("/api/getTableData", tableId, tableName)
+        .then((response) => {
+          // 获取表数据
+          this.tableData = response.data;
+          console.log("数据长度" + response.data.length);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+
+    clearFilter() {
+      this.disease = "";
+      this.leader = "";
+    },
+
+    handleAllCheckedChange(value) {
+      // 全选按钮状态变化时的处理逻辑
+      // 将所有节点的选中状态设置为与全选按钮状态相同
+      this.$refs.tree.setCheckedKeys(value ? this.getAllNodeKeys() : []);
+    },
+    getAllNodeKeys() {
+      // 获取所有节点的 key 值
+      const keys = [];
+      const traverse = (node) => {
+        keys.push(node.data.id);
+        if (node.children) {
+          node.children.forEach((child) => traverse(child));
+        }
+      };
+      this.$refs.tree.store.root.childNodes.forEach((node) => traverse(node));
+      return keys;
+    },
+
+    handleCheck(row) {
+      getRequest(`Task/result/${row.id}`).then((res) => {
+        if (res.code == 200) {
+          this.result = res.data;
+          if (this.result.parameters != null) {
+            this.result.parameters = this.result.parameters.split(",");
+          }
+          this.resultDialogShow = true;
+        } else {
+          this.$message.error("查看任务失败");
+        }
+      });
+    },
+
+    handleCheckChange(data, checked) {
+      if (checked) {
+        if (data.isLeafs == 0) {
+          this.diseaseList.push(data.label);
+        } else {
+          this.datasetList.push(data.label);
+        }
+      } else {
+        const index1 = this.datasetList.indexOf(data.label);
+        const index2 = this.diseaseList.indexOf(data.label);
+        if (index1 !== -1) {
+          this.datasetList.splice(index1, 1);
+        }
+        if (index2 !== -1) {
+          this.diseaseList.splice(index2, 1);
+        }
+      }
+      console.log("diseaseList: ",this.diseaseList);
+      console.log("datasetList: ",this.datasetList);
+    },
+
+    handleSwitchChange(modelName, value) {
+      if (value) {
+        // 如果开关打开，则向modelList数组中添加模型名称
+        this.modelList.push(modelName);
+        console.log(this.modelList);
+      } else {
+        // 如果开关关闭，则从modelList数组中删除模型名称
+        const index = this.modelList.indexOf(modelName);
+        if (index !== -1) {
+          this.modelList.splice(index, 1);
+          console.log(this.modelList);
+        }
+      }
+    },
+
+    displayedCard(item) {
+      // 判断 item 的 disease、model 和 dataset 是否在相应的数组中存在
+      const diseaseMatch = this.diseaseList.includes(item.disease);
+      const modelMatch = this.modelList.includes(item.model);
+      const datasetMatch = this.datasetList.includes(item.dataset);
+      const leaderMatch = this.leader == item.leader;
+      const taskMatch = this.taskName == item.taskName;
+
+      // 当 disease、leader、task、model 和 dataset 都不存在时，返回 false，不显示该卡片
+      if (
+        !diseaseMatch &&
+        !modelMatch &&
+        !datasetMatch &&
+        !leaderMatch &&
+        !taskMatch
+      ) {
+        return false;
+      }
+      return true;
+    },
+
+    // 处理每页数量变化
+    // handleSizeChange(size) {
+    //   this.pageSize = size;
+    //   this.loadData();
+    // },
+    // 处理当前页变化
+    // handleCurrentChange(page) {
+    //   this.currentPage = page;
+    //   this.loadData();
+    // },
+
+    submit(row) {
+      // this.m_changeStep(2);
+      getRequest(`Task/result/${row.id}`).then((res) => {
+        if (res.code == 200) {
+          this.result = res.data;
+          console.log("this.result", this.result);
+          this.m_changeTaskInfo({ predict_features: this.result.feature });
+          this.m_changeStep(2);
+          console.log("this.m_predict_features222   ", this.m_predict_features);
+        }
+      });
+
+      let payload = {
+        ci: this.result.ci,
+        dataset: this.result.dataset,
+        disease: this.result.disease,
+        feature: this.result.feature,
+        leader: this.result.leader,
+        model: this.result.model,
+        para: this.result.para,
+        paraValue: this.result.paraValue,
+        participant: this.result.participant,
+        ratio: this.result.ratio,
+        remark: this.result.remark,
+        res: this.result.res,
+        targetcolumn: this.result.targetcolumn,
+        taskName: this.result.taskName,
+        time: this.result.time,
+        uid: this.result.uid,
+      };
+
+      // postRequest("", payload)
+      //   .then((res) => {
+      //     console.log(res);
+      //     this.m_changeTaskInfo({ predict_features: this.result.feature });
+      //     console.log("this.m_predict_features222   ", this.m_predict_features);
+      //     this.m_changeStep(2);
+      //   })
+      //   .catch((err) => {
+      //     this.loading = false;
+      //     this.$message({
+      //       showClose: true,
+      //       type: "error",
+      //       message: `发生错误：${err}`,
+      //     });
+      //   });
+    },
+  },
+};
+</script>
+
+<style scoped>
+.main {
+  display: grid;
+  grid-template-columns: 15% 85%;
+  height: auto;
+  overflow-y: hidden; /* 隐藏垂直滚动条 */
+  overflow-x: hidden;
+}
+
+.left_tree {
+  display: inline-block;
+  border-radius: 3px;
+  border: 1px solid #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1); /* 修正阴影的颜色和透明度 */
+  background: rgba(255, 255, 255, 0.1);
+  overflow-y: scroll; /* 或者 auto */
+  scrollbar-width: none; /* 隐藏 Firefox 的滚动条 */
+  -ms-overflow-style: none; /* 隐藏 IE/Edge 的滚动条 */
+}
+
+.right {
+  display: grid;
+  grid-template-rows: auto 15% auto auto;
+  margin-left: 30px;
+}
+
+.right_top {
+  display: flex; /* 将容器设置为弹性布局 */
+  width: auto;
+}
+
+.right_top > div {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.right_middle {
+  display: grid;
+  grid-template-columns: auto auto;
+  margin-top: 20px;
+}
+
+.right_bottom {
+  height: auto;
+  width: 100%;
+}
+
+.lineStyle {
+  color: rgb(100, 172, 231);
+  font-weight: 100;
+  font-size: 25px;
+  margin-left: auto;
+}
+
+.featureTitle {
+  font-size: 30px;
+  margin-right: 30px;
+  margin-bottom: 20px;
+}
+
+.buttonGroup {
+  display: flex;
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中 */
+}
+
+.algorithmSelect_box {
+  width: 45%;
+  height: auto;
+  border: 1px solid #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1); /* 修正阴影的颜色和透明度 */
+  background: rgba(255, 255, 255, 0.1);
+  margin-top: 10px;
+}
+
+.cardGroup {
+  width: 100%; /* 调整宽度 */
+  height: 400px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 20px; /* 间距 */
+  overflow-y: scroll; /* 或者 auto */
+  scrollbar-width: none; /* 隐藏 Firefox 的滚动条 */
+  -ms-overflow-style: none; /* 隐藏 IE/Edge 的滚动条 */
+}
+
+.cardGroup::-webkit-scrollbar {
+  display: none; /* 隐藏 Chrome/Safari 的滚动条 */
+}
+
+.taskCard {
+  margin-bottom: 10px;
+  width: 95%;
+  height: 230px;
+  border: 1px solid #c0bebe; /* 边框颜色设置为黑色 */
+  box-shadow: 0 2px 4px rgba(88, 88, 88, 0.1);
+  border-radius: 10px;
+  overflow-y: scroll; /* 或者 auto */
+  scrollbar-width: none; /* 隐藏 Firefox 的滚动条 */
+  -ms-overflow-style: none; /* 隐藏 IE/Edge 的滚动条 */
+}
+
+.taskCard::-webkit-scrollbar {
+  display: none; /* 隐藏 Chrome/Safari 的滚动条 */
+}
+
+.cardInfo {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 定义两列，每列占用相等的空间 */
+  grid-template-rows: auto auto auto auto; /* 定义四行，高度根据内容自适应 */
+  gap: 10px; /* 定义网格行和列之间的间隙 */
+}
+
+.cardInfo > div:nth-child(5), /* 第五个子元素（数据表） */
+.cardInfo > div:nth-child(6) /* 第六个子元素（创建时间） */ {
+  grid-column: 1 / span 2; /* 这两个元素跨越两列 */
+}
+
+.algorithmSelect {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  grid-template-rows: auto auto;
+  gap: 10px;
+  height: auto;
+  margin: 5px;
+}
+
+.algorithmSelect > div:nth-child(5),
+.algorithmSelect > div:nth-child(6) {
+  grid-column: 1 / span 2;
+}
+
+.algorithmSelect_title {
+  font-weight: 600;
+  justify-content: center;
+  padding: 10px;
+  width: 50%;
+  border-radius: 8px;
+  background-color: #eaf2f8;
+  margin-bottom: 10px;
+  text-align: center; /* 将文字居中 */
+}
+
+.text {
+  font-size: 30px;
+}
+
+.ttl {
+  font-weight: 600;
+  /* font-size: 20px; */
+  color: #071135;
+}
+</style>
