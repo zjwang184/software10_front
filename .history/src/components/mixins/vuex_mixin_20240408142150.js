@@ -50,7 +50,7 @@ export default {
       return this.$store.state[this.moduleName].SVM;
     },
     m_KNN() {
-      return this.$store.state[this.moduleName].KNN;
+      return this.$store.state[this.moduleName].SVM;
     },
     m_models(newdata) {
       return this.$store.state[this.moduleName].models;

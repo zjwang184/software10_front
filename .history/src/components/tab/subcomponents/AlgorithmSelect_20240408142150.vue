@@ -282,7 +282,7 @@
                           ></el-icon>
                         </el-popover>
                       </template>
-                      <el-input v-model.trim="KNN_form.K"></el-input>
+                      <el-input v-model.trim="KNN_form.paramRange"></el-input>
                       <span class="valueRange">(取值范围为 3 - 10 )</span>
                     </el-form-item>
                   </el-form>
@@ -343,7 +343,7 @@ export default {
       KNN_form: {        
         random_state: 42,     
         cv: 10,
-        K: 3
+        paramRange: 3
       },
 
       editableTabs: [      

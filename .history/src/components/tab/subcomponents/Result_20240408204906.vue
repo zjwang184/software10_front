@@ -63,22 +63,22 @@
           <div class="taskInfoBox_disease">
             <span class="lineStyle">▍</span
             ><span class="featureTitle">精确率acc：</span>
-            <span>{{ transTOPercent(item.res.accuracy) }}</span>
+            <span>{{ item.res.accuracy }}</span>
           </div>
           <div class="taskInfoBox dataset">
             <span class="lineStyle">▍</span
             ><span class="featureTitle">准确率precision：</span>
-            <span>{{ transTOPercent(item.res.precision) }}</span>
+            <span>{{ item.res.precision }}</span>
           </div>
           <div class="taskInfoBox algorithm">
             <span class="lineStyle">▍</span
             ><span class="featureTitle">召回率recall：</span>
-            <span>{{ transTOPercent(item.res.recall) }}</span>
+            <span>{{ item.res.recall }}</span>
           </div>
           <div class="taskInfoBox use_features">
             <span class="lineStyle">▍</span
             ><span class="featureTitle">f1-score：</span>
-            <span>{{ transTOPercent(item.res.f1) }}</span>
+            <span>{{ item.res.f1 }}</span>
           </div>
         </div>
 
@@ -124,22 +124,22 @@
           <div class="taskInfoBox_disease">
             <span class="lineStyle">▍</span
             ><span class="featureTitle">精确率acc：</span>
-            <span>{{ transTOPercent(item.res.accuracy) }}</span>
+            <span>{{ item.res.accuracy }}</span>
           </div>
           <div class="taskInfoBox dataset">
             <span class="lineStyle">▍</span
             ><span class="featureTitle">准确率precision：</span>
-            <span>{{ transTOPercent(item.res.precision) }}</span>
+            <span>{{ item.res.precision }}</span>
           </div>
           <div class="taskInfoBox algorithm">
             <span class="lineStyle">▍</span
             ><span class="featureTitle">召回率recall：</span>
-            <span>{{ transTOPercent(item.res.recall) }}</span>
+            <span>{{ item.res.recall }}</span>
           </div>
           <div class="taskInfoBox use_features">
             <span class="lineStyle">▍</span
             ><span class="featureTitle">f1-score：</span>
-            <span>{{ transTOPercent(item.res.f1) }}</span>
+            <span>{{ item.res.f1 }}</span>
           </div>
         </div>
 
@@ -172,22 +172,22 @@
           <div class="taskInfoBox_disease">
             <span class="lineStyle">▍</span
             ><span class="featureTitle">精确率acc：</span>
-            <span>{{ transTOPercent(item.res.accuracy) }}</span>
+            <span>{{ item.res.accuracy }}</span>
           </div>
           <div class="taskInfoBox dataset">
             <span class="lineStyle">▍</span
             ><span class="featureTitle">准确率precision：</span>
-            <span>{{ transTOPercent(item.res.precision) }}</span>
+            <span>{{ item.res.precision }}</span>
           </div>
           <div class="taskInfoBox algorithm">
             <span class="lineStyle">▍</span
             ><span class="featureTitle">召回率recall：</span>
-            <span>{{ transTOPercent(item.res.recall) }}</span>
+            <span>{{ item.res.recall }}</span>
           </div>
           <div class="taskInfoBox use_features">
             <span class="lineStyle">▍</span
             ><span class="featureTitle">f1-score：</span>
-            <span>{{ transTOPercent(item.res.f1) }}</span>
+            <span>{{ item.res.f1 }}</span>
           </div>
         </div>
 
@@ -526,11 +526,6 @@ export default {
     transTONumber(confusion){
       return parseInt(confusion);
     },
-
-    transTOPercent(rate){
-      return (parseFloat(rate) * 100).toFixed(2) + "%";
-    },
-
     transToPie(shapeValueStr){
       // 将字符串按逗号分割成对象数组
       const objectArray = shapeValueStr.split('},{').map(item => {

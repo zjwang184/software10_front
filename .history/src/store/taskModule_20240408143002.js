@@ -47,7 +47,7 @@ export default {
           params:{
             random_state: 42,     
             cv: 10,
-            K: 3
+            paramRange: 3
           },
           res:{}
         }
@@ -66,7 +66,7 @@ export default {
       KNN: {        
         random_state: 42,     
         cv: 10,
-        K: 3
+        paramRange: 3
       },
 
       result: [],

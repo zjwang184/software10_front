@@ -63,22 +63,22 @@
           <div class="taskInfoBox_disease">
             <span class="lineStyle">▍</span
             ><span class="featureTitle">精确率acc：</span>
-            <span>{{ transTOPercent(item.res.accuracy) }}</span>
+            <span>{{ item.res.accuracy }}</span>
           </div>
           <div class="taskInfoBox dataset">
             <span class="lineStyle">▍</span
             ><span class="featureTitle">准确率precision：</span>
-            <span>{{ transTOPercent(item.res.precision) }}</span>
+            <span>{{ item.res.precision }}</span>
           </div>
           <div class="taskInfoBox algorithm">
             <span class="lineStyle">▍</span
             ><span class="featureTitle">召回率recall：</span>
-            <span>{{ transTOPercent(item.res.recall) }}</span>
+            <span>{{ item.res.recall }}</span>
           </div>
           <div class="taskInfoBox use_features">
             <span class="lineStyle">▍</span
             ><span class="featureTitle">f1-score：</span>
-            <span>{{ transTOPercent(item.res.f1) }}</span>
+            <span>{{ item.res.f1 }}</span>
           </div>
         </div>
 
@@ -124,70 +124,22 @@
           <div class="taskInfoBox_disease">
             <span class="lineStyle">▍</span
             ><span class="featureTitle">精确率acc：</span>
-            <span>{{ transTOPercent(item.res.accuracy) }}</span>
+            <span>{{ item.res.accuracy }}</span>
           </div>
           <div class="taskInfoBox dataset">
             <span class="lineStyle">▍</span
             ><span class="featureTitle">准确率precision：</span>
-            <span>{{ transTOPercent(item.res.precision) }}</span>
+            <span>{{ item.res.precision }}</span>
           </div>
           <div class="taskInfoBox algorithm">
             <span class="lineStyle">▍</span
             ><span class="featureTitle">召回率recall：</span>
-            <span>{{ transTOPercent(item.res.recall) }}</span>
+            <span>{{ item.res.recall }}</span>
           </div>
           <div class="taskInfoBox use_features">
             <span class="lineStyle">▍</span
             ><span class="featureTitle">f1-score：</span>
-            <span>{{ transTOPercent(item.res.f1) }}</span>
-          </div>
-        </div>
-
-        <div class="taskInfoBox result">
-          <span class="lineStyle">▍</span
-          ><span class="featureTitle">任务结果：</span>
-        </div>
-
-       
-        <div class="graphBox">
-          <featuresPie :data="transToPie(item.res.avg_shapvalue)"></featuresPie>
-          <treeMap 
-          :TP="transTONumber(item.res.TP)"
-          :FN="transTONumber(item.res.FN)"
-          :FP="transTONumber(item.res.FP)"
-          :TN="transTONumber(item.res.TN)"
-          ></treeMap>
-        </div>
-      </div>
-    </div>
-    
-    <div id="pdf_4"
-    v-for="(item, index) in knnModel"
-    :key="index"
-    >
-      <div class="taskBox3">
-        <span style="font-size: 40px; margin-bottom: 20px">{{item.name}}模型信息：</span
-        ><span></span><span></span><span></span>
-        <div class="algorithm_info">
-          <div class="taskInfoBox_disease">
-            <span class="lineStyle">▍</span
-            ><span class="featureTitle">精确率acc：</span>
-            <span>{{ transTOPercent(item.res.accuracy) }}</span>
-          </div>
-          <div class="taskInfoBox dataset">
-            <span class="lineStyle">▍</span
-            ><span class="featureTitle">准确率precision：</span>
-            <span>{{ transTOPercent(item.res.precision) }}</span>
-          </div>
-          <div class="taskInfoBox algorithm">
-            <span class="lineStyle">▍</span
-            ><span class="featureTitle">召回率recall：</span>
-            <span>{{ transTOPercent(item.res.recall) }}</span>
-          </div>
-          <div class="taskInfoBox use_features">
-            <span class="lineStyle">▍</span
-            ><span class="featureTitle">f1-score：</span>
-            <span>{{ transTOPercent(item.res.f1) }}</span>
+            <span>{{ item.res.f1 }}</span>
           </div>
         </div>
 
@@ -266,11 +218,6 @@ export default {
       // 根据条件筛选 editableTabs 数组
       return this.m_models.filter(item => item.name==='svm');
     },
-    knnModel(){
-      // 根据条件筛选 editableTabs 数组
-      return this.m_models.filter(item => item.name==='knn');
-    },
-
 
     ratio() {
       let num = (this.m_result.ratio * 100).toFixed(2);
@@ -526,11 +473,6 @@ export default {
     transTONumber(confusion){
       return parseInt(confusion);
     },
-
-    transTOPercent(rate){
-      return (parseFloat(rate) * 100).toFixed(2) + "%";
-    },
-
     transToPie(shapeValueStr){
       // 将字符串按逗号分割成对象数组
       const objectArray = shapeValueStr.split('},{').map(item => {
@@ -740,12 +682,11 @@ export default {
 
     async exportRes() {
       this.exportExcel();
-      const divsToExport = ["pdf_1", "pdf_2", "pdf_3", "pdf_4"];
+      const divsToExport = ["pdf_1", "pdf_2", "pdf_3"];
       const pdf_positions = [
-        { x: 5, y: 5 },
-        { x: 5, y: 35 },
-        { x: 5, y: 160 },
-        { x: 5, y: 210 },
+        { x: 5, y: 20 },
+        { x: 5, y: 50 },
+        { x: 5, y: 200 },
       ];
       const pdf = new jsPDF();
 

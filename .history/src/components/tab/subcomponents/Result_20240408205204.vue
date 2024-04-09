@@ -528,7 +528,7 @@ export default {
     },
 
     transTOPercent(rate){
-      return (parseFloat(rate) * 100).toFixed(2) + "%";
+      return parseFloat(rate) * 100 + "%";
     },
 
     transToPie(shapeValueStr){
