@@ -295,41 +295,41 @@ export default {
     // },
     async next(name) {
       this.next_loading=true;
-    this.chosenData = name;
-    this.m_changeTaskInfo({ dataset: this.chosenData, disease: this.m_disease });
-    console.log("chosenData:", this.chosenData);
-    
-    try {
-      // 等待第一个异步操作完成
-      const resFeatures = await postRequest("runtime_bus/getLackinfos_features", {
-        tableName: this.chosenData,
-        modename: "public",
-      });
-      this.allFeatures = resFeatures;
-      this.m_changeTaskInfo({
-        all_features: this.allFeatures,
-      });
-
-      // 等待第二个异步操作完成
-      const resLabels = await postRequest("runtime_bus/getLackinfos_labels", {
-        tableName: this.chosenData,
-        modename: "public",
-      });
-      this.targetFeatures = resLabels;
-      this.m_changeTaskInfo({
-        target_features: this.targetFeatures,
-      });
-
-      // 确保所有异步操作完成后再进行下一步
-      this.next_loading=false;
-      this.m_changeStep(3);
-      console.log("data_select—end this.targetFeatures:", this.m_target_features);
-      console.log("this.m_all_features:", this.m_all_features);
+      this.chosenData = name;
+      this.m_changeTaskInfo({ dataset: this.chosenData, disease: this.m_disease });
+      console.log("chosenData:", this.chosenData);
       
-    } catch (error) {
-      console.error(error); // 如果异步请求出错，打印错误信息
-    }
-  },
+      try {
+        // 等待第一个异步操作完成
+        const resFeatures = await postRequest("runtime_bus/getLackinfos_features", {
+          tableName: this.chosenData,
+          modename: "public",
+        });
+        this.allFeatures = resFeatures;
+        this.m_changeTaskInfo({
+          all_features: this.allFeatures,
+        });
+
+        // 等待第二个异步操作完成
+        const resLabels = await postRequest("runtime_bus/getLackinfos_labels", {
+          tableName: this.chosenData,
+          modename: "public",
+        });
+        this.targetFeatures = resLabels;
+        this.m_changeTaskInfo({
+          target_features: this.targetFeatures,
+        });
+
+        // 确保所有异步操作完成后再进行下一步
+        this.next_loading=false;
+        this.m_changeStep(3);
+        console.log("data_select—end this.targetFeatures:", this.m_target_features);
+        console.log("this.m_all_features:", this.m_all_features);
+        
+      } catch (error) {
+        console.error(error); // 如果异步请求出错，打印错误信息
+      }
+    },
 
     backStep() {
       this.m_changeStep(this.m_step - 1);

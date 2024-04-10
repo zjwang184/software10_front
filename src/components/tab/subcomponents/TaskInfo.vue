@@ -30,7 +30,7 @@
       </el-form-item>
       <div></div>
 
-      <el-form-item prop="disease">
+      <!-- <el-form-item prop="disease">
         <template slot="label">
           <span class="lineStyle">▍</span>
           <span>研究病种</span>
@@ -49,7 +49,8 @@
             >{{ dis.name }}</el-radio
           >
         </el-radio-group>
-      </el-form-item>
+      </el-form-item> -->
+
       <el-form-item prop="comment" class="inputBox shortItem">
         <template slot="label">
           <span class="lineStyle">▍</span>

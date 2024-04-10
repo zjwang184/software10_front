@@ -1,35 +1,56 @@
 <template>
   <div class="main">
     <div class="left_tree">
-      <el-checkbox v-model="isAllChecked" @change="handleAllCheckedChange"
+      <!-- <el-checkbox v-model="isAllChecked" @change="handleAllCheckedChange"
         >全选</el-checkbox
+      > -->
+      <!-- <el-alert>叶子节点为数据集，非叶子节点为病种</el-alert> -->
+      <div
+        style="
+          background-color: rgb(234, 242, 248);
+          width: 100%;
+          font-size: 20px;
+          border: 1px solid #fff;
+          border-radius: 10px;
+        "
       >
+        病种、数据集选择
+        <el-popover placement="top" trigger="hover">
+          <div>叶子节点为数据集，非叶子节点为病种</div>
+
+          <el-icon
+            class="el-icon-question"
+            slot="reference"
+            style="font-size: 15px"
+          ></el-icon>
+        </el-popover>
+      </div>
+
       <el-tree
         ref="tree"
         :data="treeData"
-        :show-checkbox="true"
+        :show-checkbox="false"
         node-key="id"
         default-expand-all
         :expand-on-click-node="false"
         :check-on-click-node="true"
         :highlight-current="true"
-        @check-change="handleCheckChange"
+        @node-click="changeData"
       >
       </el-tree>
     </div>
 
     <div class="right">
       <div>
-        <span class="lineStyle">▍</span
-        ><span class="featureTitle"
-          >请选择一个训练好的任务，点击任务可以查看对应任务详情</span
+        <span class="lineStyle" style="display: inline-block">▍</span
+        ><span class="featureTitle" style="display: inline-block"
+          >请选择一个训练好的任务</span
         >
-        <el-popover placement="right" trigger="hover">
-          <div>
-            可根据疾病名称、数据集、任务名称、任务负责人、所用算法对任务进行筛选
-          </div>
-          <el-icon slot="reference" class="el-icon-warning-outline"></el-icon>
-        </el-popover>
+        <span style="display: inline-block;font-size:20px"
+          ><el-alert>
+            可根据疾病名称、数据集、任务名称、任务负责人、所用算法对任务进行筛选,筛选结果根据创建时间由近到远进行排序
+          </el-alert></span
+        >
       </div>
       <div class="right_top">
         <div class="algorithmSelect_box">
@@ -94,7 +115,7 @@
                 v-model="KNN_selected"
                 active-text="KNN"
                 style="margin-right: 20px; font-size: 40px"
-                disabled
+                @change="handleSwitchChange('KNN', $event)"
               >
               </el-switch>
             </div>
@@ -108,7 +129,7 @@
                 v-model="SVM_selected"
                 active-text="SVM"
                 style="margin-right: 20px; font-size: 40px"
-                disabled
+                @change="handleSwitchChange('SVM', $event)"
               >
               </el-switch>
             </div>
@@ -122,7 +143,7 @@
                 v-model="RF_selected"
                 active-text="RF"
                 style="margin-right: 20px; font-size: 40px"
-                disabled
+                @change="handleSwitchChange('RF', $event)"
               >
               </el-switch>
             </div>
@@ -151,18 +172,19 @@
           >
           </el-input
         ></span>
+        <div style="margin-top: 10px">
+          共
+          <span style="color: red">{{ filteredTaskList.length }} </span> 个任务
+        </div>
       </div>
 
       <div class="right_bottom">
-        <div class="cardGroup"
-        v-for="item in taskList"
-            :key="item.id"
-        >
+        <div class="cardGroup">
           <el-card
             class="taskCard"
-            
+            v-for="item in filteredTaskList"
+            :key="item.id"
             shadow="always"
-            v-show="displayedCard(item)"
           >
             <div class="cardInfo">
               <div><span class="ttl">任务名称：</span>{{ item.taskName }}</div>
@@ -175,9 +197,18 @@
               </div>
             </div>
             <span class="buttonGroup">
-              <el-button type="success" @click="handleCheck(item)" round
-                >查看</el-button
-              >
+              <el-popover placement="top" trigger="hover">
+                <div>点击查看任务详情</div>
+                <el-button
+                  slot="reference"
+                  type="success"
+                  @click="handleCheck(item)"
+                  round
+                  >查看</el-button
+                >
+              </el-popover>
+              <span style="margin: 10px"></span>
+
               <el-button type="primary" @click="submit(item)" round
                 >确认</el-button
               >
@@ -300,10 +331,51 @@ export default {
     ]),
     ...mapGetters(["taskLeaderList", "taskDiseaseList"]),
 
-    // totalTasks() {
-    //   return this.taskList.filter((item) => this.displayedCard(item)).length;
-    // },
+    totalTasks() {
+      return this.taskList.filter((item) => this.displayedCard(item)).length;
+    },
+    filteredTaskListByModel() {
+      return this.taskList.filter((item) => item.model);
+    },
+    isModelListContainsDQN() {
+      return this.modelList.includes("DQN");
+    },
+    isModelListContainsDDPG() {
+      return this.modelList.includes("DDPG");
+    },
+    isModelListContainsPPO() {
+      return this.modelList.includes("PPO");
+    },
+    isModelListContainsKNN() {
+      return this.modelList.includes("KNN");
+    },
+    isModelListContainsSVM() {
+      return this.modelList.includes("SVM");
+    },
+    isModelListContainsRF() {
+      return this.modelList.includes("RF");
+    },
+    filteredTaskList() {
+      // 进行筛选
+      let filteredList = this.taskList.filter((task) => {
+        let diseaseMatch = this.disease === "" || task.disease === this.disease;
+        let modelMatch =
+          this.modelList.length === 0 || this.modelList.includes(task.model);
+        let datasetMatch = this.dataset === "" || task.dataset === this.dataset;
+        let leaderMatch = this.leader === "" || task.leader === this.leader;
+        let taskMatch = this.taskName === "" || task.taskName === this.taskName;
+        return (
+          diseaseMatch && modelMatch && datasetMatch && leaderMatch && taskMatch
+        );
+      });
+
+      // 进行排序
+      return filteredList.sort((a, b) => {
+        return new Date(b.createtime) - new Date(a.createtime);
+      });
+    },
   },
+
   data() {
     return {
       isAllChecked: false, // 全选按钮的状态
@@ -314,8 +386,9 @@ export default {
       leader: "",
       taskName: "",
       modelList: [],
-      diseaseList: [],
-      datasetList: [],
+      dataset: "",
+      // diseaseList: [],
+      // datasetList: [],
       // taskList: JSON.parse(JSON.stringify(taskList)),
       DQN_selected: false,
       DDPG_selected: false,
@@ -333,9 +406,9 @@ export default {
   },
 
   created() {
-    this.init();
     this.getCatgory();
-    this.getTaskList();
+    // this.getTaskList();
+    this.init();
   },
 
   methods: {
@@ -346,9 +419,22 @@ export default {
     ...mapMutations(["SetTaskList"]),
     //和vuex内数据同步
     init() {
+      //初始化
+      const uniqueModels = new Set();
+      for (const item of this.filteredTaskListByModel) {
+        uniqueModels.add(item.model);
+      }
+      this.modelList = Array.from(uniqueModels);
       this.predict_features = this.m_predict_features;
+      this.DQN_selected = this.isModelListContainsDQN;
+      this.DDPG_selected = this.isModelListContainsDDPG;
+      this.PPO_selected = this.isModelListContainsPPO;
+      this.KNN_selected = this.isModelListContainsKNN;
+      this.SVM_selected = this.isModelListContainsSVM;
+      this.RF_selected = this.isModelListContainsRF;
       console.log("当前模块名👉", this.moduleName);
       console.log("this.m_predict_features111   ", this.m_predict_features);
+      console.log("this.modelList", this.modelList);
     },
 
     getCatgory() {
@@ -407,25 +493,50 @@ export default {
       });
     },
 
-    handleCheckChange(data, checked) {
-      if (checked) {
-        if (data.isLeafs == 0) {
-          this.diseaseList.push(data.label);
-        } else {
-          this.datasetList.push(data.label);
-        }
+    // handleCheckChange(data, checked) {
+    //   if (checked) {
+    //     if (data.isLeafs == 0) {
+    //       this.diseaseList.push(data.label);
+    //     } else {
+    //       this.datasetList.push(data.label);
+    //     }
+    //   } else {
+    //     const index1 = this.datasetList.indexOf(data.label);
+    //     const index2 = this.diseaseList.indexOf(data.label);
+    //     if (index1 !== -1) {
+    //       this.datasetList.splice(index1, 1);
+    //     }
+    //     if (index2 !== -1) {
+    //       this.diseaseList.splice(index2, 1);
+    //     }
+    //   }
+    //   console.log("diseaseList: ",this.diseaseList);
+    //   console.log("datasetList: ",this.datasetList);
+    // },
+
+    changeData(node) {
+      if (this.lastClickedNode && this.lastClickedNode === node) {
+        // 如果当前节点已经被高亮，则取消高亮
+        this.$refs.tree.setCurrentKey(null);
+        this.lastClickedNode = null;
+        this.disease = "";
+        this.dataset = "";
       } else {
-        const index1 = this.datasetList.indexOf(data.label);
-        const index2 = this.diseaseList.indexOf(data.label);
-        if (index1 !== -1) {
-          this.datasetList.splice(index1, 1);
-        }
-        if (index2 !== -1) {
-          this.diseaseList.splice(index2, 1);
+        // 高亮当前节点
+        this.$refs.tree.setCurrentKey(node.id);
+        this.lastClickedNode = node;
+        if (node.isLeafs == 0) {
+          this.disease = node.label;
+          this.dataset = "";
+        } else {
+          this.dataset = node.label;
+          this.disease = "";
         }
       }
-      console.log("diseaseList: ",this.diseaseList);
-      console.log("datasetList: ",this.datasetList);
+      console.log("this.disease: ", this.disease);
+      console.log("this.dataset: ", this.dataset);
+      console.log("this.taskName: ", this.taskName);
+      console.log("this.leader: ", this.leader);
     },
 
     handleSwitchChange(modelName, value) {
@@ -441,27 +552,6 @@ export default {
           console.log(this.modelList);
         }
       }
-    },
-
-    displayedCard(item) {
-      // 判断 item 的 disease、model 和 dataset 是否在相应的数组中存在
-      const diseaseMatch = this.diseaseList.includes(item.disease);
-      const modelMatch = this.modelList.includes(item.model);
-      const datasetMatch = this.datasetList.includes(item.dataset);
-      const leaderMatch = this.leader == item.leader;
-      const taskMatch = this.taskName == item.taskName;
-
-      // 当 disease、leader、task、model 和 dataset 都不存在时，返回 false，不显示该卡片
-      if (
-        !diseaseMatch &&
-        !modelMatch &&
-        !datasetMatch &&
-        !leaderMatch &&
-        !taskMatch
-      ) {
-        return false;
-      }
-      return true;
     },
 
     // 处理每页数量变化
@@ -530,7 +620,7 @@ export default {
 .main {
   display: grid;
   grid-template-columns: 15% 85%;
-  height: auto;
+  height: 100%;
   overflow-y: hidden; /* 隐藏垂直滚动条 */
   overflow-x: hidden;
 }
@@ -547,10 +637,19 @@ export default {
   -ms-overflow-style: none; /* 隐藏 IE/Edge 的滚动条 */
 }
 
+/* 修改树形控件高亮颜色 */
+::v-deep.el-tree--highlight-current
+  .el-tree-node.is-current
+  > .el-tree-node__content {
+  color: #ffffff;
+  background: #62a2e7 !important;
+}
+
 .right {
   display: grid;
   grid-template-rows: auto 15% auto auto;
   margin-left: 30px;
+  height: 100%;
 }
 
 .right_top {
@@ -565,12 +664,12 @@ export default {
 
 .right_middle {
   display: grid;
-  grid-template-columns: auto auto;
+  grid-template-columns: auto auto auto;
   margin-top: 20px;
 }
 
 .right_bottom {
-  height: auto;
+  height: 100%;
   width: 100%;
 }
 

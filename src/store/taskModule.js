@@ -63,13 +63,19 @@ export default {
         random_state: 42,     
         cv: 5,
       },
-      KNN: {        
+      KNN: {  
         random_state: 42,     
         cv: 10,
         K: 3
       },
 
       result: [],
+
+      // 风险预测
+      predict_features: [],
+      patient_form:[],
+
+
     };
   },
   getters: {},

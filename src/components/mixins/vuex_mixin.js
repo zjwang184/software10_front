@@ -59,6 +59,15 @@ export default {
     m_result() {
       return this.$store.state[this.moduleName].result;
     },
+
+    // 风险预测
+    m_predict_features() {
+      return this.$store.state[this.moduleName].predict_features;
+    },
+    m_patient_form() {
+      return this.$store.state[this.moduleName].patient_form;
+    },
+
   },
   methods: {
     m_changeStep(newStep) {

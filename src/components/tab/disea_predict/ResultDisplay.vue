@@ -67,7 +67,7 @@
         <div></div>
         <div class="box">
           <div>
-            <img :src="imageUrl" alt="Image" />
+            <img src="http://10.16.97.233:8088/fig/shap1.png" alt="Image" />
           </div>
           <PlusAndMinusBarVue />
         </div>
