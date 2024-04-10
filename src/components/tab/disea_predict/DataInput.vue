@@ -14,7 +14,7 @@
 
       <el-form
         :model="personForm"
-        :rules="rule"
+        :rules="rules"
         ref="personForm"
         label-width="200px"
         class="demo-personForm"
@@ -110,45 +110,46 @@ export default {
     return {
       predict_features: [],
       personForm: {},
-      formRules: {},
-      rules: {
-        age: [
-          { required: true, message: "年龄不能为空" },
-          { type: "number", message: "年龄必须为数字值" },
-        ],
-        pregnancies: [
-          { required: true, message: "从未怀孕可以填0,不能为空" },
-          { type: "number", message: "必须为数字值", trigger: "change" },
-        ],
-        diabetesPedigreeFunction: [
-          { required: true, message: "不能为空" },
-          { type: "number", message: "必须为数字值", trigger: "change" },
-        ],
-        glucose: [
-          { required: true, message: "不能为空" },
-          { type: "number", message: "年龄必须为数字值" },
-        ],
-        bloodPressure: [
-          { required: true, message: "不能为空" },
-          { type: "number", message: "必须为数字值", trigger: "change" },
-        ],
-        skinThickness: [
-          { required: true, message: "不能为空" },
-          { type: "number", message: "必须为数字值", trigger: "change" },
-        ],
-        insulin: [
-          { required: true, message: "不能为空" },
-          { type: "number", message: "必须为数字值", trigger: "change" },
-        ],
-        bmi: [
-          { required: true, message: "不能为空" },
-          { type: "number", message: "必须为数字值", trigger: "change" },
-        ],
-      },
+      rules: {},
+      // rules: {
+      //   age: [
+      //     { required: true, message: "年龄不能为空" },
+      //     { type: "number", message: "年龄必须为数字值" },
+      //   ],
+      //   pregnancies: [
+      //     { required: true, message: "从未怀孕可以填0,不能为空" },
+      //     { type: "number", message: "必须为数字值", trigger: "change" },
+      //   ],
+      //   diabetesPedigreeFunction: [
+      //     { required: true, message: "不能为空" },
+      //     { type: "number", message: "必须为数字值", trigger: "change" },
+      //   ],
+      //   glucose: [
+      //     { required: true, message: "不能为空" },
+      //     { type: "number", message: "年龄必须为数字值" },
+      //   ],
+      //   bloodPressure: [
+      //     { required: true, message: "不能为空" },
+      //     { type: "number", message: "必须为数字值", trigger: "change" },
+      //   ],
+      //   skinThickness: [
+      //     { required: true, message: "不能为空" },
+      //     { type: "number", message: "必须为数字值", trigger: "change" },
+      //   ],
+      //   insulin: [
+      //     { required: true, message: "不能为空" },
+      //     { type: "number", message: "必须为数字值", trigger: "change" },
+      //   ],
+      //   bmi: [
+      //     { required: true, message: "不能为空" },
+      //     { type: "number", message: "必须为数字值", trigger: "change" },
+      //   ],
+      // },
     };
   },
-  created() {
+  mounted() {
     this.init();
+    this.generateFormAndRules();
   },
   methods: {
     init() {
@@ -157,12 +158,41 @@ export default {
       console.log("this.m_predict_features   ", this.predict_features);
       console.log("this.m_patient_form   ", this.m_patient_form);
     },
+
+    generateFormAndRules() {
+      // 动态生成表单项
+      this.personForm = this.predict_features.reduce((acc, cur) => {
+        acc[cur] = ""; // 将表单项添加到表单数据对象中，并初始化为空字符串
+        return acc;
+      }, {});
+
+      // 动态生成验证规则
+      this.rules = this.predict_features.reduce((acc, cur) => {
+        acc[cur] = [
+          { required: true, message: "此项不能为空", trigger: "blur" },
+          // 可以添加其他验证规则
+        ];
+        return acc;
+      }, {});
+    },
+
     resetForm(formName) {
       this.$refs[formName].resetFields();
     },
 
     submit() {
-      this.m_changeStep(3);
+      // 检查是否有空值
+      const emptyFields = this.predict_features.filter(
+        (item) => !this.personForm[item]
+      );
+
+      if (emptyFields.length > 0) {
+        // 如果有空值，则弹出警告
+        this.$message.error("请填写完整的表单！");
+      } else {
+        // 如果没有空值，则进行页面跳转
+        this.m_changeStep(3);
+      }
       // alert("提交成功");
       let formData = new FormData();
 
@@ -185,7 +215,7 @@ export default {
       console.log(dictionary);
       console.log("=======");
       this.m_changeTaskInfo({ patient_form: dictionary });
-          console.log("this.m_patient_form   ", this.m_patient_form);
+      console.log("this.m_patient_form   ", this.m_patient_form);
       postRequest("/ten/data/update_person", dictionary)
         .then((res) => {
           console.log("res:", res);
