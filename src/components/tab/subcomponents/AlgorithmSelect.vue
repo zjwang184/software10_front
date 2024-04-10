@@ -56,7 +56,7 @@
         @edit="handleTabsEdit"
           >
           <el-tab-pane v-for="(item, index) in filteredEditableTabs" :key="index" :label="item.title" :name="item.name" >
-            <!-- <div v-if="item.name === 'dqn'"> -->
+            <!-- <div v-if="item.name === 'DQN'"> -->
               <div class="titleBox">{{item.title}}</div>
                 <div class="introBox">
                   <p>模型说明：</p>
@@ -64,7 +64,7 @@
                 </div>             
                 
                 <!-- 强化学习DQN的表单 -->
-                <div class="paramBox" v-if="editableTabsValue === 'dqn'">
+                <div class="paramBox" v-if="editableTabsValue === 'DQN'">
                   <el-form
                     :model="DQN_form"
                     class=""
@@ -146,7 +146,7 @@
                 </div>
 
                 <!-- 机器学习SVM的表单 -->
-                <div class="paramBox" v-if="editableTabsValue === 'svm'">
+                <div class="paramBox" v-if="editableTabsValue === 'SVM'">
                   <el-form
                     :model="SVM_form"
                     class=""
@@ -223,7 +223,7 @@
                 </div>
 
                 <!-- 机器学习KNN的表单 -->
-                <div class="paramBox" v-if="editableTabsValue === 'knn'">
+                <div class="paramBox" v-if="editableTabsValue === 'KNN'">
                   <el-form
                     :model="KNN_form"
                     class=""
@@ -273,7 +273,7 @@
                         <span class="paramTitle">K临近值</span>
                         <el-popover placement="right" trigger="hover">
                           <div>
-                            knn中k的取值
+                            KNN中k的取值
                             <!--  待填 -->
                           </div>
                           <el-icon
@@ -349,7 +349,7 @@ export default {
       editableTabs: [      
         {
           title: 'DQN',
-          name: 'dqn',
+          name: 'DQN',
           content: '强化学习算法-DQN',
           intro: "DQN，即深度Q网络（Deep Q-network），是指基于深度学习的Q-Learing算法。",
           // forms: this.DQN_form,
@@ -365,7 +365,7 @@ export default {
         // },  
         {
           title: 'KNN',
-          name: 'knn',
+          name: 'KNN',
           content: '机器学习算法-KNN',
           // forms: this.SVM_form,
           intro: "KNN:如果一个样本在特征空间中的k个最相似（即特征空间中最近）的样本中的大多数属于某一个类别，则该样本也属于这个类别，并具有这个类别上样本的特性。",
@@ -373,14 +373,14 @@ export default {
         },
         {
           title: 'SVM',
-          name: 'svm',
+          name: 'SVM',
           content: '机器学习算法-SVM',
           // forms: this.SVM_form,
           intro: "SVM",
           is_select: false
         }],
 
-      editableTabsValue: "dqn",
+      editableTabsValue: "DQN",
 
       model: "",      
       loading: false,
@@ -465,14 +465,14 @@ export default {
             forms: {}//获取不到editableTabs的值，所以更改成{}
           }
           selected_model.forms
-          if (this.editableTabs[ind].name === 'dqn'){
+          if (this.editableTabs[ind].name === 'DQN'){
             selected_model.forms = this.DQN_form;
             this.m_DQN_update(this.DQN_form);
-          }else if (this.editableTabs[ind].name === 'svm'){
+          }else if (this.editableTabs[ind].name === 'SVM'){
             selected_model.forms = this.SVM_form;
             this.m_SVM_update(this.SVM_form);
             
-          }else if (this.editableTabs[ind].name === 'knn'){
+          }else if (this.editableTabs[ind].name === 'KNN'){
             selected_model.forms = this.KNN_form;
             this.m_KNN_update(this.KNN_form);
           }
