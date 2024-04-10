@@ -1,12 +1,42 @@
 <template>
   <div>
     <div class="left_tree">
-      <el-button
+      <!-- <div class="tree-top">数据集选择
+        <el-popover placement="right" trigger="hover">
+          <div>叶子节点为数据集，非叶子节点为病种</div>
+          <el-icon
+            class="el-icon-warning-outline"
+            slot="reference"
+            style="font-size: 15px"
+          ></el-icon>
+        </el-popover>
+      </div> -->
+      <div
+        style="
+          background-color: rgb(234, 242, 248);
+          width: 100%;
+          font-size: 20px;
+          border: 1px solid #fff;
+          border-radius: 10px;
+        "
+      >
+        病种、数据集选择
+        <el-popover placement="top" trigger="hover">
+          <div>叶子节点为数据集，非叶子节点为病种</div>
+
+          <el-icon
+            class="el-icon-warning-outline"
+            slot="reference"
+            style="font-size: 15px"
+          ></el-icon>
+        </el-popover>
+      </div>
+      <!-- <el-button
         type="success"
         class="add_button"
         @click="dialogDiseaseVisible2 = true"
         >添加病种</el-button
-      >
+      > -->
       <el-dialog title="提示" :visible.sync="dialogDiseaseVisible2" width="30%">
         <span>
           请输入新病种名称：<el-input
@@ -86,6 +116,12 @@
           </span>
         </span>
       </el-tree>
+      <el-button
+        type="success"
+        class="add_button"
+        @click="dialogDiseaseVisible2 = true"
+        >添加病种</el-button
+      >
       <el-dialog title="提示" :visible.sync="dialogDiseaseVisible" width="30%">
         <span>
           请输入新病种名称（a）：<el-input
@@ -457,6 +493,7 @@
       </el-dialog>
     </el-dialog>
     <div class="right_table">
+      <div class="table_top">数据集预览 <el-alert>1111</el-alert></div>
       <el-card class="right_table_topCard">
         <div class="describe_content">
           <h3>{{ showDataForm.tableName }}</h3>
@@ -492,7 +529,11 @@
                 <div class="truncate-text">{{ row[key] }}</div>
               </template>
               <template slot="header">
-                <el-tooltip effect="dark" :content="getCount(key)" placement="top">
+                <el-tooltip
+                  effect="dark"
+                  :content="getCount(key)"
+                  placement="top"
+                >
                   <div>{{ key }}</div>
                 </el-tooltip>
               </template>
@@ -1295,6 +1336,31 @@ export default {
   padding-right: 8px;
 }
 
+.tree-top {
+  font-size: 32px;
+  color: #000000;
+  text-align: center;
+  padding: 10px 20px; /* 设置内边距 */
+  border: 1px solid #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1); /* 修正阴影的颜色和透明度 */
+  background-color:rgb(144,147,153);
+}
+
+.table_top{
+  display:inline-block;
+  width: 95%;
+  font-size: 32px;
+  color: #000000;
+  text-align: center;
+  border-radius: 3px;
+  border: 1px solid #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1); /* 修正阴影的颜色和透明度 */
+  margin-left:20px;
+  margin-bottom:25px;
+}
+
 .right_table {
   display: inline-block;
   height: 85%;
@@ -1326,9 +1392,12 @@ export default {
 }
 
 .add_button {
-  width: 100%;
+  position: fixed;
+  width: 264px;
   margin-top: 10px;
   margin-bottom: 10px;
+  z-index: 9999; /* 置于最顶层 */
+  bottom:50px;
 }
 
 .nameInput {
@@ -1411,5 +1480,13 @@ export default {
   overflow-x: auto;
   scrollbar-width: none; /* 隐藏 Firefox 的滚动条 */
   -ms-overflow-style: none; /* 隐藏 IE/Edge 的滚动条 */
+}
+
+/* 修改树形控件高亮颜色 */
+::v-deep.el-tree--highlight-current
+  .el-tree-node.is-current
+  > .el-tree-node__content {
+  color: #ffffff;
+  background: #62a2e7 !important;
 }
 </style>

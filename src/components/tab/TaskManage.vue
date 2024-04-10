@@ -73,10 +73,10 @@
           "
         >
           <div class="cardInfo">
-            <div><span class="ttl">任务名称：</span>{{ item.taskName }}</div>
+            <div><span class="ttl">任务名称：</span>{{ item.taskname }}</div>
             <div><span class="ttl">任务负责人：</span>{{ item.leader }}</div>
             <div><span class="ttl">所属疾病：</span>{{ item.disease }}</div>
-            <div><span class="ttl">使用模型：</span>{{ item.model }}</div>
+            <div><span class="ttl">使用模型：</span>{{ item.modelname }}</div>
             <div><span class="ttl">数据表：</span>{{ item.dataset }}</div>
             <div><span class="ttl">创建时间：</span>{{ item.createtime }}</div>
           </div>
@@ -103,7 +103,7 @@
       </div>
 
       <el-dialog
-        :title="result.taskName"
+        :title="result.taskname"
         :visible.sync="resultDialogShow"
         v-if="resultDialogShow"
         width="32%"
@@ -135,7 +135,7 @@
         <div class="taskInfoBox algorithm">
           <span class="lineStyle">▍</span
           ><span class="featureTitle">所用算法：</span>
-          <span>{{ result.model }}</span>
+          <span>{{ result.modelname }}</span>
         </div>
         <div class="taskInfoBox algorithmValue">
           <span class="lineStyle">▍</span

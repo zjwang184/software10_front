@@ -19,7 +19,7 @@
           <div>叶子节点为数据集，非叶子节点为病种</div>
 
           <el-icon
-            class="el-icon-question"
+            class="el-icon-warning-outline"
             slot="reference"
             style="font-size: 15px"
           ></el-icon>
@@ -46,7 +46,7 @@
         ><span class="featureTitle" style="display: inline-block"
           >请选择一个训练好的任务</span
         >
-        <span style="display: inline-block;font-size:20px"
+        <span style="display: inline-block; font-size: 20px"
           ><el-alert>
             可根据疾病名称、数据集、任务名称、任务负责人、所用算法对任务进行筛选,筛选结果根据创建时间由近到远进行排序
           </el-alert></span
@@ -155,7 +155,7 @@
         <span
           >任务名称：
           <el-input
-            v-model="taskName"
+            v-model="taskname"
             placeholder="请输入任务名称进行搜索"
             clearable
             :style="{ width: '300px' }"
@@ -187,10 +187,10 @@
             shadow="always"
           >
             <div class="cardInfo">
-              <div><span class="ttl">任务名称：</span>{{ item.taskName }}</div>
+              <div><span class="ttl">任务名称：</span>{{ item.taskname }}</div>
               <div><span class="ttl">负责人：</span>{{ item.leader }}</div>
               <div><span class="ttl">所属疾病：</span>{{ item.disease }}</div>
-              <div><span class="ttl">所用算法：</span>{{ item.model }}</div>
+              <div><span class="ttl">所用算法：</span>{{ item.modelname }}</div>
               <div><span class="ttl">数据表：</span>{{ item.dataset }}</div>
               <div>
                 <span class="ttl">创建时间：</span>{{ item.createtime }}
@@ -258,7 +258,7 @@
           <div class="taskInfoBox algorithm">
             <span class="lineStyle">▍</span
             ><span class="featureTitle">所用算法：</span>
-            <span class="text">{{ result.model }}</span>
+            <span class="text">{{ result.modelname }}</span>
           </div>
           <div class="taskInfoBox algorithmValue">
             <span class="lineStyle">▍</span
@@ -335,7 +335,7 @@ export default {
       return this.taskList.filter((item) => this.displayedCard(item)).length;
     },
     filteredTaskListByModel() {
-      return this.taskList.filter((item) => item.model);
+      return this.taskList.filter((item) => item.modelname);
     },
     isModelListContainsDQN() {
       return this.modelList.includes("DQN");
@@ -360,10 +360,11 @@ export default {
       let filteredList = this.taskList.filter((task) => {
         let diseaseMatch = this.disease === "" || task.disease === this.disease;
         let modelMatch =
-          this.modelList.length === 0 || this.modelList.includes(task.model);
+          this.modelList.length === 0 ||
+          this.modelList.includes(task.modelname);
         let datasetMatch = this.dataset === "" || task.dataset === this.dataset;
         let leaderMatch = this.leader === "" || task.leader === this.leader;
-        let taskMatch = this.taskName === "" || task.taskName === this.taskName;
+        let taskMatch = this.taskname === "" || task.taskname === this.taskname;
         return (
           diseaseMatch && modelMatch && datasetMatch && leaderMatch && taskMatch
         );
@@ -384,7 +385,7 @@ export default {
       treeData: [],
       disease: "",
       leader: "",
-      taskName: "",
+      taskname: "",
       modelList: [],
       dataset: "",
       // diseaseList: [],
@@ -422,7 +423,7 @@ export default {
       //初始化
       const uniqueModels = new Set();
       for (const item of this.filteredTaskListByModel) {
-        uniqueModels.add(item.model);
+        uniqueModels.add(item.modelname);
       }
       this.modelList = Array.from(uniqueModels);
       this.predict_features = this.m_predict_features;
@@ -535,7 +536,7 @@ export default {
       }
       console.log("this.disease: ", this.disease);
       console.log("this.dataset: ", this.dataset);
-      console.log("this.taskName: ", this.taskName);
+      console.log("this.taskname: ", this.taskname);
       console.log("this.leader: ", this.leader);
     },
 
@@ -567,50 +568,15 @@ export default {
 
     submit(row) {
       // this.m_changeStep(2);
-      getRequest(`Task/result/${row.id}`).then((res) => {
+      getRequest(`Task/result/pred/${row.id}`).then((res) => {
         if (res.code == 200) {
-          this.result = res.data;
-          console.log("this.result", this.result);
-          this.m_changeTaskInfo({ predict_features: this.result.feature });
+          this.predict_features = res.data;
+          console.log("this.predict_features", this.predict_features);
+          this.m_changeTaskInfo({ predict_features: this.predict_features });
           this.m_changeStep(2);
           console.log("this.m_predict_features222   ", this.m_predict_features);
         }
       });
-
-      let payload = {
-        ci: this.result.ci,
-        dataset: this.result.dataset,
-        disease: this.result.disease,
-        feature: this.result.feature,
-        leader: this.result.leader,
-        model: this.result.model,
-        para: this.result.para,
-        paraValue: this.result.paraValue,
-        participant: this.result.participant,
-        ratio: this.result.ratio,
-        remark: this.result.remark,
-        res: this.result.res,
-        targetcolumn: this.result.targetcolumn,
-        taskName: this.result.taskName,
-        time: this.result.time,
-        uid: this.result.uid,
-      };
-
-      // postRequest("", payload)
-      //   .then((res) => {
-      //     console.log(res);
-      //     this.m_changeTaskInfo({ predict_features: this.result.feature });
-      //     console.log("this.m_predict_features222   ", this.m_predict_features);
-      //     this.m_changeStep(2);
-      //   })
-      //   .catch((err) => {
-      //     this.loading = false;
-      //     this.$message({
-      //       showClose: true,
-      //       type: "error",
-      //       message: `发生错误：${err}`,
-      //     });
-      //   });
     },
   },
 };

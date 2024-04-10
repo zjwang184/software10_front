@@ -363,10 +363,13 @@ export default {
 }
 
 .buttonGroup {
+  position: fixed;
+  bottom: 10px; /* 距离页面底部 10px */
+  left: 50%;
+  transform: translateX(-50%); /* 水平居中 */
   width: 200px;
-  margin-top: 5vh;
-  margin-left: auto;
-  margin-right: auto;
+  z-index: 9999; /* 置于最顶层 */
+  margin-left:6%;
 }
 
 .left_tree {

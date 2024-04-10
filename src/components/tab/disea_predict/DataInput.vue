@@ -170,11 +170,27 @@ export default {
       this.rules = this.predict_features.reduce((acc, cur) => {
         acc[cur] = [
           { required: true, message: "此项不能为空", trigger: "blur" },
+          { validator: this.validateInput, trigger: "blur" } // 添加自定义验证器
           // 可以添加其他验证规则
         ];
         return acc;
       }, {});
     },
+
+    validateInput(rule, value, callback) {
+    // 检查是否包含非法字符
+    if (/[/\\]/.test(value)) {
+      callback(new Error("不能包含/或\\字符"));
+    } else {
+      // 检查是否只包含数字
+      if (!/^\d+$/.test(value)) {
+        callback(new Error("只能输入数字"));
+      } else {
+        callback(); // 通过验证
+      }
+    }
+  },
+
 
     resetForm(formName) {
       this.$refs[formName].resetFields();
