@@ -17,7 +17,7 @@
       <el-form-item prop="principal" class="inputBox shortItem">
         <template slot="label">
           <span class="lineStyle">▍</span>
-          <span>任务负责人</span>
+          <span>任务创建人</span>
         </template>
         <el-input v-model="taskInfoForm.principal" :disabled="true"></el-input>
       </el-form-item>
@@ -30,27 +30,6 @@
       </el-form-item>
       <div></div>
 
-      <!-- <el-form-item prop="disease">
-        <template slot="label">
-          <span class="lineStyle">▍</span>
-          <span>研究病种</span>
-        </template>
-        <el-radio-group
-          id="disGroup"
-          v-model="taskInfoForm.disease"
-          ref="disGroup"
-        >
-          <el-radio
-            v-for="(dis, index) in disOptions"
-            :key="index"
-            :label="dis.name"
-            class="disGroup-item"
-            border
-            >{{ dis.name }}</el-radio
-          >
-        </el-radio-group>
-      </el-form-item> -->
-
       <el-form-item prop="comment" class="inputBox shortItem">
         <template slot="label">
           <span class="lineStyle">▍</span>
@@ -59,25 +38,33 @@
         <el-input
           v-model="taskInfoForm.comment"
           type="textarea"
-          style="width: 800px"
+          style="width:60vh; height: 800px"
         ></el-input>
       </el-form-item>
-      <el-form-item>
+      
+      <!-- <el-form-item>
         <el-button @click="resetForm('taskInfoForm')" round>重置</el-button>
         <el-button type="primary" @click="next()" round>下一步</el-button>
-      </el-form-item>
+      </el-form-item> -->
     </el-form>
+    <div class="buttonGroup">
+        <el-button @click="resetForm()" round>清除</el-button>
+        <el-button type="primary" @click="next()" round
+          >下一步</el-button
+        >
+      </div>
   </div>
 </template>
 
 <script>
 import { disOptions } from "@/components/tab/constData.js";
-import { resetForm } from "@/components/mixins/mixin.js";
+// import { resetForm } from "@/components/mixins/mixin.js";
 import vuex_mixin from "@/components/mixins/vuex_mixin";
 
 export default {
   name: "TaskInfo",
-  mixins: [resetForm, vuex_mixin],
+  // mixins: [resetForm, vuex_mixin],
+  mixins: [ vuex_mixin],
   props: {
     moduleName: {
       type: String,
@@ -158,6 +145,13 @@ export default {
       }
     },
 
+    resetForm(){
+      this.taskInfoForm.taskName = "";
+      this.taskInfoForm.participants = "";
+      this.taskInfoForm.comment = "";
+      this.m_changeTaskInfo(this.taskInfoForm);
+    },
+
     next() {
       if (
         this.taskInfoForm.taskName.length < 1 ||
@@ -193,6 +187,7 @@ export default {
   width: 50%;
 }
 
+
 .lineStyle {
   color: rgb(100, 172, 231);
 }
@@ -206,4 +201,18 @@ export default {
   width: 180px;
   margin-bottom: 10px;
 }
+
+ /* 这里是最后的两个按钮固定在页面上 */
+.buttonGroup {
+  position: fixed;
+  bottom: 10%; /* 距离页面底部 10px */
+  left: 50%;
+  transform: translateX(-50%); /* 水平居中 */
+  width: 200px;
+  z-index: 9999; /* 置于最顶层 */
+  margin-left:6%;
+}
+
 </style>
+
+

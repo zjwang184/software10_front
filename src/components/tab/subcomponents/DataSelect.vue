@@ -63,7 +63,7 @@
       <div class="buttonGroup">
         <el-button @click="backStep()" round>上一步</el-button>
         <el-button type="primary" @click="next(showDataForm.tableName)" round
-          >确认</el-button
+          >下一步</el-button
         >
       </div>
     </div>
@@ -72,7 +72,7 @@
 
 <script>
 // TODO:大数据预览卡顿， 需要做虚拟列表，动态渲染
-import { getRequest, postRequest, saveParentDisease } from "@/api/user";
+import { getRequest, postRequest, getRequestWithRestful } from "@/api/user";
 import vuex_mixin from "@/components/mixins/vuex_mixin";
 import { mapGetters, mapMutations, mapState, mapActions } from "vuex";
 import { getCategory } from "@/api/category";
@@ -106,6 +106,8 @@ export default {
       next_loading:false,
 
       chosenData: "",
+      disease:"",
+
       pageSize: 4,
       currentPage: 1,
       dataTotal: 0,
@@ -229,8 +231,26 @@ export default {
     //   });
     // },
 
-    changeData(data) {
+    changeData(data) { 
+      console.log("数据选择的data", data);
+      
       if (data.isLeafs == 1) {
+        let pid = data.parentId;
+        console.log("pid", pid);
+
+        getRequestWithRestful("/api/getParentLabel/"+pid)
+        .then((response) => {
+          // 获取表数据
+          this.disease = response.msg;
+          console.log("pid: ", pid, this.disease)
+          // this.loading=false;
+          // console.log("数据长度" + response.data.length);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
+
         this.loading=true;
         this.tableData = [];
         //获取描述信息
@@ -238,6 +258,8 @@ export default {
         //获取数据信息
         this.getTableData(data.id, data.label);
         this.loading=false;
+      }else{
+        this.disease = data.label;
       }
     },
 
@@ -247,57 +269,11 @@ export default {
       }
     },
 
-    // async next(name) {
-    //   this.chosenData = name;
-    //   // this.m_changeStep(3);
-    //   this.m_changeTaskInfo({ dataset: this.chosenData,disease: this.m_disease });
-    //   console.log("chosenData:", this.chosenData);
-    //   postRequest("runtime_bus/getLackinfos_features", {
-    //     tableName: this.chosenData,
-    //     modename: "public",
-    //   })
-    //     .then((res) => {
-    //       this.allFeatures = res;
-    //       // console.log("this.allFeatures:", this.allFeatures);
-    //       // console.log("data_select this.targetFeatures:", this.m_target_features);
-    //     console.log("this.m_all_features:", this.m_all_features);
-    //       this.m_changeTaskInfo({
-    //         all_features: this.allFeatures,
-    //       });
-    //     })
-    //     .catch((error) => {
-    //       console.error(error); // 打印错误信息
-    //     });
-
-    //   postRequest("runtime_bus/getLackinfos_labels", {
-    //     tableName: this.chosenData,
-    //     modename: "public",
-    //   })
-    //     .then((res) => {
-    //       this.targetFeatures = res;
-    //       // console.log("this.targetFeatures:", this.targetFeatures);
-    //       console.log("data_select this.targetFeatures:", this.m_target_features);
-    //     // console.log("this.m_all_features:", this.m_all_features);
-    //       this.m_changeTaskInfo({
-    //         target_features: this.targetFeatures,
-    //       });
-    //     })
-    //     .catch((error) => {
-    //       console.error(error); // 打印错误信息
-    //     });
-
-    //     console.log("data_select—end this.targetFeatures:", this.m_target_features);
-    //     console.log("this.m_all_features:", this.m_all_features);
-
-    //     this.m_changeStep(3);
-
-        
-    // },
     async next(name) {
       this.next_loading=true;
       this.chosenData = name;
-      this.m_changeTaskInfo({ dataset: this.chosenData, disease: this.m_disease });
-      console.log("chosenData:", this.chosenData);
+      this.m_changeTaskInfo({ dataset: this.chosenData, disease: this.disease });
+      console.log("chosenData:", this.chosenData, " disease:", this.disease);
       
       try {
         // 等待第一个异步操作完成
@@ -364,7 +340,7 @@ export default {
 
 .buttonGroup {
   position: fixed;
-  bottom: 10px; /* 距离页面底部 10px */
+  bottom: 5vh; /* 距离页面底部 10vh */
   left: 50%;
   transform: translateX(-50%); /* 水平居中 */
   width: 200px;

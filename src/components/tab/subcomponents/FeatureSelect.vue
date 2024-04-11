@@ -64,7 +64,7 @@
           <span class="lineStyle">▍</span
           ><span class="featureTitle">参与运算的特征：</span>
           <el-checkbox
-            v-model="checkAll"
+            v-model="checkAll_compute"
             @change="handleCheckAll_compute"
             border
             style="width: auto"
@@ -118,283 +118,70 @@
 
       <el-divider></el-divider>
 
-      <div style="margin-bottom: 50px">
-        <div calss="top">
-          <span class="lineStyle">▍</span
-          ><span class="featureTitle"
-            >请根据特征重要性拖动滑块设置奖励程度</span
-          >
-          <el-popover placement="right" trigger="hover">
-            <div>
-              手动设置奖励程度大小
-              <!--  待填 -->
-            </div>
+      <!---------------------------------------------------------- 特征重要性拖动滑块 -------------------------------------------------->
+      <div  v-loading="compute_loading">
+        <div style="margin-bottom: 50px"  >
+          <div calss="top">
+            <span class="lineStyle">▍</span
+            ><span class="featureTitle"
+              >请根据特征重要性拖动滑块设置奖励程度</span
+            >
+            <!-- <el-popover placement="right" trigger="hover">
+              <div>
+                手动设置奖励程度大小
+              
+              </div>
+              <el-icon slot="reference" class="el-icon-warning-outline"></el-icon>
+            </el-popover> -->
+          
+            <!------- 下拉框得到默认值 ----------------->
             <el-icon slot="reference" class="el-icon-warning-outline"></el-icon>
-          </el-popover>
-        </div>
-      </div>
+              选择一个算法初步计算各特征的特征重要性：
+            <el-select
+              v-model="value"            
+              style="margin: 20px"
+              default-first-option
+              @change="runDefaultReward(value)"            
+              :disabled="isDisabled"            
+            >
+              <!-- <div>
+                手动设置奖励程度大小              
+              </div> -->
 
-      <el-row v-for="(item, index) in allFeatures" :key="index">
-        <el-col :span="20" v-if="computeFeatures.includes(item.riskFactor)">
-          <span class="demonstration">{{ item.riskFactor }}</span>
-          <span>&nbsp; &nbsp; &nbsp;{{ item.doctorRate }}%</span>
-          <el-slider
-            v-model="allFeatures[index].doctorRate"
-            :format-tooltip="formatTooltip"
-            style="width: 100%"
-          ></el-slider>
-        </el-col>
-        
-        <!-- <el-col :span="4"> &nbsp; &nbsp; &nbsp;{{ item.rate }}%</el-col> -->
-      </el-row>
-      
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
+            
+          </div>
+        </div>
+
+        <el-row v-for="(item, index) in allFeatures" :key="index">
+          <el-col :span="20" v-if="computeFeatures.includes(item.riskFactor)">
+            <span class="demonstration">{{ item.riskFactor }}</span>
+            <span>&nbsp; &nbsp; &nbsp;{{ item.doctorRate }}%</span>
+            <el-slider
+              v-model="allFeatures[index].doctorRate"
+              :format-tooltip="formatTooltip"
+              style="width: 100%"
+            ></el-slider>
+          </el-col>
+          
+          <!-- <el-col :span="4"> &nbsp; &nbsp; &nbsp;{{ item.rate }}%</el-col> -->
+        </el-row>
+      </div>
 
       <div class="buttonGroup">
         <el-button @click="backStep()" round>上一步</el-button>
-        <!-- <el-button @click="printALLFeatures()">测试</el-button> -->
-        <el-select
-          v-model="value"
-          clearable
-          style="margin: 20px"
-          default-first-option
-          @change="runDefaultReward(value)"
-        >
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          >
-          </el-option>
-        </el-select>
-        <el-button type="primary" @click="next()" round>确认</el-button>
+        <!-- <el-button @click="printALLFeatures()">测试</el-button> --> 
+        <el-button type="primary" @click="next()" round>下一步</el-button>
       </div>
     </div>
 
-    <!-- ------------------------------------选择目标特征 ------------------------------->
-    <!-- <div v-if="moduleName !== 'modelTraining'">
-      <div class="top">
-        <span class="lineStyle">▍</span
-        ><span class="featureTitle">选择目标特征：</span> -->
-    <!-- <el-checkbox
-          v-model="checkAll_target"
-          @change="
-            (val) => {
-              this.targetFeatures = val ? this.allFeatures : [];
-            }
-          "
-          border
-          size="small"
-          >全选</el-checkbox
-        > -->
-    <!-- </div>
-      <div v-if="peopleFeatures.length > 0">
-        <h3 class="featureSubTitle">人口学特征</h3>
-        <el-checkbox-group v-model="targetFeatures" @change="changeBox_target()">
-          <el-checkbox
-            v-for="item in peopleFeatures"
-            :label="item"
-            :key="item"
-            border
-          >
-            <el-popover
-              placement="top-end"
-              width="150"
-              :title="item"
-              trigger="hover"
-              :content="getDeficiency(item)"
-              :open-delay="200"
-            >
-              <span slot="reference">{{ item }}</span>
-            </el-popover>
-          </el-checkbox>
-        </el-checkbox-group>
-      </div> -->
-
-    <!-- <div v-if="physiologicalFeatures.length > 0">
-        <h3 class="featureSubTitle">生理学特征</h3>
-        <el-checkbox-group v-model="targetFeatures" @change="changeBox_target()">
-          <el-checkbox
-            v-for="item in physiologicalFeatures"
-            :label="item"
-            :key="item"
-            border
-          >
-            <el-popover
-              placement="top-end"
-              width="150"
-              :title="item"
-              trigger="hover"
-              :content="getDeficiency(item)"
-              :open-delay="200"
-            >
-              <span slot="reference">{{ item }}</span>
-            </el-popover></el-checkbox
-          >
-        </el-checkbox-group>
-      </div>
-
-      <div v-if="socialFeatures.length > 0">
-        <h3 class="featureSubTitle">社会学特征</h3>
-        <el-checkbox-group v-model="targetFeatures" @change="changeBox_target()">
-          <el-checkbox
-            v-for="item in socialFeatures"
-            :label="item"
-            :key="item"
-            border
-            ><el-popover
-              placement="top-end"
-              width="150"
-              :title="item"
-              trigger="hover"
-              :content="getDeficiency(item)"
-              :open-delay="200"
-            >
-              <span slot="reference">{{ item }}</span>
-            </el-popover></el-checkbox
-          >
-        </el-checkbox-group>
-      </div>
-      <el-divider></el-divider>
-    </div> -->
-
-    <!-- ------------------------------------- 参与运算特征 ---------------------------->
-    <!-- <div>
-      <div v-if="peopleFeatures.length > 0">
-        <h3 class="featureSubTitle">人口学特征</h3>
-        <el-checkbox-group v-model="computeFeatures" @change="changeBox_1()">
-          <el-checkbox
-            v-for="item in peopleFeatures"
-            :label="item"
-            :key="item"
-            border
-            ><el-popover
-              placement="top-end"
-              width="150"
-              :title="item"
-              trigger="hover"
-              :content="getDeficiency(item)"
-              :open-delay="200"
-            >
-              <span slot="reference">{{ item }}</span>
-            </el-popover></el-checkbox
-          >
-        </el-checkbox-group>
-      </div>
-
-      <div v-if="physiologicalFeatures.length > 0">
-        <h3 class="featureSubTitle">生理学特征</h3>
-        <el-checkbox-group v-model="computeFeatures" @change="changeBox_1()">
-          <el-checkbox
-            v-for="item in physiologicalFeatures"
-            :label="item"
-            :key="item"
-            border
-            ><el-popover
-              placement="top-end"
-              width="150"
-              :title="item"
-              trigger="hover"
-              :content="getDeficiency(item)"
-              :open-delay="200"
-            >
-              <span slot="reference">{{ item }}</span>
-            </el-popover></el-checkbox
-          >
-        </el-checkbox-group>
-      </div>
-
-      <div v-if="socialFeatures.length > 0">
-        <h3 class="featureSubTitle">社会学特征</h3>
-        <el-checkbox-group v-model="computeFeatures" @change="changeBox_1()">
-          <el-checkbox
-            v-for="item in socialFeatures"
-            :label="item"
-            :key="item"
-            border
-            ><el-popover
-              placement="top-end"
-              width="150"
-              :title="item"
-              trigger="hover"
-              :content="getDeficiency(item)"
-              :open-delay="200"
-            >
-              <span slot="reference">{{ item }}</span>
-            </el-popover></el-checkbox
-          >
-        </el-checkbox-group>
-      </div>
-    </div> -->
-
-    <!-- --------------------------------------------- 已知特征 ----------------------------->
-    <!-- <div>
-      <div v-if="peopleFeatures.length > 0">
-        <h3 class="featureSubTitle">人口学特征</h3>
-        <el-checkbox-group v-model="knownFeatures" @change="changeBox_2()">
-          <el-checkbox
-            v-for="item in peopleFeatures"
-            :label="item"
-            :key="item"
-            border
-            ><el-popover
-              placement="top-end"
-              width="150"
-              :title="item"
-              trigger="hover"
-              :content="getDeficiency(item)"
-              :open-delay="200"
-            >
-              <span slot="reference">{{ item }}</span>
-            </el-popover></el-checkbox
-          >
-        </el-checkbox-group>
-      </div>
-    </div>
-
-    <div v-if="physiologicalFeatures.length > 0">
-      <h3 class="featureSubTitle">生理学特征</h3>
-      <el-checkbox-group v-model="knownFeatures" @change="changeBox_2()">
-        <el-checkbox
-          v-for="item in physiologicalFeatures"
-          :label="item"
-          :key="item"
-          border
-          ><el-popover
-            placement="top-end"
-            width="150"
-            :title="item"
-            trigger="hover"
-            :content="getDeficiency(item)"
-            :open-delay="200"
-          >
-            <span slot="reference">{{ item }}</span>
-          </el-popover></el-checkbox
-        >
-      </el-checkbox-group>
-    </div>
-
-    <div v-if="socialFeatures.length > 0">
-      <h3 class="featureSubTitle">社会学特征</h3>
-      <el-checkbox-group v-model="knownFeatures" @change="changeBox_2()">
-        <el-checkbox
-          v-for="item in socialFeatures"
-          :label="item"
-          :key="item"
-          border
-          ><el-popover
-            placement="top-end"
-            width="150"
-            :title="item"
-            trigger="hover"
-            :content="getDeficiency(item)"
-            :open-delay="200"
-          >
-            <span slot="reference">{{ item }}</span>
-          </el-popover></el-checkbox
-        >
-      </el-checkbox-group>
-    </div> -->
   </div>
 </template>
 
@@ -426,6 +213,9 @@ export default {
   },
   data() {
     return {
+      // 所有特征计算重要性
+      compute_loading: false,
+      
       // 获取虚拟树形结构数据
       // treeData: JSON.parse(JSON.stringify(treeData)),
       isChange: false,
@@ -466,12 +256,13 @@ export default {
         doctorRate: "",
       },
       formDatalist: [],
-
+      
+      isDisabled: true,
       value: "",
       options: [
         {
           value: "XGB",
-          label: "xgboost预训练值",
+          label: "XGBoost",
         },
         {
           value: "RF",
@@ -490,9 +281,8 @@ export default {
 
   mounted() {
     this.init();
-    // this.getData();
+    // this.getData();       
   },
-
   methods: {
     init() {
       //   同步vuex里的数据
@@ -569,8 +359,10 @@ export default {
       // 处理全选复选框状态改变
       if (checked) {
         this.computeFeatures = this.allFeatures.map((item) => item.riskFactor);
+        this.isDisabled=false;
       } else {
         this.computeFeatures = [];
+        this.isDisabled=true;
       }
     },
 
@@ -578,8 +370,10 @@ export default {
       // 处理全选复选框状态改变
       if (checked) {
         this.labelFeatures = this.targetFeatures.map((item) => item.riskFactor);
+        
       } else {
         this.labelFeatures = [];
+        
       }
     },
 
@@ -589,6 +383,12 @@ export default {
       } else {
         this.checkAll_compute = false;
       }
+
+      if (this.computeFeatures.length > 0){
+        this.isDisabled=false;
+      }else{
+        this.isDisabled=true;
+      }
     },
 
     changeBox_2() {
@@ -597,6 +397,7 @@ export default {
       } else {
         this.checkAll_2 = false;
       }
+      
     },
 
     changeBox_label() {
@@ -632,6 +433,7 @@ export default {
         return;
       }
 
+      this.compute_loading=true,
       postRequest("/runtime_bus/submitBus", {
         // "model": model,
 
@@ -662,12 +464,9 @@ export default {
             this.allFeatures[risk]["doctorRate"]
           );
         }
+        this.compute_loading=false;
       });
     },
-
-    // printALLFeatures(){
-    //   console.log(this.allFeatures);
-    // },
 
     next() {
       this.m_changeStep(this.m_step + 1);
@@ -800,5 +599,15 @@ export default {
   margin-right: 10px;
   margin-top: 10px;
   font-size: 16px; /* 设置标签的字体大小 */
+}
+
+.buttonGroup {
+  position: fixed;
+  bottom: 10%; /* 距离页面底部 10px */
+  left: 50%;
+  transform: translateX(-50%); /* 水平居中 */
+  width: 200px;
+  z-index: 9999; /* 置于最顶层 */
+  margin-left:6%;
 }
 </style>

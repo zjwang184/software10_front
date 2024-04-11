@@ -23,6 +23,7 @@ export default {
         {
           name: "dqn",
           model_type: "dl",
+          is_select: false,
           params:{
             reward: 1,
             epoch: 100,
@@ -34,6 +35,7 @@ export default {
         {
           name: "svm",
           model_type: "ml",
+          is_select: false,
           params:{
             kernel: "linear",
             random_state: 42,     
@@ -44,6 +46,7 @@ export default {
         {
           name: "knn",
           model_type: "ml",
+          is_select: false,
           params:{
             random_state: 42,     
             cv: 10,
@@ -101,8 +104,9 @@ export default {
       state.KNN = Object.assign(state.KNN, newdata);
     },
 
-    models_update(state,payload){
+    models_update(state, payload){
       let name = payload.name;
+      let is_select = payload.is_select
       let newdata = payload.newdata;
       let all_models = state.models;
       console.log("all_models", all_models, " name:", name)
@@ -110,11 +114,12 @@ export default {
         if (model.name === name){
           console.log("all true")
           model.params = Object.assign(state.models[index].params, newdata);
+          model.is_select=is_select;
           console.log("task",model.params, "\n", newdata)
         }
       })
-      
     },
+
     models_update_res(state,payload){
       let name = payload.name;
       let res = payload.res;

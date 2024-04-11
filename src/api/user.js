@@ -8,6 +8,13 @@ export function getRequest(url, paramObj) {
   });
 }
 
+export function getRequestWithRestful(url) {
+  return request({
+    method: "get",
+    url
+  });
+}
+
 export function postRequest(url, data) {
   return request({
     method: "post",

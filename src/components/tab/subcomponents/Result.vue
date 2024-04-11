@@ -52,11 +52,10 @@
       
     </div>
 
-    <div id="pdf_2"
-    v-for="(item, index) in dqnModel"
-    :key="index"
-    >
-      <div class="taskBox3">
+    <div id="pdf_2" v-if="dqnModel.length > 0">
+      <div class="taskBox3" 
+      v-for="(item, index) in dqnModel"
+      :key="index">
         <span style="font-size: 40px; margin-bottom: 20px">{{item.name}}模型信息：</span
         ><span></span><span></span><span></span>
         <div class="algorithm_info">
@@ -104,113 +103,114 @@
         <div class="graphBox">
           <featuresPie :data="transToPie(item.res.avg_shapvalue)"></featuresPie>
           <treeMap
-          :TP="transTONumber(item.res.TP)"
-          :FN="transTONumber(item.res.FN)"
-          :FP="transTONumber(item.res.FP)"
-          :TN="transTONumber(item.res.TN)"
-          ></treeMap>
+            :TP="transTONumber(item.res.TP)"
+            :FN="transTONumber(item.res.FN)"
+            :FP="transTONumber(item.res.FP)"
+            :TN="transTONumber(item.res.TN)"
+            ></treeMap>
         </div>
       </div>
     </div>
 
-    <div id="pdf_3"
-    v-for="(item, index) in svmModel"
-    :key="index"
-    >
-      <div class="taskBox3">
-        <span style="font-size: 40px; margin-bottom: 20px">{{item.name}}模型信息：</span
-        ><span></span><span></span><span></span>
-        <div class="algorithm_info">
-          <div class="taskInfoBox_disease">
-            <span class="lineStyle">▍</span
-            ><span class="featureTitle">精确率acc：</span>
-            <span>{{ transTOPercent(item.res.accuracy) }}</span>
-          </div>
-          <div class="taskInfoBox dataset">
-            <span class="lineStyle">▍</span
-            ><span class="featureTitle">准确率precision：</span>
-            <span>{{ transTOPercent(item.res.precision) }}</span>
-          </div>
-          <div class="taskInfoBox algorithm">
-            <span class="lineStyle">▍</span
-            ><span class="featureTitle">召回率recall：</span>
-            <span>{{ transTOPercent(item.res.recall) }}</span>
-          </div>
-          <div class="taskInfoBox use_features">
-            <span class="lineStyle">▍</span
-            ><span class="featureTitle">f1-score：</span>
-            <span>{{ transTOPercent(item.res.f1) }}</span>
-          </div>
-        </div>
+    <div id="pdf_3" v-if="svmModel.length > 0">
+      <div id="pdf_3"
+        v-for="(item, index) in svmModel"
+        :key="index"
+        >
+          <div class="taskBox3">
+            <span style="font-size: 40px; margin-bottom: 20px">{{item.name}}模型信息：</span
+            ><span></span><span></span><span></span>
+            <div class="algorithm_info">
+              <div class="taskInfoBox_disease">
+                <span class="lineStyle">▍</span
+                ><span class="featureTitle">精确率acc：</span>
+                <span>{{ transTOPercent(item.res.accuracy) }}</span>
+              </div>
+              <div class="taskInfoBox dataset">
+                <span class="lineStyle">▍</span
+                ><span class="featureTitle">准确率precision：</span>
+                <span>{{ transTOPercent(item.res.precision) }}</span>
+              </div>
+              <div class="taskInfoBox algorithm">
+                <span class="lineStyle">▍</span
+                ><span class="featureTitle">召回率recall：</span>
+                <span>{{ transTOPercent(item.res.recall) }}</span>
+              </div>
+              <div class="taskInfoBox use_features">
+                <span class="lineStyle">▍</span
+                ><span class="featureTitle">f1-score：</span>
+                <span>{{ transTOPercent(item.res.f1) }}</span>
+              </div>
+            </div>
 
-        <div class="taskInfoBox result">
-          <span class="lineStyle">▍</span
-          ><span class="featureTitle">任务结果：</span>
-        </div>
+            <div class="taskInfoBox result">
+              <span class="lineStyle">▍</span
+              ><span class="featureTitle">任务结果：</span>
+            </div>
 
-       
-        <div class="graphBox">
-          <featuresPie :data="transToPie(item.res.avg_shapvalue)"></featuresPie>
-          <treeMap 
-          :TP="transTONumber(item.res.TP)"
-          :FN="transTONumber(item.res.FN)"
-          :FP="transTONumber(item.res.FP)"
-          :TN="transTONumber(item.res.TN)"
-          ></treeMap>
+          
+            <div class="graphBox">
+              <featuresPie :data="transToPie(item.res.avg_shapvalue)"></featuresPie>
+              <treeMap 
+              :TP="transTONumber(item.res.TP)"
+              :FN="transTONumber(item.res.FN)"
+              :FP="transTONumber(item.res.FP)"
+              :TN="transTONumber(item.res.TN)"
+              ></treeMap>
+            </div>
+          </div>
+      </div>
+    </div>
+
+    <div id="pdf_4" v-if="knnModel.length > 0">
+      <div id="pdf_4"
+      v-for="(item, index) in knnModel"
+      :key="index"
+      >
+        <div class="taskBox3">
+          <span style="font-size: 40px; margin-bottom: 20px">{{ item.name }}模型信息：</span
+          ><span></span><span></span><span></span>
+          <div class="algorithm_info">
+            <div class="taskInfoBox_disease">
+              <span class="lineStyle">▍</span
+              ><span class="featureTitle">精确率acc：</span>
+              <span>{{ transTOPercent(item.res.accuracy) }}</span>
+            </div>
+            <div class="taskInfoBox dataset">
+              <span class="lineStyle">▍</span
+              ><span class="featureTitle">准确率precision：</span>
+              <span>{{ transTOPercent(item.res.precision) }}</span>
+            </div>
+            <div class="taskInfoBox algorithm">
+              <span class="lineStyle">▍</span
+              ><span class="featureTitle">召回率recall：</span>
+              <span>{{ transTOPercent(item.res.recall) }}</span>
+            </div>
+            <div class="taskInfoBox use_features">
+              <span class="lineStyle">▍</span
+              ><span class="featureTitle">f1-score：</span>
+              <span>{{ transTOPercent(item.res.f1) }}</span>
+            </div>
+          </div>
+
+          <div class="taskInfoBox result">
+            <span class="lineStyle">▍</span
+            ><span class="featureTitle">任务结果：</span>
+          </div>
+
+        
+          <div class="graphBox">
+            <featuresPie :data="transToPie(item.res.avg_shapvalue)"></featuresPie>
+            <treeMap 
+            :TP="transTONumber(item.res.TP)"
+            :FN="transTONumber(item.res.FN)"
+            :FP="transTONumber(item.res.FP)"
+            :TN="transTONumber(item.res.TN)"
+            ></treeMap>
+          </div>
         </div>
       </div>
     </div>
-    
-    <div id="pdf_4"
-    v-for="(item, index) in knnModel"
-    :key="index"
-    >
-      <div class="taskBox3">
-        <span style="font-size: 40px; margin-bottom: 20px">{{item.name}}模型信息：</span
-        ><span></span><span></span><span></span>
-        <div class="algorithm_info">
-          <div class="taskInfoBox_disease">
-            <span class="lineStyle">▍</span
-            ><span class="featureTitle">精确率acc：</span>
-            <span>{{ transTOPercent(item.res.accuracy) }}</span>
-          </div>
-          <div class="taskInfoBox dataset">
-            <span class="lineStyle">▍</span
-            ><span class="featureTitle">准确率precision：</span>
-            <span>{{ transTOPercent(item.res.precision) }}</span>
-          </div>
-          <div class="taskInfoBox algorithm">
-            <span class="lineStyle">▍</span
-            ><span class="featureTitle">召回率recall：</span>
-            <span>{{ transTOPercent(item.res.recall) }}</span>
-          </div>
-          <div class="taskInfoBox use_features">
-            <span class="lineStyle">▍</span
-            ><span class="featureTitle">f1-score：</span>
-            <span>{{ transTOPercent(item.res.f1) }}</span>
-          </div>
-        </div>
-
-        <div class="taskInfoBox result">
-          <span class="lineStyle">▍</span
-          ><span class="featureTitle">任务结果：</span>
-        </div>
-
-       
-        <div class="graphBox">
-          <featuresPie :data="transToPie(item.res.avg_shapvalue)"></featuresPie>
-          <treeMap 
-          :TP="transTONumber(item.res.TP)"
-          :FN="transTONumber(item.res.FN)"
-          :FP="transTONumber(item.res.FP)"
-          :TN="transTONumber(item.res.TN)"
-          ></treeMap>
-        </div>
-      </div>
-    </div>
-    
-
-   
 
     <div class="buttonGroup">
       <el-button @click="backStep()" round>上一步</el-button>
@@ -258,19 +258,42 @@ export default {
     },
   },
   computed: {
+    
     dqnModel(){
+      console.log("dqn result", this.m_models);
       // 根据条件筛选 editableTabs 数组
-      return this.m_models.filter(item => item.name==='dqn');
+      const filteredModels = this.m_models.filter(item => ((item.name === 'dqn')&&(item.is_select === true)));
+      console.log("dqnModel length:", filteredModels.length, filteredModels);
+      if (filteredModels.length > 0) {
+        return filteredModels;
+      } else {
+        // 如果数组为空，则返回一个空数组或者执行其他操作
+        return [];
+      }
     },
     svmModel(){
+      
       // 根据条件筛选 editableTabs 数组
-      return this.m_models.filter(item => item.name==='svm');
+      const filteredModels = this.m_models.filter(item => ((item.name === 'svm')&&(item.is_select === true)));
+      console.log("svmModel length:", filteredModels.length, filteredModels);
+      if (filteredModels.length > 0) {
+        return filteredModels;
+      } else {
+        // 如果数组为空，则返回一个空数组或者执行其他操作
+        return [];
+      }
     },
     knnModel(){
       // 根据条件筛选 editableTabs 数组
-      return this.m_models.filter(item => item.name==='knn');
+      const filteredModels = this.m_models.filter(item => ((item.name === 'knn')&&(item.is_select === true)));
+      console.log("knnModel length:", filteredModels.length, filteredModels);
+      if (filteredModels.length > 0) {
+        return filteredModels;
+      } else {
+        // 如果数组为空，则返回一个空数组或者执行其他操作
+        return [];
+      }
     },
-
 
     ratio() {
       let num = (this.m_result.ratio * 100).toFixed(2);
@@ -300,224 +323,224 @@ export default {
     console.log("console.log(this.m_target_featuress);", this.m_target_features);
     console.log("this.m_result" + JSON.stringify(this.m_result.res));
     console.log("this.tree" + JSON.stringify(this.m_result.treeRes));
-    var treeData = {
-      name: "结果统计",
-      children: [],
-    };
-    let tempNode = {
-      name: this.m_target_features[0],
-      x: 300,
-      y: 300,
-      color: "#7B68EE",
-      symbolSize: 65,
-    };
-    let tempLink = {
-      source: "",
-      target: "",
-      value: 1,
-      label: {
-        show: true,
-      },
-      lineStyle: {
-        width: 5,
-        curveness: 0.2,
-      },
-    };
-    let top_y = 200;
-    let bottom_y = 300;
-    switch (this.moduleName) {
-      case "modelTraining": {
-        tempNode.name = this.m_target_features[0];
-        tempNode.x = 500;
-        tempNode.y = bottom_y;
-        tempNode.color = "#7B68EE";
-        if (this.m_result.res.length < 1) {
-          this.$message("未挖掘出相关关系");
-          tempNode.x = 500;
-          tempNode.y = 500;
-          tempNode.color = "#c2b8fae1";
-          break;
-        }
-        this.graphTitile = `${this.m_disease}相关危险因素`;
-        this.node.push(JSON.parse(JSON.stringify(tempNode)));
-        let ref_x = 1000 / (this.m_result.res[0].length + 1);
-        for (let i = 0; i < this.m_result.res[0].length; i++) {
-          tempNode.name = this.m_result.res[0][i];
-          tempNode.x = ref_x * (i + 1);
-          tempNode.y = top_y;
-          tempNode.color = "#FFDEAD";
-          this.node.push(JSON.parse(JSON.stringify(tempNode)));
-          tempLink.source = this.m_target_features[0];
-          tempLink.target = this.m_result.res[0][i];
-          // 权重是随机数
-          tempLink.value = Number(Math.random().toFixed(3));
-          tempLink.lineStyle.width += tempLink.value * 2;
-          this.links.push(JSON.parse(JSON.stringify(tempLink)));
-        }
+    // var treeData = {
+    //   name: "结果统计",
+    //   children: [],
+    // };
+    // let tempNode = {
+    //   name: this.m_target_features[0],
+    //   x: 300,
+    //   y: 300,
+    //   color: "#7B68EE",
+    //   symbolSize: 65,
+    // };
+    // let tempLink = {
+    //   source: "",
+    //   target: "",
+    //   value: 1,
+    //   label: {
+    //     show: true,
+    //   },
+    //   lineStyle: {
+    //     width: 5,
+    //     curveness: 0.2,
+    //   },
+    // };
+    // let top_y = 200;
+    // let bottom_y = 300;
+    // switch (this.moduleName) {
+    //   case "modelTraining": {
+    //     tempNode.name = this.m_target_features[0];
+    //     tempNode.x = 500;
+    //     tempNode.y = bottom_y;
+    //     tempNode.color = "#7B68EE";
+    //     if (this.m_result.res.length < 1) {
+    //       this.$message("未挖掘出相关关系");
+    //       tempNode.x = 500;
+    //       tempNode.y = 500;
+    //       tempNode.color = "#c2b8fae1";
+    //       break;
+    //     }
+    //     this.graphTitile = `${this.m_disease}相关危险因素`;
+    //     this.node.push(JSON.parse(JSON.stringify(tempNode)));
+    //     let ref_x = 1000 / (this.m_result.res[0].length + 1);
+    //     for (let i = 0; i < this.m_result.res[0].length; i++) {
+    //       tempNode.name = this.m_result.res[0][i];
+    //       tempNode.x = ref_x * (i + 1);
+    //       tempNode.y = top_y;
+    //       tempNode.color = "#FFDEAD";
+    //       this.node.push(JSON.parse(JSON.stringify(tempNode)));
+    //       tempLink.source = this.m_target_features[0];
+    //       tempLink.target = this.m_result.res[0][i];
+    //       // 权重是随机数
+    //       tempLink.value = Number(Math.random().toFixed(3));
+    //       tempLink.lineStyle.width += tempLink.value * 2;
+    //       this.links.push(JSON.parse(JSON.stringify(tempLink)));
+    //     }
 
-        var firstChildren = {
-          name: String(Object.keys(this.m_result.treeRes)),
-          children: [],
-        };
-        treeData.children.push(firstChildren);
-        var secondChildrenList = Array.from(
-          this.m_result.treeRes[firstChildren.name]
-        );
-        secondChildrenList.forEach((element) => {
-          var secondChildren = { name: String(element), children: [] };
-          treeData.children[0].children.push(secondChildren);
-        });
-        this.data = treeData;
-        break;
-      }
+    //     var firstChildren = {
+    //       name: String(Object.keys(this.m_result.treeRes)),
+    //       children: [],
+    //     };
+    //     treeData.children.push(firstChildren);
+    //     var secondChildrenList = Array.from(
+    //       this.m_result.treeRes[firstChildren.name]
+    //     );
+    //     secondChildrenList.forEach((element) => {
+    //       var secondChildren = { name: String(element), children: [] };
+    //       treeData.children[0].children.push(secondChildren);
+    //     });
+    //     this.data = treeData;
+    //     break;
+    //   }
 
-      case "f_Factor": {
-        // 不能有重复的name，用map存储已有name进行去重
-        let existedName = new Map();
-        let ref_x_t = 1000 / (this.m_target_features.length + 1);
-        for (let i = 0; i < this.m_target_features.length; i++) {
-          tempNode.name = this.m_target_features[i];
-          tempNode.x = ref_x_t * i;
-          tempNode.y = bottom_y;
-          if (
-            this.m_result.res[i].length > 0 &&
-            this.m_result.res[i].length <= 2
-          ) {
-            tempNode.color = "#7B68EE";
-          } else if (this.m_result.res[i].length >= 3) {
-            tempNode.color = "#000080";
-          } else {
-            tempNode.color = "#c2b8fae1";
-          }
-          this.node.push(JSON.parse(JSON.stringify(tempNode)));
-          existedName.set(tempNode.name, 1);
-        }
-        // 检查结果二维数组中是否有值并统计总长度
-        let resLength = 0;
-        let ref_x_r = [];
-        for (const item of this.m_result.res) {
-          let tempLen = Number((ref_x_t / (item.length + 1)).toFixed(2));
-          ref_x_r.push(tempLen);
-          if (item.length > 0) {
-            resLength += item.length;
-          }
-        }
-        if (resLength == 0) {
-          {
-            this.$message("未挖掘出相关关系");
-            break;
-          }
-        }
+    //   case "f_Factor": {
+    //     // 不能有重复的name，用map存储已有name进行去重
+    //     let existedName = new Map();
+    //     let ref_x_t = 1000 / (this.m_target_features.length + 1);
+    //     for (let i = 0; i < this.m_target_features.length; i++) {
+    //       tempNode.name = this.m_target_features[i];
+    //       tempNode.x = ref_x_t * i;
+    //       tempNode.y = bottom_y;
+    //       if (
+    //         this.m_result.res[i].length > 0 &&
+    //         this.m_result.res[i].length <= 2
+    //       ) {
+    //         tempNode.color = "#7B68EE";
+    //       } else if (this.m_result.res[i].length >= 3) {
+    //         tempNode.color = "#000080";
+    //       } else {
+    //         tempNode.color = "#c2b8fae1";
+    //       }
+    //       this.node.push(JSON.parse(JSON.stringify(tempNode)));
+    //       existedName.set(tempNode.name, 1);
+    //     }
+    //     // 检查结果二维数组中是否有值并统计总长度
+    //     let resLength = 0;
+    //     let ref_x_r = [];
+    //     for (const item of this.m_result.res) {
+    //       let tempLen = Number((ref_x_t / (item.length + 1)).toFixed(2));
+    //       ref_x_r.push(tempLen);
+    //       if (item.length > 0) {
+    //         resLength += item.length;
+    //       }
+    //     }
+    //     if (resLength == 0) {
+    //       {
+    //         this.$message("未挖掘出相关关系");
+    //         break;
+    //       }
+    //     }
 
-        this.graphTitile = `${this.m_disease}中部分危险因素间关联关系`;
+    //     this.graphTitile = `${this.m_disease}中部分危险因素间关联关系`;
 
-        for (let i = 0; i < this.m_result.res.length; i++) {
-          for (let j = 0; j < this.m_result.res[i].length; j++) {
-            console.log(this.m_result.res[i][j], ref_x_r[i]);
-            if (!existedName.has(this.m_result.res[i][j])) {
-              tempNode.name = this.m_result.res[i][j];
-              tempNode.x = ref_x_t * i + (ref_x_r[i] + 1) * j;
-              tempNode.y = top_y;
-              tempNode.color = "#FFDEAD";
-              this.node.push(JSON.parse(JSON.stringify(tempNode)));
-              existedName.set(tempNode.name, 1);
-            }
-            tempLink.source = this.m_target_features[i];
-            tempLink.target = this.m_result.res[i][j];
-            // 权重是随机数
-            tempLink.value = Number(Math.random().toFixed(3));
-            tempLink.lineStyle.width = 3 + tempLink.value * 8;
-            this.links.push(JSON.parse(JSON.stringify(tempLink)));
-          }
-        }
-        var resTreedata = this.m_result.treeRes;
-        Object.entries(resTreedata).forEach(function ([key, value], index) {
-          var firstChildren = { name: String(key), children: [] };
-          treeData.children.push(firstChildren);
-          var secondChildrenList = Array.from(value);
-          secondChildrenList.forEach((element) => {
-            var secondChildren = { name: String(element), children: [] };
-            treeData.children[index].children.push(secondChildren);
-          });
-        });
-        this.data = treeData;
-        break;
-      }
-      case "factorDis": {
-        // 不能有重复的name，用map存储已有name进行去重
-        let existedName = new Map();
-        let ref_x_t = 1000 / (this.m_target_features.length + 1);
-        for (let i = 0; i < this.m_target_features.length; i++) {
-          tempNode.name = this.m_target_features[i];
-          tempNode.x = ref_x_t * i;
-          tempNode.y = bottom_y;
-          if (
-            this.m_result.res[i].length > 0 &&
-            this.m_result.res[i].length <= 2
-          ) {
-            tempNode.color = "#7B68EE";
-          } else if (this.m_result.res[i].length >= 3) {
-            tempNode.color = "#000080";
-          } else {
-            tempNode.color = "#c2b8fae1";
-          }
-          this.node.push(JSON.parse(JSON.stringify(tempNode)));
-          existedName.set(tempNode.name, 1);
-        }
-        // 检查结果二维数组中是否有值并统计总长度
-        let resLength = 0;
-        let ref_x_r = [];
-        for (const item of this.m_result.res) {
-          let tempLen = Number((ref_x_t / (item.length + 1)).toFixed(2));
-          ref_x_r.push(tempLen);
-          if (item.length > 0) {
-            resLength += item.length;
-          }
-        }
-        if (resLength == 0) {
-          {
-            this.$message("未挖掘出相关关系");
-            break;
-          }
-        }
+    //     for (let i = 0; i < this.m_result.res.length; i++) {
+    //       for (let j = 0; j < this.m_result.res[i].length; j++) {
+    //         console.log(this.m_result.res[i][j], ref_x_r[i]);
+    //         if (!existedName.has(this.m_result.res[i][j])) {
+    //           tempNode.name = this.m_result.res[i][j];
+    //           tempNode.x = ref_x_t * i + (ref_x_r[i] + 1) * j;
+    //           tempNode.y = top_y;
+    //           tempNode.color = "#FFDEAD";
+    //           this.node.push(JSON.parse(JSON.stringify(tempNode)));
+    //           existedName.set(tempNode.name, 1);
+    //         }
+    //         tempLink.source = this.m_target_features[i];
+    //         tempLink.target = this.m_result.res[i][j];
+    //         // 权重是随机数
+    //         tempLink.value = Number(Math.random().toFixed(3));
+    //         tempLink.lineStyle.width = 3 + tempLink.value * 8;
+    //         this.links.push(JSON.parse(JSON.stringify(tempLink)));
+    //       }
+    //     }
+    //     var resTreedata = this.m_result.treeRes;
+    //     Object.entries(resTreedata).forEach(function ([key, value], index) {
+    //       var firstChildren = { name: String(key), children: [] };
+    //       treeData.children.push(firstChildren);
+    //       var secondChildrenList = Array.from(value);
+    //       secondChildrenList.forEach((element) => {
+    //         var secondChildren = { name: String(element), children: [] };
+    //         treeData.children[index].children.push(secondChildren);
+    //       });
+    //     });
+    //     this.data = treeData;
+    //     break;
+    //   }
+    //   case "factorDis": {
+    //     // 不能有重复的name，用map存储已有name进行去重
+    //     let existedName = new Map();
+    //     let ref_x_t = 1000 / (this.m_target_features.length + 1);
+    //     for (let i = 0; i < this.m_target_features.length; i++) {
+    //       tempNode.name = this.m_target_features[i];
+    //       tempNode.x = ref_x_t * i;
+    //       tempNode.y = bottom_y;
+    //       if (
+    //         this.m_result.res[i].length > 0 &&
+    //         this.m_result.res[i].length <= 2
+    //       ) {
+    //         tempNode.color = "#7B68EE";
+    //       } else if (this.m_result.res[i].length >= 3) {
+    //         tempNode.color = "#000080";
+    //       } else {
+    //         tempNode.color = "#c2b8fae1";
+    //       }
+    //       this.node.push(JSON.parse(JSON.stringify(tempNode)));
+    //       existedName.set(tempNode.name, 1);
+    //     }
+    //     // 检查结果二维数组中是否有值并统计总长度
+    //     let resLength = 0;
+    //     let ref_x_r = [];
+    //     for (const item of this.m_result.res) {
+    //       let tempLen = Number((ref_x_t / (item.length + 1)).toFixed(2));
+    //       ref_x_r.push(tempLen);
+    //       if (item.length > 0) {
+    //         resLength += item.length;
+    //       }
+    //     }
+    //     if (resLength == 0) {
+    //       {
+    //         this.$message("未挖掘出相关关系");
+    //         break;
+    //       }
+    //     }
 
-        this.graphTitile = `${this.m_target_features[0]}因素相关疾病`;
+    //     this.graphTitile = `${this.m_target_features[0]}因素相关疾病`;
 
-        for (let i = 0; i < this.m_result.res.length; i++) {
-          for (let j = 0; j < this.m_result.res[i].length; j++) {
-            console.log(this.m_result.res[i][j], ref_x_r[i]);
-            if (!existedName.has(this.m_result.res[i][j])) {
-              tempNode.name = this.m_result.res[i][j];
-              tempNode.x = ref_x_t * i + (ref_x_r[i] + 1) * j;
-              tempNode.y = top_y;
-              tempNode.color = "#FFDEAD";
-              this.node.push(JSON.parse(JSON.stringify(tempNode)));
-              existedName.set(tempNode.name, 1);
-            }
-            tempLink.source = this.m_target_features[i];
-            tempLink.target = this.m_result.res[i][j];
-            // 权重是随机数
-            tempLink.value = Number(Math.random().toFixed(3));
-            tempLink.lineStyle.width = 3 + tempLink.value * 8;
-            this.links.push(JSON.parse(JSON.stringify(tempLink)));
-          }
-        }
-        var resTreedata = this.m_result.treeRes;
-        Object.entries(resTreedata).forEach(function ([key, value], index) {
-          var firstChildren = { name: String(key), children: [] };
-          treeData.children.push(firstChildren);
-          var secondChildrenList = Array.from(value);
-          secondChildrenList.forEach((element) => {
-            var secondChildren = { name: String(element), children: [] };
-            treeData.children[index].children.push(secondChildren);
-          });
-        });
-        this.data = treeData;
-        break;
-      }
-      default:
-        break;
-    }
+    //     for (let i = 0; i < this.m_result.res.length; i++) {
+    //       for (let j = 0; j < this.m_result.res[i].length; j++) {
+    //         console.log(this.m_result.res[i][j], ref_x_r[i]);
+    //         if (!existedName.has(this.m_result.res[i][j])) {
+    //           tempNode.name = this.m_result.res[i][j];
+    //           tempNode.x = ref_x_t * i + (ref_x_r[i] + 1) * j;
+    //           tempNode.y = top_y;
+    //           tempNode.color = "#FFDEAD";
+    //           this.node.push(JSON.parse(JSON.stringify(tempNode)));
+    //           existedName.set(tempNode.name, 1);
+    //         }
+    //         tempLink.source = this.m_target_features[i];
+    //         tempLink.target = this.m_result.res[i][j];
+    //         // 权重是随机数
+    //         tempLink.value = Number(Math.random().toFixed(3));
+    //         tempLink.lineStyle.width = 3 + tempLink.value * 8;
+    //         this.links.push(JSON.parse(JSON.stringify(tempLink)));
+    //       }
+    //     }
+    //     var resTreedata = this.m_result.treeRes;
+    //     Object.entries(resTreedata).forEach(function ([key, value], index) {
+    //       var firstChildren = { name: String(key), children: [] };
+    //       treeData.children.push(firstChildren);
+    //       var secondChildrenList = Array.from(value);
+    //       secondChildrenList.forEach((element) => {
+    //         var secondChildren = { name: String(element), children: [] };
+    //         treeData.children[index].children.push(secondChildren);
+    //       });
+    //     });
+    //     this.data = treeData;
+    //     break;
+    //   }
+    //   default:
+    //     break;
+    // }
     this.initFlag = true;
   },
 
@@ -532,6 +555,7 @@ export default {
     },
 
     transToPie(shapeValueStr){
+      console.log("shapeValueStr", shapeValueStr);
       // 将字符串按逗号分割成对象数组
       const objectArray = shapeValueStr.split('},{').map(item => {
         // 去除大括号，然后按照键值对分割

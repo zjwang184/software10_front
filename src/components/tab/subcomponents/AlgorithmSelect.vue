@@ -459,12 +459,14 @@ export default {
       let models = []
       for (var ind=0; ind < this.editableTabs.length; ind++){
         console.log(ind)
-        if (this.editableTabs[ind].is_select){
-          let selected_model = {
+        let selected_model = {
             name: this.editableTabs[ind].name,
             forms: {}//获取不到editableTabs的值，所以更改成{}
-          }
-          selected_model.forms
+        }
+        
+
+        if (this.editableTabs[ind].is_select){   
+          
           if (this.editableTabs[ind].name === 'dqn'){
             selected_model.forms = this.DQN_form;
             this.m_DQN_update(this.DQN_form);
@@ -476,21 +478,33 @@ export default {
             selected_model.forms = this.KNN_form;
             this.m_KNN_update(this.KNN_form);
           }
-
           selected_model.forms['taskname'] = this.m_taskName;
           selected_model.forms['table_name'] = this.m_dataset;
           selected_model.forms['cols'] = this.m_use_features;
           selected_model.forms['labels'] = targets;
-          console.log("selected_model", selected_model.forms)
           models.push(selected_model);
-
           this.m_models_update(
-          {
-            name: this.editableTabs[ind].name, 
-            newdata: selected_model.forms
-          }
-              );
+            {
+              name: this.editableTabs[ind].name, 
+              is_select: true,
+              newdata: selected_model.forms
+            }
+          );
+        }else {
+          selected_model.forms['taskname'] = this.m_taskName;
+          selected_model.forms['table_name'] = this.m_dataset;
+          selected_model.forms['cols'] = this.m_use_features;
+          selected_model.forms['labels'] = targets;       
+          this.m_models_update(
+            {
+              name: this.editableTabs[ind].name, 
+              is_select: false,
+              newdata: selected_model.forms
+            }
+          );
         }
+        console.log("selected_model", selected_model.forms);
+        
       }
       
       console.log("alg_models:", models);
