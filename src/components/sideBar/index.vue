@@ -51,10 +51,10 @@
               <i class="el-icon-menu"></i>
               <span slot="title">任务管理</span>
             </el-menu-item>
-            <el-menu-item index="/sideBar/TableManage">
+            <!-- <el-menu-item index="/sideBar/TableManage">
               <i class="el-icon-menu"></i>
               <span slot="title">字段管理</span>
-            </el-menu-item>
+            </el-menu-item> -->
             <el-menu-item index="/sideBar/ModelTraining">
               <i class="el-icon-menu"></i>
               <span slot="title">模型训练</span>

@@ -1,16 +1,17 @@
 <template>
-  <div>
+  <div class="main">
     <div class="left_tree">
       <div class="tree-top">
-        <h2>病种、数据集选择<el-popover placement="top" trigger="hover">
-          <div>叶子节点为数据集，非叶子节点为病种</div>
-          <el-icon
-            class="el-icon-warning-outline"
-            slot="reference"
-            style="font-size: 15px;margin-left:20px"
-          ></el-icon>
-        </el-popover></h2>
-      
+        <h2>
+          病种、数据集选择<el-popover placement="top" trigger="hover">
+            <div>叶子节点为数据集，非叶子节点为病种</div>
+            <el-icon
+              class="el-icon-warning-outline"
+              slot="reference"
+              style="font-size: 15px; margin-left: 20px"
+            ></el-icon>
+          </el-popover>
+        </h2>
       </div>
       <!-- <el-button
         type="success"
@@ -474,26 +475,47 @@
       </el-dialog>
     </el-dialog>
     <div class="right_table">
-      <el-card class="right_table_topCard">
-        <div class="describe_content">
-          <h2 style="text-align: center;">数据集预览</h2>
-          <h3>{{ showDataForm.tableName }}</h3>
-          <p style="margin-top: 0.5%">
-            <i class="el-icon-user"></i>创建人:
-            <span>{{ showDataForm.createUser }}</span>
-            <i class="el-icon-time"></i>创建时间:
-            <span>{{ showDataForm.createTime }}</span>
-            <i class="el-icon-folder-opened"></i>所属类别:
-            <span>{{ showDataForm.classPath }}</span>
-          </p>
+      <div class="describe_content">
+        <h2 style="text-align: center">数据集预览</h2>
+        <p>
+          <i class="el-icon-folder"></i>数据集名称:
+          <span style="font-weight: bold">{{ showDataForm.tableName }}</span>
+          <i class="el-icon-user"></i>创建人:
+          <span style="font-weight: bold">{{ showDataForm.createUser }}</span>
+          <i class="el-icon-time"></i>创建时间:
+          <span style="font-weight: bold">{{ showDataForm.createTime }}</span>
+          <i class="el-icon-folder-opened"></i>所属类别:
+          <span style="font-weight: bold">{{ showDataForm.classPath }}</span>
+        </p>
+      </div>
+      <!-- 显示表数据 -->
+      <!-- 点击左树之前显示的内容 -->
+      <div v-if="!selectedDataset">
+        <div
+          class="container"
+          style="
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            font-size: 24px;
+            background-color: #f2f2f2;
+          "
+        >
+          <div class="blinking-text" style="margin-top: 20px">
+            请点击左边树节点选择数据集
+          </div>
+          <img src="@/assets/暂无数据_(1).png" class="imgStyle" />
         </div>
-        <!-- 显示表数据 -->
-        <div class="tableData">
+      </div>
+      <div v-else>
+        <div class="table-container">
           <el-table
             :data="tableData"
             stripe
             v-loading="loading"
-            style="width: 100%"
             class="custom-table"
             :header-cell-style="headerCellStyle"
           >
@@ -502,7 +524,7 @@
               :key="key"
               :prop="key"
               :label="key"
-              width="80"
+              width="auto"
               :show-overflow-tooltip="true"
               :sortable="true"
             >
@@ -521,7 +543,33 @@
             </el-table-column>
           </el-table>
         </div>
-      </el-card>
+        <div
+          style="
+            position: fixed;
+            bottom: 50px;
+            left: 65%;
+            transform: translateX(-50%);
+            width: 800px;
+            z-index: 9999;
+            margin-left: 6%;
+          "
+        >
+          <el-button
+            type="primary"
+            @click="exportCSV()"
+            round
+            v-show="tableData"
+            >导出CSV文件</el-button
+          >
+          <el-button
+            type="primary"
+            @click="exportCSV()"
+            round
+            v-show="tableData"
+            >导出XLSX文件</el-button
+          >
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -534,6 +582,10 @@ import { getTableDes, getTableData } from "@/api/tableDescribe.js";
 import { mapGetters, mapMutations, mapState, mapActions } from "vuex";
 import { disOptions } from "@/components/tab/constData.js";
 import { resetForm, debounce } from "@/components/mixins/mixin.js";
+import FileSaver from "file-saver";
+import XLSX from "xlsx";
+import { taskList } from "./constTaskList";
+
 let id = 1000;
 
 export default {
@@ -546,7 +598,8 @@ export default {
     },
     headerCellStyle() {
       return {
-        color: "black", // 设置表头文字颜色为白色
+        color: "black",
+        width: "100%", // 使其填满父元素的宽度
       };
     },
   },
@@ -564,7 +617,10 @@ export default {
       treeData: [],
       // 获取虚拟表格数据
       // tableData: JSON.parse(JSON.stringify(tableData)),
+      topLevelNodeCount: 0, // 一级节点计数器
+      allChildNodeCount: 0, // 所有子节点计数器
       tableData: [],
+      selectedDataset: null,
       fullData: "",
       showTooltip: false,
       hoverTimer: null,
@@ -694,11 +750,17 @@ export default {
       });
     }, 200);
     this.getCatgory();
-    this.getTableDescribe("1005", "copd");
-    this.getTableData("1005", "copd");
+    // this.getTableDescribe("1005", "copd");
+    // this.getTableData("1005", "copd");
+    this.init();
   },
 
   methods: {
+    init() {
+      console.log("treeData", this.treeData);
+      this.topLevelNodeCount = this.treeData.length; // 获取一级节点的数量
+      console.log(" this.topLevelNodeCount", this.topLevelNodeCount);
+    },
     compelete() {
       // 判断多标签合理性
       let labelCount = 0;
@@ -888,6 +950,8 @@ export default {
     getCatgory() {
       getCategory("/api/category").then((response) => {
         this.treeData = response.data;
+
+        console.log("treeData111", this.treeData);
       });
     },
     uploadFile() {
@@ -942,8 +1006,10 @@ export default {
         this.getTableDescribe(data.id, data.label);
         //获取数据信息
         this.getTableData(data.id, data.label);
+        this.selectedDataset = true;
       }
     },
+
     append(isLeaf) {
       // 发送请求新增一个病种信息（目录结构）
       let catagoryNode = {
@@ -1256,6 +1322,78 @@ export default {
         );
       }
     },
+
+    exportCSV() {
+      console.log(this.tableData); // 打印表格数据到控制台
+
+      /* 从 this.tableData 生成 CSV 字符串 */
+      this.type = "";
+      setTimeout(() => {
+        // 生成 CSV 字符串
+        var csvData = "";
+
+        // 添加表头
+        var headerRow = Object.keys(this.tableData[0]);
+        csvData += headerRow.join(",") + "\n";
+
+        // 添加数据行
+        this.tableData.forEach((row) => {
+          var rowData = [];
+          Object.values(row).forEach((value) => {
+            rowData.push(value);
+          });
+          csvData += rowData.join(",") + "\n";
+        });
+
+        // 下载 CSV 文件
+        try {
+          FileSaver.saveAs(
+            new Blob([csvData], { type: "text/csv;charset=utf-8" }),
+            `${this.showDataForm.tableName}.csv`
+          );
+        } catch (e) {
+          if (typeof console !== "undefined") console.log(e, csvData);
+        }
+      }, 1000);
+    },
+
+    exportXLSX() {
+      console.log(this.tableData); // 打印表格数据到控制台
+
+      /* 从 this.tableData 生成 XLSX 对象 */
+      this.type = "";
+      setTimeout(() => {
+        // 创建 Workbook 对象
+        var wb = XLSX.utils.book_new();
+
+        // 创建 Worksheet 对象
+        var ws = XLSX.utils.json_to_sheet(this.tableData);
+
+        // 将 Worksheet 添加到 Workbook 中
+        XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+
+        // 将 Workbook 转换为二进制字符串
+        var wbout = XLSX.write(wb, { type: "binary" });
+
+        // 下载 XLSX 文件
+        try {
+          FileSaver.saveAs(
+            new Blob([this.s2ab(wbout)], { type: "application/octet-stream" }),
+            `${this.showDataForm.tableName}.xlsx`
+          );
+        } catch (e) {
+          if (typeof console !== "undefined") console.log(e, wbout);
+        }
+      }, 1000);
+    },
+
+    s2ab(s) {
+      // 将字符串转换为 ArrayBuffer
+      var buf = new ArrayBuffer(s.length);
+      var view = new Uint8Array(buf);
+      for (var i = 0; i != s.length; ++i) view[i] = s.charCodeAt(i) & 0xff;
+      return buf;
+    },
   },
 };
 </script>
@@ -1284,6 +1422,14 @@ export default {
   margin-top: 10px;
 }
 
+.main {
+  display: grid;
+  grid-template-columns: 15% 85%;
+  height: 100%;
+  overflow-y: hidden; /* 隐藏垂直滚动条 */
+  overflow-x: hidden;
+}
+
 .featureLabel {
   height: 55vh;
   width: 100%;
@@ -1297,6 +1443,7 @@ export default {
 }
 
 .left_tree {
+  height: auto;
   display: inline-block;
   border-radius: 3px;
   border: 1px solid #fff;
@@ -1324,26 +1471,20 @@ export default {
   border-radius: 10px;
 }
 
-
 .right_table {
   display: inline-block;
-  height: 85%;
-  width: 75%;
-  position: absolute;
-  border: none;
-  overflow-y: auto;
-}
-
-.right_table_topCard {
-  padding: 0;
   height: auto;
   width: 95%;
+  margin-left: 30px;
+  overflow-y: auto;
   border-radius: 3px;
-  border-bottom: 1px solid #e6e6e6;
-  position: relative;
-  /* top: 2%; */
-  left: 1%;
-  /* overflow-y: auto; */
+  border: 1px solid #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1); /* 修正阴影的颜色和透明度 */
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0 10px 10px 10px;
+  scrollbar-width: none; /* 隐藏 Firefox 的滚动条 */
+  -ms-overflow-style: none; /* 隐藏 IE/Edge 的滚动条 */
 }
 
 .describe_content {
@@ -1352,19 +1493,15 @@ export default {
   color: #000000;
   border-radius: 6px;
   border: 1px solid #fff;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1); /* 修正阴影的颜色和透明度 */
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
   background-color: rgba(146, 145, 145, 0.3);
-}
-
-.describe_content span {
-  margin: 10px;
 }
 
 .add_button {
   position: fixed;
-  width: 264px;
+  width: 10%;
   margin-top: 10px;
-  margin-bottom: 10px;
+
   z-index: 9999; /* 置于最顶层 */
   bottom: 50px;
 }
@@ -1437,25 +1574,47 @@ export default {
 .cool-button:hover::before {
   transform: scaleX(1);
 }
+.custom-table {
+  width: 100%;
+  height: auto;
+}
 
 .custom-table tr {
   background-color: #dcf3fc !important;
 }
 
-.tableData {
+.imgStyle {
+  height: 900px;
+  width: 900px;
+  border-radius: 15px;
+}
+
+.table-container {
   width: 100%;
-  height: 750px;
+  height: auto;
   overflow-y: auto;
   overflow-x: auto;
   scrollbar-width: none; /* 隐藏 Firefox 的滚动条 */
   -ms-overflow-style: none; /* 隐藏 IE/Edge 的滚动条 */
 }
-
 /* 修改树形控件高亮颜色 */
 ::v-deep.el-tree--highlight-current
   .el-tree-node.is-current
   > .el-tree-node__content {
   color: #ffffff;
   background: #62a2e7 !important;
+}
+
+.blinking-text {
+  animation: blink-animation 1s infinite alternate; /* 定义闪烁动画 */
+}
+
+@keyframes blink-animation {
+  from {
+    opacity: 1; /* 起始状态为不透明 */
+  }
+  to {
+    opacity: 0.3; /* 终止状态为完全透明 */
+  }
 }
 </style>

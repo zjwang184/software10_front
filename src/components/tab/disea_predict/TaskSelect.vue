@@ -7,23 +7,22 @@
       <!-- <el-alert>叶子节点为数据集，非叶子节点为病种</el-alert> -->
       <div
         style="
-          background-color: rgb(234, 242, 248);
+          background-color: rgba(146, 145, 145, 0.3);
           width: 100%;
-          font-size: 20px;
           border: 1px solid #fff;
           border-radius: 10px;
         "
       >
-        病种、数据集选择
-        <el-popover placement="top" trigger="hover">
-          <div>叶子节点为数据集，非叶子节点为病种</div>
-
-          <el-icon
-            class="el-icon-warning-outline"
-            slot="reference"
-            style="font-size: 15px"
-          ></el-icon>
-        </el-popover>
+        <h2>
+          病种、数据集选择<el-popover placement="top" trigger="hover">
+            <div>叶子节点为数据集，非叶子节点为病种</div>
+            <el-icon
+              class="el-icon-warning-outline"
+              slot="reference"
+              style="font-size: 15px; margin-left: 20px"
+            ></el-icon>
+          </el-popover>
+        </h2>
       </div>
 
       <el-tree
@@ -46,7 +45,7 @@
         ><span class="featureTitle" style="display: inline-block"
           >请选择一个训练好的任务</span
         >
-        <span style="display: inline-block; "
+        <span style="display: inline-block"
           ><el-alert>
             可根据疾病名称、数据集、任务名称、任务负责人、所用算法对任务进行筛选,筛选结果根据创建时间由近到远进行排序
           </el-alert></span
@@ -194,6 +193,11 @@
               <div><span class="ttl">数据表：</span>{{ item.dataset }}</div>
               <div>
                 <span class="ttl">创建时间：</span>{{ item.createtime }}
+              </div>
+              <div>
+                <span class="ttl"
+                  >所属类别：<span>{{ item.classpath }}</span></span
+                >
               </div>
             </div>
             <span class="buttonGroup">
@@ -621,7 +625,7 @@ export default {
 
 .right {
   display: grid;
-  grid-template-rows: auto 15% auto auto;
+  grid-template-rows: 3% 5% 5% auto;
   margin-left: 30px;
   height: 100%;
 }
@@ -643,7 +647,7 @@ export default {
 }
 
 .right_bottom {
-  height: 100%;
+  height: auto;
   width: 100%;
 }
 
@@ -678,7 +682,7 @@ export default {
 
 .cardGroup {
   width: 100%; /* 调整宽度 */
-  height: 400px;
+  height: auto;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-gap: 20px; /* 间距 */
@@ -712,6 +716,7 @@ export default {
   grid-template-columns: 1fr 1fr; /* 定义两列，每列占用相等的空间 */
   grid-template-rows: auto auto auto auto; /* 定义四行，高度根据内容自适应 */
   gap: 10px; /* 定义网格行和列之间的间隙 */
+  margin-left: 10%;
 }
 
 .cardInfo > div:nth-child(5), /* 第五个子元素（数据表） */
@@ -753,5 +758,4 @@ export default {
   /* font-size: 20px; */
   color: #071135;
 }
-
 </style>

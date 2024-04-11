@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div >
     <el-container>
       <el-header>
         <div id="step">
@@ -13,7 +13,7 @@
 
       <el-divider></el-divider>
 
-      <el-main v-if="step == 1" class="mainBox">
+      <el-main v-if="step == 1" class="mainBox" style="height: 1050px !important;">
         <TaskSelectVue :moduleName="moduleName"></TaskSelectVue>
       </el-main>
 
@@ -59,6 +59,6 @@ export default {
 <style scoped>
 .mainBox {
   height:100%;
-  overflow-y: hidden; /* 隐藏垂直滚动条 */
 }
+
 </style>

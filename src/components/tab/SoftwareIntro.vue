@@ -38,7 +38,7 @@
           </div>
 
           
-          <div class="icon">
+          <!-- <div class="icon">
             <div class="singleBox" @click="quickLink('TableManage')">
               <img
                 src="@/assets/字段管理.png"
@@ -47,7 +47,7 @@
               />
               <h3 style="font-size: 30px">字段管理</h3>
             </div>
-          </div>
+          </div> -->
           <div class="icon">
             <div class="singleBox" @click="quickLink('ModelTraining')">
               <img
