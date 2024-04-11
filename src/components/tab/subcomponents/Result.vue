@@ -260,15 +260,15 @@ export default {
   computed: {
     dqnModel(){
       // 根据条件筛选 editableTabs 数组
-      return this.m_models.filter(item => item.name==='DQN');
+      return this.m_models.filter(item => item.name==='dqn');
     },
     svmModel(){
       // 根据条件筛选 editableTabs 数组
-      return this.m_models.filter(item => item.name==='SVM');
+      return this.m_models.filter(item => item.name==='svm');
     },
     knnModel(){
       // 根据条件筛选 editableTabs 数组
-      return this.m_models.filter(item => item.name==='KNN');
+      return this.m_models.filter(item => item.name==='knn');
     },
 
 
