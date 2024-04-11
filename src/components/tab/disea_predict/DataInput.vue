@@ -109,6 +109,8 @@ export default {
   data() {
     return {
       predict_features: [],
+      predict_task_name: "",
+      predict_model_name: "",
       personForm: {},
       rules: {},
       // rules: {
@@ -155,8 +157,13 @@ export default {
     init() {
       this.predict_features = this.m_predict_features;
       this.patient_form = this.m_patient_form;
-      console.log("this.m_predict_features   ", this.predict_features);
-      console.log("this.m_patient_form   ", this.m_patient_form);
+      this.predict_task_name = this.m_predict_task_name;
+      this.predict_model_name = this.m_predict_model_name;
+
+      // console.log("this.m_predict_features   ", this.predict_features);
+      // console.log("this.patient_form", this.patient_form);
+      // console.log("this.predict_task_name", this.predict_task_name);
+      // console.log("this.predict_model_name ", this.predict_model_name);
     },
 
     generateFormAndRules() {
@@ -170,7 +177,7 @@ export default {
       this.rules = this.predict_features.reduce((acc, cur) => {
         acc[cur] = [
           { required: true, message: "此项不能为空", trigger: "blur" },
-          { validator: this.validateInput, trigger: "blur" } // 添加自定义验证器
+          { validator: this.validateInput, trigger: "blur" }, // 添加自定义验证器
           // 可以添加其他验证规则
         ];
         return acc;
@@ -178,19 +185,18 @@ export default {
     },
 
     validateInput(rule, value, callback) {
-    // 检查是否包含非法字符
-    if (/[/\\]/.test(value)) {
-      callback(new Error("不能包含/或\\字符"));
-    } else {
-      // 检查是否只包含数字
-      if (!/^\d+$/.test(value)) {
-        callback(new Error("只能输入数字"));
+      // 检查是否包含非法字符
+      if (/[/\\]/.test(value)) {
+        callback(new Error("不能包含/或\\字符"));
       } else {
-        callback(); // 通过验证
+        // 检查是否只包含数字
+        if (!/^\d+$/.test(value)) {
+          callback(new Error("只能输入数字"));
+        } else {
+          callback(); // 通过验证
+        }
       }
-    }
-  },
-
+    },
 
     resetForm(formName) {
       this.$refs[formName].resetFields();
@@ -214,24 +220,22 @@ export default {
 
       // formData.append("personForm", JSON.stringify(this.personForm))
 
-      // console.log(formData);
       for (let key in this.personForm) {
         formData.append(key, this.personForm[key]);
-        //     console.log(key, formData.get(key));
-        //     console.log(typeof key, typeof formData.get(key));
       }
       console.log("=======");
       const dictionary = {};
+      // 将任务名称和所用算法加入字典对象
+      dictionary["taskname"] = this.predict_task_name;
+      dictionary["modelname"] = this.predict_model_name;
       for (const [key, value] of formData.entries()) {
         dictionary[key] = value;
-        // console.log(typeof dictionary);
-        // console.log(dictionary);
       }
-      console.log(typeof dictionary);
-      console.log(dictionary);
+      console.log("typeof dictionary", typeof dictionary);
+      console.log("dictionary", dictionary);
       console.log("=======");
       this.m_changeTaskInfo({ patient_form: dictionary });
-      console.log("this.m_patient_form   ", this.m_patient_form);
+      // console.log("this.m_patient_form   ", this.m_patient_form);
       postRequest("/ten/data/update_person", dictionary)
         .then((res) => {
           console.log("res:", res);

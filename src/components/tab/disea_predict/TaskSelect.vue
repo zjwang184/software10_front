@@ -46,7 +46,7 @@
         ><span class="featureTitle" style="display: inline-block"
           >请选择一个训练好的任务</span
         >
-        <span style="display: inline-block; font-size: 20px"
+        <span style="display: inline-block; "
           ><el-alert>
             可根据疾病名称、数据集、任务名称、任务负责人、所用算法对任务进行筛选,筛选结果根据创建时间由近到远进行排序
           </el-alert></span
@@ -66,7 +66,7 @@
                 v-model="DQN_selected"
                 active-text="DQN"
                 style="margin-right: 20px; font-size: 40px"
-                @change="handleSwitchChange('DQN', $event)"
+                @change="handleSwitchChange('dqn', $event)"
               >
               </el-switch>
             </div>
@@ -80,7 +80,7 @@
                 v-model="DDPG_selected"
                 active-text="DDPG"
                 style="margin-right: 20px; font-size: 40px"
-                @change="handleSwitchChange('DDPG', $event)"
+                @change="handleSwitchChange('ddpg', $event)"
               >
               </el-switch>
             </div>
@@ -94,7 +94,7 @@
                 v-model="PPO_selected"
                 active-text="PPO"
                 style="margin-right: 20px; font-size: 40px"
-                @change="handleSwitchChange('PPO', $event)"
+                @change="handleSwitchChange('ppo', $event)"
               >
               </el-switch>
             </div>
@@ -115,7 +115,7 @@
                 v-model="KNN_selected"
                 active-text="KNN"
                 style="margin-right: 20px; font-size: 40px"
-                @change="handleSwitchChange('KNN', $event)"
+                @change="handleSwitchChange('knn', $event)"
               >
               </el-switch>
             </div>
@@ -129,7 +129,7 @@
                 v-model="SVM_selected"
                 active-text="SVM"
                 style="margin-right: 20px; font-size: 40px"
-                @change="handleSwitchChange('SVM', $event)"
+                @change="handleSwitchChange('svm', $event)"
               >
               </el-switch>
             </div>
@@ -143,7 +143,7 @@
                 v-model="RF_selected"
                 active-text="RF"
                 style="margin-right: 20px; font-size: 40px"
-                @change="handleSwitchChange('RF', $event)"
+                @change="handleSwitchChange('rf', $event)"
               >
               </el-switch>
             </div>
@@ -338,22 +338,22 @@ export default {
       return this.taskList.filter((item) => item.modelname);
     },
     isModelListContainsDQN() {
-      return this.modelList.includes("DQN");
+      return this.modelList.includes("dqn");
     },
     isModelListContainsDDPG() {
-      return this.modelList.includes("DDPG");
+      return this.modelList.includes("ddpg");
     },
     isModelListContainsPPO() {
-      return this.modelList.includes("PPO");
+      return this.modelList.includes("ppo");
     },
     isModelListContainsKNN() {
-      return this.modelList.includes("KNN");
+      return this.modelList.includes("knn");
     },
     isModelListContainsSVM() {
-      return this.modelList.includes("SVM");
+      return this.modelList.includes("svm");
     },
     isModelListContainsRF() {
-      return this.modelList.includes("RF");
+      return this.modelList.includes("rf");
     },
     filteredTaskList() {
       // 进行筛选
@@ -398,6 +398,8 @@ export default {
       SVM_selected: false,
       RF_selected: false,
       predict_features: [],
+      predict_task_name: "",
+      predict_model_name: "",
 
       //分页数据
       pageSize: 20,
@@ -408,7 +410,7 @@ export default {
 
   created() {
     this.getCatgory();
-    // this.getTaskList();
+    this.getTaskList();
     this.init();
   },
 
@@ -427,6 +429,8 @@ export default {
       }
       this.modelList = Array.from(uniqueModels);
       this.predict_features = this.m_predict_features;
+      this.predict_model_name = this.m_predict_model_name;
+      this.predict_task_name = this.m_predict_task_name;
       this.DQN_selected = this.isModelListContainsDQN;
       this.DDPG_selected = this.isModelListContainsDDPG;
       this.PPO_selected = this.isModelListContainsPPO;
@@ -435,7 +439,7 @@ export default {
       this.RF_selected = this.isModelListContainsRF;
       console.log("当前模块名👉", this.moduleName);
       console.log("this.m_predict_features111   ", this.m_predict_features);
-      console.log("this.modelList", this.modelList);
+      console.log("taskList", taskList);
     },
 
     getCatgory() {
@@ -571,10 +575,14 @@ export default {
       getRequest(`Task/result/pred/${row.id}`).then((res) => {
         if (res.code == 200) {
           this.predict_features = res.data;
-          console.log("this.predict_features", this.predict_features);
-          this.m_changeTaskInfo({ predict_features: this.predict_features });
+          this.predict_task_name = row.taskname;
+          this.predict_model_name = row.modelname;
+          this.m_changeTaskInfo({
+            predict_features: this.predict_features,
+            predict_task_name: this.predict_task_name,
+            predict_model_name: this.predict_model_name,
+          });
           this.m_changeStep(2);
-          console.log("this.m_predict_features222   ", this.m_predict_features);
         }
       });
     },
@@ -745,4 +753,5 @@ export default {
   /* font-size: 20px; */
   color: #071135;
 }
+
 </style>

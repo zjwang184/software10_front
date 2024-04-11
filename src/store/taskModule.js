@@ -74,8 +74,8 @@ export default {
       // 风险预测
       predict_features: [],
       patient_form:[],
-
-
+      predict_task_name: [],
+      predict_model_name: [],
     };
   },
   getters: {},

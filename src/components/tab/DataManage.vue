@@ -1,35 +1,16 @@
 <template>
   <div>
     <div class="left_tree">
-      <!-- <div class="tree-top">数据集选择
-        <el-popover placement="right" trigger="hover">
+      <div class="tree-top">
+        <h2>病种、数据集选择<el-popover placement="top" trigger="hover">
           <div>叶子节点为数据集，非叶子节点为病种</div>
           <el-icon
             class="el-icon-warning-outline"
             slot="reference"
-            style="font-size: 15px"
+            style="font-size: 15px;margin-left:20px"
           ></el-icon>
-        </el-popover>
-      </div> -->
-      <div
-        style="
-          background-color: rgb(234, 242, 248);
-          width: 100%;
-          font-size: 20px;
-          border: 1px solid #fff;
-          border-radius: 10px;
-        "
-      >
-        病种、数据集选择
-        <el-popover placement="top" trigger="hover">
-          <div>叶子节点为数据集，非叶子节点为病种</div>
-
-          <el-icon
-            class="el-icon-warning-outline"
-            slot="reference"
-            style="font-size: 15px"
-          ></el-icon>
-        </el-popover>
+        </el-popover></h2>
+      
       </div>
       <!-- <el-button
         type="success"
@@ -493,9 +474,9 @@
       </el-dialog>
     </el-dialog>
     <div class="right_table">
-      <div class="table_top">数据集预览 <el-alert>1111</el-alert></div>
       <el-card class="right_table_topCard">
         <div class="describe_content">
+          <h2 style="text-align: center;">数据集预览</h2>
           <h3>{{ showDataForm.tableName }}</h3>
           <p style="margin-top: 0.5%">
             <i class="el-icon-user"></i>创建人:
@@ -1337,29 +1318,12 @@ export default {
 }
 
 .tree-top {
-  font-size: 32px;
-  color: #000000;
-  text-align: center;
-  padding: 10px 20px; /* 设置内边距 */
+  background-color: rgba(146, 145, 145, 0.3);
+  width: 100%;
   border: 1px solid #fff;
   border-radius: 10px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1); /* 修正阴影的颜色和透明度 */
-  background-color:rgb(144,147,153);
 }
 
-.table_top{
-  display:inline-block;
-  width: 95%;
-  font-size: 32px;
-  color: #000000;
-  text-align: center;
-  border-radius: 3px;
-  border: 1px solid #fff;
-  border-radius: 10px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1); /* 修正阴影的颜色和透明度 */
-  margin-left:20px;
-  margin-bottom:25px;
-}
 
 .right_table {
   display: inline-block;
@@ -1384,7 +1348,12 @@ export default {
 
 .describe_content {
   display: inline-block;
-  width: 70%;
+  width: 100%;
+  color: #000000;
+  border-radius: 6px;
+  border: 1px solid #fff;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1); /* 修正阴影的颜色和透明度 */
+  background-color: rgba(146, 145, 145, 0.3);
 }
 
 .describe_content span {
@@ -1397,7 +1366,7 @@ export default {
   margin-top: 10px;
   margin-bottom: 10px;
   z-index: 9999; /* 置于最顶层 */
-  bottom:50px;
+  bottom: 50px;
 }
 
 .nameInput {

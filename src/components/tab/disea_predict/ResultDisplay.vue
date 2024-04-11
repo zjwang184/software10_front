@@ -53,7 +53,7 @@
 
     <div id="pdf_2">
       <div class="bottom">
-        <!-- <div
+        <div
         style="
           font-family: Arial, sans-serif;
           font-size: 24px;
@@ -63,13 +63,12 @@
         "
       >
         各特征对结果的影响
-      </div> -->
-        <div></div>
+      </div>
         <div class="box">
           <div>
             <img src="http://10.16.97.233:8088/fig/shap1.png" alt="Image" />
           </div>
-          <PlusAndMinusBarVue />
+          <!-- <PlusAndMinusBarVue /> -->
         </div>
       </div>
     </div>
@@ -390,9 +389,9 @@ export default {
 }
 
 .bottom {
-  display: flex;
+  /* display: flex; */
   justify-content: center;
-  height: 600px;
+  height: auto;
   width: 90%;
   margin: 20px auto; /* 顶部和底部留有间距，并居中 */
   border: 2px solid rgb(10, 7, 7); /* 灰色边框 */

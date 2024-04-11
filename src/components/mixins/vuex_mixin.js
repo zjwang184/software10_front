@@ -67,7 +67,12 @@ export default {
     m_patient_form() {
       return this.$store.state[this.moduleName].patient_form;
     },
-
+    m_predict_task_name(){
+      return this.$store.state[this.moduleName].predict_task_name;
+    },
+    m_predict_model_name(){
+      return this.$store.state[this.moduleName].predict_model_name;
+    },
   },
   methods: {
     m_changeStep(newStep) {
