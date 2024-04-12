@@ -38,21 +38,19 @@
         <el-input
           v-model="taskInfoForm.comment"
           type="textarea"
-          style="width:60vh; height: 800px !important"
+          style="width: 60vh"
         ></el-input>
       </el-form-item>
-      
+
       <!-- <el-form-item>
         <el-button @click="resetForm('taskInfoForm')" round>重置</el-button>
         <el-button type="primary" @click="next()" round>下一步</el-button>
       </el-form-item> -->
     </el-form>
     <div class="buttonGroup">
-        <el-button @click="resetForm()" round>清除</el-button>
-        <el-button type="primary" @click="next()" round
-          >下一步</el-button
-        >
-      </div>
+      <el-button @click="resetForm()" round>清除</el-button>
+      <el-button type="primary" @click="next()" round>下一步</el-button>
+    </div>
   </div>
 </template>
 
@@ -64,7 +62,7 @@ import vuex_mixin from "@/components/mixins/vuex_mixin";
 export default {
   name: "TaskInfo",
   // mixins: [resetForm, vuex_mixin],
-  mixins: [ vuex_mixin],
+  mixins: [vuex_mixin],
   props: {
     moduleName: {
       type: String,
@@ -145,7 +143,7 @@ export default {
       }
     },
 
-    resetForm(){
+    resetForm() {
       this.taskInfoForm.taskName = "";
       this.taskInfoForm.participants = "";
       this.taskInfoForm.comment = "";
@@ -187,7 +185,6 @@ export default {
   width: 50%;
 }
 
-
 .lineStyle {
   color: rgb(100, 172, 231);
 }
@@ -202,7 +199,7 @@ export default {
   margin-bottom: 10px;
 }
 
- /* 这里是最后的两个按钮固定在页面上 */
+/* 这里是最后的两个按钮固定在页面上 */
 .buttonGroup {
   position: fixed;
   bottom: 10%; /* 距离页面底部 10px */
@@ -210,9 +207,12 @@ export default {
   transform: translateX(-50%); /* 水平居中 */
   width: 200px;
   z-index: 9999; /* 置于最顶层 */
-  margin-left:6%;
+  margin-left: 5%;
 }
 
+::v-deep .el-textarea__inner {
+  height: 250px;
+}
 </style>
 
 

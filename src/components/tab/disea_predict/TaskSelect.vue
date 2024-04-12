@@ -264,7 +264,7 @@
             ><span class="featureTitle">所用算法：</span>
             <span class="text">{{ result.modelname }}</span>
           </div>
-          <div class="taskInfoBox algorithmValue">
+          <!-- <div class="taskInfoBox algorithmValue">
             <span class="lineStyle">▍</span
             ><span class="featureTitle">算法参数：</span>
             <span v-if="result.para[0] == ''">本算法没有参数</span>
@@ -275,7 +275,7 @@
                 >
               </div>
             </div>
-          </div>
+          </div> -->
           <div class="taskInfoBox target_features">
             <span class="lineStyle">▍</span
             ><span class="featureTitle">目标因素：</span>
@@ -492,8 +492,9 @@ export default {
       getRequest(`Task/result/${row.id}`).then((res) => {
         if (res.code == 200) {
           this.result = res.data;
-          if (this.result.parameters != null) {
-            this.result.parameters = this.result.parameters.split(",");
+          console.log("this.result",this.result);
+          if (this.result.feature != null) {
+            this.result.feature = this.result.feature.split(",");
           }
           this.resultDialogShow = true;
         } else {
