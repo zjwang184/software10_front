@@ -625,7 +625,7 @@ export default {
 
 .right {
   display: grid;
-  grid-template-rows: 3% 5% 5% auto;
+  grid-template-rows: 5% 10% 10% auto;
   margin-left: 30px;
   height: 100%;
 }
@@ -698,7 +698,7 @@ export default {
 .taskCard {
   margin-bottom: 10px;
   width: 95%;
-  height: 230px;
+  height: auto;
   border: 1px solid #c0bebe; /* 边框颜色设置为黑色 */
   box-shadow: 0 2px 4px rgba(88, 88, 88, 0.1);
   border-radius: 10px;
