@@ -4,12 +4,14 @@ export default {
     return {
       step: 1,
       taskName: "",
+      nodeid: "",
       principal: "",
       participants: "",
       disease: "",
       dataset: "",
       all_features: [],
       use_features: [],
+      use_labels: [],
       known_features: [],
       target_features: [],
       algorithm:'',
@@ -23,7 +25,7 @@ export default {
         {
           name: "dqn",
           model_type: "dl",
-          is_select: false,
+          is_select: true,
           params:{
             reward: 1,
             epoch: 100,
@@ -133,6 +135,168 @@ export default {
         }
       })
       
+    },
+
+    reset_state(state){
+      let defaultValue = {
+        step: 1,
+        taskName: "",
+        nodeid: "",
+        principal: "",
+        participants: "",
+        disease: "",
+        dataset: "",
+        all_features: [],
+        use_features: [],
+        use_labels: [],
+        known_features: [],
+        target_features: [],
+        algorithm:'',
+        SF_DRMB: {
+          K_OR: 0.15,
+          K_and_PC: 0.3,
+          K_and_SP: 0.75,
+        },
+
+        models:[
+          {
+            name: "dqn",
+            model_type: "dl",
+            is_select: true,
+            params:{
+              reward: 1,
+              epoch: 100,
+              gamma: 0.8,
+              learning_rate: 0.01,
+            },
+            res:{}
+          },
+          {
+            name: "svm",
+            model_type: "ml",
+            is_select: false,
+            params:{
+              kernel: "linear",
+              random_state: 42,     
+              cv: 5,
+            },
+            res:{}
+          },
+          {
+            name: "knn",
+            model_type: "ml",
+            is_select: false,
+            params:{
+              random_state: 42,     
+              cv: 10,
+              K: 3
+            },
+            res:{}
+          }
+        ],
+        DQN: {
+          reward: 1,
+          epoch: 100,
+          gamma: 0.8,
+          learning_rate: 0.01,
+        },
+        SVM: {
+          kernel: "linear",
+          random_state: 42,     
+          cv: 5,
+        },
+        KNN: {  
+          random_state: 42,     
+          cv: 10,
+          K: 3
+        },
+
+        result: [],
+      };
+
+      state = Object.assign(state, defaultValue);
+    },
+
+    reset_state_from_datasets(state){
+      let defaultValue = {
+        // step: 1,
+        // taskName: "",
+        // nodeid: "",
+        // principal: "",
+        // participants: "",
+        // disease: "",
+        // dataset: "",
+        all_features: [],
+        use_features: [],
+        use_labels: [],
+        // known_features: [],
+        target_features: [],
+        // algorithm:'',
+        // SF_DRMB: {
+        //   K_OR: 0.15,
+        //   K_and_PC: 0.3,
+        //   K_and_SP: 0.75,
+        // },
+
+        models:[
+          {
+            name: "dqn",
+            model_type: "dl",
+            is_select: true,
+            params:{
+              reward: 1,
+              epoch: 100,
+              gamma: 0.8,
+              learning_rate: 0.01,
+            },
+            res:{}
+          },
+          {
+            name: "svm",
+            model_type: "ml",
+            is_select: false,
+            params:{
+              kernel: "linear",
+              random_state: 42,     
+              cv: 5,
+            },
+            res:{}
+          },
+          {
+            name: "knn",
+            model_type: "ml",
+            is_select: false,
+            params:{
+              random_state: 42,     
+              cv: 10,
+              K: 3
+            },
+            res:{}
+          }
+        ],
+        DQN: {
+          reward: 1,
+          epoch: 100,
+          gamma: 0.8,
+          learning_rate: 0.01,
+        },
+        SVM: {
+          kernel: "linear",
+          random_state: 42,     
+          cv: 5,
+        },
+        KNN: {  
+          random_state: 42,     
+          cv: 10,
+          K: 3
+        },
+
+        // result: [],
+      };
+
+      state = Object.assign(state, defaultValue);
     }
+
+
   },
 };

@@ -12,10 +12,11 @@
 
             <el-row :gutter="20"
               v-for="(item, index) in editableTabs" :key="index"
+              
             >
               <el-switch style="margin-top: 10%"
                 v-model="item.is_select"
-                
+                @change="handleCheckAlg($event, item.name)"
                 :active-text="item.content"
                 inactive-text="">
               </el-switch>
@@ -376,7 +377,7 @@ export default {
           name: 'svm',
           content: '机器学习算法-SVM',
           // forms: this.SVM_form,
-          intro: "SVM",
+          intro: "SVM是找到一个最优的超平面来将不同类别的数据分隔开，以实现分类的算法。",
           is_select: false
         }],
 
@@ -402,7 +403,7 @@ export default {
   methods: {
     handleTabsEdit(targetName, action) {
       if (action === 'remove') {
-        let tabs = this.editableTabs;
+        let tabs = this.filteredEditableTabs;
         let activeName = this.editableTabsValue;
         if (activeName === targetName) {
           tabs.forEach((tab, index) => {
@@ -417,11 +418,30 @@ export default {
 
         this.editableTabsValue = activeName;
         // 更新选项卡的 is_select 属性
+        // let update_tabs = this.editableTabs;
+        // update_tabs.forEach((tab, index) => {
+        //   if (tab.name === targetName) {
+        //     this.$set(tab, 'is_select', false); // 使用 Vue 的 $set 方法确保响应性
+        //   }
+        // });
         tabs.forEach((tab, index) => {
           if (tab.name === targetName) {
             this.$set(tab, 'is_select', false); // 使用 Vue 的 $set 方法确保响应性
           }
         });
+      }
+
+      console.log("remove后", this.editableTabs)
+    },
+    handleCheckAlg(checked, name){
+      console.log("name:", name, " checked ", checked)
+      if (checked){
+        this.editableTabsValue = name;
+      }else{
+        for (var i in this.filteredEditableTabs){
+          this.editableTabsValue = this.filteredEditableTabs[i].name;
+          return;
+        }
       }
     },
 
@@ -431,9 +451,18 @@ export default {
       this.SVM_form = this.m_SVM;
       this.KNN_form = this.m_KNN;
       
-      if (this.moduleName === "modelTraining") {
-        this.model = "dqn";
+      for (var i in this.m_models){
+        for (var j in this.editableTabs){
+          if (this.m_models[i].name === this.editableTabs[j].name){
+            this.editableTabs[j].is_select = this.m_models[i].is_select;
+            if (this.m_models[i].is_select){
+              this.editableTabsValue = this.m_models[i].name;
+            }
+          }
+        }
       }
+
+      console.log("this.editableTab", this.editableTabs, this.editableTabsValue)
     },
 
     backStep() {

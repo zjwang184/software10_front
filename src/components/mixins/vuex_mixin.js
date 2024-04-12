@@ -10,6 +10,9 @@ export default {
     m_taskName() {
       return this.$store.state[this.moduleName].taskName;
     },
+    m_nodeid() {
+      return this.$store.state[this.moduleName].nodeid;
+    },
     m_principal() {
       return this.$store.state[this.moduleName].principal;
     },
@@ -30,6 +33,9 @@ export default {
     },
     m_use_features() {
       return this.$store.state[this.moduleName].use_features;
+    },
+    m_use_labels() {
+      return this.$store.state[this.moduleName].use_labels;
     },
     m_known_features() {
       return this.$store.state[this.moduleName].known_features;
@@ -78,6 +84,7 @@ export default {
     m_changeStep(newStep) {
       this.$store.commit(`${this.moduleName}/ChangeStep`, newStep);
     },
+    
     m_changeTaskInfo(newValue) {
       this.$store.commit(`${this.moduleName}/ChangeTaskInfo`, newValue);
     },
@@ -100,6 +107,14 @@ export default {
 
     m_models_update_res(payload) {
       this.$store.commit(`${this.moduleName}/models_update_res`, payload);
+    },
+
+    m_reset_state() {
+      this.$store.commit(`${this.moduleName}/reset_state`);
+    },
+
+    m_reset_state_from_datasets() {
+      this.$store.commit(`${this.moduleName}/reset_state_from_datasets`);
     },
   },
 };
