@@ -38,7 +38,7 @@
         <el-input
           v-model="taskInfoForm.comment"
           type="textarea"
-          style="width:60vh; height: 800px"
+          style="width:60vh; height: 800px !important"
         ></el-input>
       </el-form-item>
       

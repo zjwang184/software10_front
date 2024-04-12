@@ -32,7 +32,7 @@
 
         <el-checkbox-group v-model="labelFeatures" @change="changeBox_label()">
           <el-checkbox
-            v-for="item in targetFeatures"
+            v-for="item in displayedLabel"
             :label="item.riskFactor"
             :key="item.riskFactor"
             border
@@ -206,6 +206,11 @@ export default {
       const endIndex = startIndex + this.pageSize;
       return this.allFeatures.slice(startIndex, endIndex);
     },
+    displayedLabel() {
+      const startIndex = (this.currentPage - 1) * this.pageSize;
+      const endIndex = startIndex + this.pageSize;
+      return this.targetFeatures.slice(startIndex, endIndex);
+    },
     // 计算属性，计算总特性数量
     totalFeatures() {
       return this.allFeatures.length;
@@ -232,6 +237,7 @@ export default {
       computeFeatures: [],
       knownFeatures: [],
       targetFeatures: [],
+      
       labelFeatures: [],
       defaultReward: [],
 
@@ -289,9 +295,14 @@ export default {
       this.targetFeatures = this.m_target_features;
       this.allFeatures = this.m_all_features;
       this.computeFeatures = this.m_use_features;
+      this.labelFeatures = this.m_use_labels;
+      this.changeBox_compute();
+      this.changeBox_label();
       this.knownFeatures = this.m_known_features;
       console.log("!!!!!!!!!", this.targetFeatures);
       console.log("!!!!!!!!!", this.allFeatures);
+      // this.handleCheckAll_label();
+      // this.handleCheckAll_compute();
       // this.changeBox_1();
       // this.changeBox_2();
 
@@ -334,27 +345,6 @@ export default {
       // });
     },
 
-    // getData(tablename) {
-    //   this.getData_loading = true;
-    //   postRequest("", {
-    //     tableName: tablename,
-    //   }).then((res) => {
-    //     this.allFeatures = res;
-    //     console.log("this.allFeatures:", this.allFeatures);
-    //     this.getData_loading = false;
-    //     this.dataTableVision = true;
-    //   });
-    //   // 标签特征
-    //   postRequest("/runtime_bus/getLackinfos_labels", {
-    //     tableName: tablename,
-    //   }).then((res) => {
-    //     this.targetFeatures = res;
-    //     console.log("this.targetFeatures:", this.targetFeatures);
-    //     this.getData_loading = false;
-    //     this.dataTableVision = true;
-    //   });
-    // },
-
     handleCheckAll_compute(checked) {
       // 处理全选复选框状态改变
       if (checked) {
@@ -378,7 +368,7 @@ export default {
     },
 
     changeBox_compute() {
-      if (this.computeFeatures.length === this.allFeatures.length) {
+      if (this.computeFeatures.length === this.allFeatures.length && this.computeFeatures.length > 0) {
         this.checkAll_compute = true;
       } else {
         this.checkAll_compute = false;
@@ -392,7 +382,7 @@ export default {
     },
 
     changeBox_2() {
-      if (this.knownFeatures.length === this.allFeatures.length) {
+      if (this.knownFeatures.length === this.allFeatures.length && this.knownFeatures.length != 0) {
         this.checkAll_2 = true;
       } else {
         this.checkAll_2 = false;
@@ -401,7 +391,7 @@ export default {
     },
 
     changeBox_label() {
-      if (this.labelFeatures.length === this.targetFeatures.length) {
+      if (this.labelFeatures.length === this.targetFeatures.length && this.labelFeatures.length > 0) {
         this.checkAll_label = true;
       } else {
         this.checkAll_label = false;
@@ -450,8 +440,7 @@ export default {
           // console.log(" risk ",this.defaultReward[risk]["riskFactor"], this.defaultReward[risk]["rate"]);
           for (var risk2 in this.allFeatures) {
             if (
-              this.defaultReward[risk]["riskFactor"] ==
-              this.defaultReward[risk2]["riskFactor"]
+              this.defaultReward[risk]["riskFactor"] == this.defaultReward[risk2]["riskFactor"]
             ) {
               this.allFeatures[risk2]["doctorRate"] =
                 parseFloat(this.defaultReward[risk]["rate"]) * 100;
@@ -469,8 +458,8 @@ export default {
     },
 
     next() {
-      this.m_changeStep(this.m_step + 1);
-      if (this.targetFeatures.length < 1) {
+      
+      if (this.labelFeatures.length < 1) {
         alert("该数据没有标签特征，请重新选择或上传数据表");
         return;
       }
@@ -486,9 +475,10 @@ export default {
         target_feature: this.labelFeatures,
         use_features: this.computeFeatures,
         all_features: this.allFeatures,
+        use_labels: this.labelFeatures,
       });
 
-
+      this.m_changeStep(this.m_step + 1);
       // 发送后端请求
       // postRequest("", this.allFeatures).then((res) => {
       //   console.log(res);

@@ -34,7 +34,7 @@
           <el-table
             :data="tableData"
             stripe
-            v-loading="loading"
+            v-loading="getData_loading"
             style="width: 100%"
             class="custom-table"
             :header-cell-style="headerCellStyle"
@@ -102,16 +102,18 @@ export default {
 
   data() {
     return {
-      loading:true,
+      getData_loading: true,
       next_loading:false,
 
       chosenData: "",
       disease:"",
+      dataset: "", 
+      nodeid: "",
 
       pageSize: 4,
       currentPage: 1,
       dataTotal: 0,
-      getData_loading: false,
+      
       dataTableVision: false,
       patientTable: [],
       allFeatures: [],
@@ -159,9 +161,17 @@ export default {
         return true;
       });
     }, 200);
+
     this.getCatgory();
-    this.getTableDescribe("1005", "copd");
-    this.getTableData("1005", "copd");
+    if (this.m_nodeid != ''){
+      console.log("dataselect nodeid", this.m_nodeid);
+      this.getTableDescribe(this.m_nodeid, this.m_dataset);
+      this.getTableData(this.m_nodeid, this.m_dataset);
+    }else{
+      this.getTableDescribe("1772547909817176066", "diabetes10");
+      this.getTableData("1772547909817176066", "diabetes10");
+    }
+    this.getData_loading=false;
   },
 
   methods: {
@@ -219,24 +229,16 @@ export default {
       return `条数: ${this.tableData.length}`;
     },
 
-    // getData(tablename) {
-    //   this.getData_loading = true;
-    //   getRequest("/DataTable/getInfoByTableName", {
-    //     tableName: tablename,
-    //   }).then((res) => {
-    //     this.patientTable = res.data;
-    //     console.log("1111111",this.patientTable);
-    //     this.getData_loading = false;
-    //     this.dataTableVision = true;
-    //   });
-    // },
-
     changeData(data) { 
       console.log("数据选择的data", data);
       
+      
+
       if (data.isLeafs == 1) {
         let pid = data.parentId;
         console.log("pid", pid);
+        this.nodeid=data.id;
+        
 
         getRequestWithRestful("/api/getParentLabel/"+pid)
         .then((response) => {
@@ -251,29 +253,34 @@ export default {
         });
 
 
-        this.loading=true;
+        this.getData_loading=true;
         this.tableData = [];
         //获取描述信息
         this.getTableDescribe(data.id, data.label);
         //获取数据信息
         this.getTableData(data.id, data.label);
-        this.loading=false;
+        this.getData_loading=false;
       }else{
         this.disease = data.label;
       }
     },
 
     handleCheckChange(data, checked) {
+      this.getData_loading=true;
       if (checked) {
         this.$refs.tree.setCheckedKeys([data.id]);
       }
+      this.getData_loading=false;
     },
 
     async next(name) {
       this.next_loading=true;
       this.chosenData = name;
-      this.m_changeTaskInfo({ dataset: this.chosenData, disease: this.disease });
-      console.log("chosenData:", this.chosenData, " disease:", this.disease);
+      // 如果选择了和缓存不一样的数据则进行重置
+      this.m_reset_state_from_datasets();
+
+      this.m_changeTaskInfo({ dataset: this.chosenData, disease: this.disease, nodeid: this.nodeid});
+      console.log("chosenData:", this.chosenData, " disease:", this.disease, " nodeid:", this.nodeid);
       
       try {
         // 等待第一个异步操作完成

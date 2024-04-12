@@ -295,6 +295,11 @@ export default {
       }
     },
 
+    filteredModels(){
+      // 根据条件筛选 editableTabs 数组
+      return this.m_models.filter(item => item.is_select);
+    },
+
     ratio() {
       let num = (this.m_result.ratio * 100).toFixed(2);
       return num + "%";
@@ -666,7 +671,7 @@ export default {
         dataset: this.m_dataset,
         feature: this.m_use_features,
         targetcolumn: this.m_target_features[0].riskFactor,
-        models: this.m_models,
+        models: this.filteredModels,
 
         time: this.m_result?.time,
         uid: sessionStorage.getItem("userid") - 0,
@@ -689,43 +694,102 @@ export default {
   
       postRequest("Task/save", payload)
         .then((res) => {
-          this.SetTaskList(res.reverse());
+          // this.SetTaskList(res.reverse());
           this.$message({
             showClose: true,
             type: "success",
             message: "任务保存成功",
           });
           this.m_changeStep(1);
-          let defaultValue = {
-            step: 1,
-            taskName: "",
-            principal: "",
-            participants: "",
-            disease: "",
-            dataset: "",
-            use_features: [],
-            known_features: [],
-            target_feature: [],
-            SF_DRMB: {
-              K_OR: 0.15,
-              K_and_PC: 0.3,
-              K_and_SP: 0.75,
-            },
-            DQN: {
-              reward: 0,
-              epoch: 0,
-              gamma: 0,
-              learning_rate: 0,
-            },
-            result: [],
-          };
-          // TODO:这个改不了深层参数，需要写一个深拷贝通用方法
-          this.m_changeTaskInfo(defaultValue);
+          this.m_reset_state();
+          // let defaultValue = {
+          //   step: 1,
+          //   taskName: "",
+          //   nodeid: "",
+          //   principal: "",
+          //   participants: "",
+          //   disease: "",
+          //   dataset: "",
+          //   all_features: [],
+          //   use_features: [],
+          //   known_features: [],
+          //   target_features: [],
+          //   algorithm:'',
+          //   SF_DRMB: {
+          //     K_OR: 0.15,
+          //     K_and_PC: 0.3,
+          //     K_and_SP: 0.75,
+          //   },
+
+          //   models:[
+          //     {
+          //       name: "dqn",
+          //       model_type: "dl",
+          //       is_select: false,
+          //       params:{
+          //         reward: 1,
+          //         epoch: 100,
+          //         gamma: 0.8,
+          //         learning_rate: 0.01,
+          //       },
+          //       res:{}
+          //     },
+          //     {
+          //       name: "svm",
+          //       model_type: "ml",
+          //       is_select: false,
+          //       params:{
+          //         kernel: "linear",
+          //         random_state: 42,     
+          //         cv: 5,
+          //       },
+          //       res:{}
+          //     },
+          //     {
+          //       name: "knn",
+          //       model_type: "ml",
+          //       is_select: false,
+          //       params:{
+          //         random_state: 42,     
+          //         cv: 10,
+          //         K: 3
+          //       },
+          //       res:{}
+          //     }
+          //   ],
+          //   DQN: {
+          //     reward: 1,
+          //     epoch: 100,
+          //     gamma: 0.8,
+          //     learning_rate: 0.01,
+          //   },
+          //   SVM: {
+          //     kernel: "linear",
+          //     random_state: 42,     
+          //     cv: 5,
+          //   },
+          //   KNN: {  
+          //     random_state: 42,     
+          //     cv: 10,
+          //     K: 3
+          //   },
+
+          //   result: [],
+
+          //   // 风险预测
+          //   predict_features: [],
+          //   patient_form:[],
+          //   predict_task_name: [],
+          //   predict_model_name: [],
+          // };
+          // // TODO:这个改不了深层参数，需要写一个深拷贝通用方法
+          // this.m_changeTaskInfo(defaultValue);
         })
         .catch((err) => {
+          console.log("+ err", err)
           this.$message({
             type: "error",
-            message: "新建任务失败",
+            message: "新建任务失败" ,
           });
           this.m_changeStep(this.m_step - 1);
           return false;
