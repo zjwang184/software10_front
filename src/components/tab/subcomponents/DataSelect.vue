@@ -19,14 +19,14 @@
     <div class="right_table">
       <el-card class="right_table_topCard">
         <div class="describe_content">
-          <h3>{{ showDataForm.tableName }}</h3>
+          <h3 style="font-weight: bold">{{ showDataForm.tableName }}</h3>
           <p style="margin-top: 0.5%">
-            <i class="el-icon-user"></i>创建人:
-            <span>{{ showDataForm.createUser }}</span>
+            <i class="e l-icon-user"></i>创建人:
+            <span style="font-weight: bold">{{ showDataForm.createUser }}</span>
             <i class="el-icon-time"></i>创建时间:
-            <span>{{ showDataForm.createTime }}</span>
+            <span style="font-weight: bold">{{ showDataForm.createTime }}</span>
             <i class="el-icon-folder-opened"></i>所属类别:
-            <span>{{ showDataForm.classPath }}</span>
+            <span style="font-weight: bold">{{ showDataForm.classPath }}</span>
           </p>
         </div>
         <!-- 显示表数据 -->
@@ -44,7 +44,7 @@
               :key="key"
               :prop="key"
               :label="key"
-              width="80"
+              width="auto"
               :show-overflow-tooltip="true"
               :sortable="true"
             >
@@ -398,5 +398,13 @@ export default {
 
 .describe_content span {
   margin: 10px;
+}
+
+/* 修改树形控件高亮颜色 */
+::v-deep.el-tree--highlight-current
+  .el-tree-node.is-current
+  > .el-tree-node__content {
+  color: #ffffff;
+  background: #62a2e7 !important;
 }
 </style>

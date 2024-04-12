@@ -13,7 +13,7 @@
 
       <el-divider></el-divider>
 
-      <el-main v-if="step == 1" class="mainBox" style="height: 1050px !important;">
+      <el-main v-if="step == 1" class="mainBox1">
         <TaskSelectVue :moduleName="moduleName"></TaskSelectVue>
       </el-main>
 
@@ -57,6 +57,11 @@ export default {
 </script>
 
 <style scoped>
+
+.mainBox1 {
+  height: 1200px;
+  /* overflow-y: auto; */
+}
 .mainBox {
   height:100%;
 }

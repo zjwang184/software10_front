@@ -4,10 +4,10 @@
       <el-header>
         <div id="step">
           <el-steps :active="step" align-center>
-            <el-step title="任务信息" icon="el-icon-guide"></el-step>
-            <el-step title="选择数据" icon="el-icon-edit"></el-step>
+            <el-step title="任务信息" icon="el-icon-user"></el-step>
+            <el-step title="数据选择" icon="el-icon-document"></el-step>
             <el-step title="特征选择" icon="el-icon-edit"></el-step>
-            <el-step title="算法选择" icon="el-icon-edit"></el-step>
+            <el-step title="算法选择" icon="el-icon-data-line"></el-step>
             <el-step title="运算结果" icon="el-icon-view"></el-step>
           </el-steps>
         </div>
@@ -63,8 +63,7 @@ export default {
     };
   },
 
-  methods: {
-  },
+  methods: {},
 };
 </script>
 

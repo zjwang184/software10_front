@@ -1,17 +1,22 @@
 <template>
   <div>
-    <h2 margin-left="25%">请输入疾病信息，具体如下：</h2>
-    <br />
-    <div class="tip">
-      <p>
-        输入一个人病人的具体详细信息，这里输入的信息是你上一个界面所选择的任务的数据集特征
-      </p>
+    <div style="margin-left: 15%">
+      <span class="lineStyle" style="display: inline-block">▍</span
+      ><span class="featureTitle" style="display: inline-block"
+        >请输入疾病信息，具体如下 ：</span
+      ><el-popover placement="right" trigger="hover">
+        <div>
+          输入病人的具体详细信息，这里输入的信息是你上一个界面所选择的任务的数据集特征
+        </div>
+        <el-icon
+          class="el-icon-warning-outline"
+          slot="reference"
+          style="font-size: 20px; margin-left: 20px"
+        ></el-icon>
+      </el-popover>
     </div>
 
-    <div id="datainput">
-      <!-- <h2 margin-left= "25%">请输入疾病信息，具体如下：</h2> -->
-      <br /><br /><br />
-
+    <div id="dataInput">
       <el-form
         :model="personForm"
         :rules="rules"
@@ -26,67 +31,14 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-form-item>
+        <el-form-item class="buttongroup">
           <el-button @click="backStep()" round>上一步</el-button>
-          <el-button type="primary" @click="submit()">下一步</el-button>
-          <el-button @click="resetForm('personForm')">重置</el-button>
+          <el-button @click="resetForm('personForm')" type="info" plain
+            >重置</el-button
+          >
+          <el-button type="primary" @click="submit()" round>下一步</el-button>
         </el-form-item>
       </el-form>
-
-      <!-- <el-form
-        :model="personForm"
-        :rules="rules"
-        ref="personForm"
-        label-width="150px"
-        class="demo-personForm"
-      >
-        <el-form-item label="年龄" prop="age">
-          <el-input v-model.number="personForm.age" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item
-          label="糖尿病谱系显示患糖尿病概率"
-          prop="diabetesPedigreeFunction"
-        >
-          <el-input
-            v-model.number="personForm.diabetesPedigreeFunction"
-            autocomplete="off"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="怀孕次数" prop="pregnancies">
-          <el-input
-            v-model.number="personForm.pregnancies"
-            autocomplete="off"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="血液中的葡萄糖水平" prop="glucose">
-          <el-input v-model.number="personForm.glucose"></el-input>
-        </el-form-item>
-        <el-form-item label="血压值" prop="bloodPressure">
-          <el-input v-model.number="personForm.bloodPressure"></el-input>
-        </el-form-item>
-        <el-form-item label="皮肤厚度" prop="skinThickness">
-          <el-input v-model.number="personForm.skinThickness"></el-input>
-        </el-form-item>
-        <el-form-item label="血液中的胰岛素水平" prop="insulin">
-          <el-input v-model.number="personForm.insulin"></el-input>
-        </el-form-item>
-        <el-form-item label="体重指数" prop="bmi">
-          <el-input v-model.number="personForm.bmi"></el-input>
-        </el-form-item>
-
-        <el-form-item>
-          <el-button @click="backStep()" round>上一步</el-button>
-          <el-button
-            type="primary"
-            @click="
-              step1('personForm');
-              submit();
-            "
-            >下一步</el-button
-          >
-          <el-button @click="resetForm('personForm')">重置</el-button>
-        </el-form-item>
-      </el-form> -->
     </div>
   </div>
 </template>
@@ -113,40 +65,7 @@ export default {
       predict_model_name: "",
       personForm: {},
       rules: {},
-      // rules: {
-      //   age: [
-      //     { required: true, message: "年龄不能为空" },
-      //     { type: "number", message: "年龄必须为数字值" },
-      //   ],
-      //   pregnancies: [
-      //     { required: true, message: "从未怀孕可以填0,不能为空" },
-      //     { type: "number", message: "必须为数字值", trigger: "change" },
-      //   ],
-      //   diabetesPedigreeFunction: [
-      //     { required: true, message: "不能为空" },
-      //     { type: "number", message: "必须为数字值", trigger: "change" },
-      //   ],
-      //   glucose: [
-      //     { required: true, message: "不能为空" },
-      //     { type: "number", message: "年龄必须为数字值" },
-      //   ],
-      //   bloodPressure: [
-      //     { required: true, message: "不能为空" },
-      //     { type: "number", message: "必须为数字值", trigger: "change" },
-      //   ],
-      //   skinThickness: [
-      //     { required: true, message: "不能为空" },
-      //     { type: "number", message: "必须为数字值", trigger: "change" },
-      //   ],
-      //   insulin: [
-      //     { required: true, message: "不能为空" },
-      //     { type: "number", message: "必须为数字值", trigger: "change" },
-      //   ],
-      //   bmi: [
-      //     { required: true, message: "不能为空" },
-      //     { type: "number", message: "必须为数字值", trigger: "change" },
-      //   ],
-      // },
+      predValue:"",
     };
   },
   mounted() {
@@ -159,6 +78,7 @@ export default {
       this.patient_form = this.m_patient_form;
       this.predict_task_name = this.m_predict_task_name;
       this.predict_model_name = this.m_predict_model_name;
+      this.predValue = this.m_predValue;
 
       // console.log("this.m_predict_features   ", this.predict_features);
       // console.log("this.patient_form", this.patient_form);
@@ -213,7 +133,7 @@ export default {
         this.$message.error("请填写完整的表单！");
       } else {
         // 如果没有空值，则进行页面跳转
-        this.m_changeStep(3);
+        // this.m_changeStep(3);
       }
       // alert("提交成功");
       let formData = new FormData();
@@ -228,20 +148,46 @@ export default {
       // 将任务名称和所用算法加入字典对象
       dictionary["taskname"] = this.predict_task_name;
       dictionary["modelname"] = this.predict_model_name;
+      // 创建一个列表来存储 FormData 对象中的值
+      // const featuredata = [];
+      // for (const [key, value] of formData.entries()) {
+      //   featuredata.push(value);
+      // }
+      // 将列表存储在 featuredata 键中
+      // dictionary["featuredata"] = featuredata;
+
+      // <------------------------创建一个普通对象来存储 FormData 对象中的键值对------------------->
+      // const featuredata = {};
+      // for (const [key, value] of formData.entries()) {
+      //   featuredata[key] = value;
+      // }
+ 
+         this.m_changeStep(3);
+
+      // <------------------------将普通对象存储在 featuredata 键中------------------------------->
+      dictionary["featuredata"] = featuredata;
       for (const [key, value] of formData.entries()) {
         dictionary[key] = value;
       }
+              // 将列表存储在 featuredata 键中
+              dictionary["featuredata"] = featuredata;
       console.log("typeof dictionary", typeof dictionary);
       console.log("dictionary", dictionary);
       console.log("=======");
       this.m_changeTaskInfo({ patient_form: dictionary });
       // console.log("this.m_patient_form   ", this.m_patient_form);
-      postRequest("/ten/data/update_person", dictionary)
+      postRequest("/runtime_bus/runmodel", dictionary)
         .then((res) => {
           console.log("res:", res);
+
           this.loading = true;
-          this.m_changeTaskInfo({ patient_form: dictionary });
+          this.predValue = res;
+          this.m_changeTaskInfo({
+            patient_form: dictionary.featuredata,
+            m_predValue: this.predValue,
+          });
           console.log("this.m_patient_form   ", this.m_patient_form);
+          console.log("this.predValue111   ", this.predValue);
           // 确保在数据处理完成后再跳转
           this.m_changeStep(3);
         })
@@ -264,11 +210,17 @@ export default {
 
 <style scoped>
 /* 病种选择页面 */
-#datainput {
+#dataInput {
   display: flex;
   flex-direction: column;
-  margin-left: 20%;
-  margin-right: 40%;
+  margin-left: 15%;
+  margin-right: 15%;
+  border: 1px solid #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1); /* 修正阴影的颜色和透明度 */
+  background: rgba(255, 255, 255, 0.1);
+  margin-top: 30px;
+  padding: 5%;
 }
 #disGroup {
   width: 60%;
@@ -281,13 +233,22 @@ export default {
   width: 200px;
   margin-bottom: 10px;
 }
-.tip {
-  padding: 8px 16px;
-  background-color: #ecf8ff;
-  border-radius: 4px;
-  border-left: 5px solid #50bfff;
-  margin: 20px 0;
-  /* margin-left: 10%;
-    margin-right: 10%; */
+
+.buttongroup {
+  margin-top: 5%;
+  margin-left: 20%;
+}
+
+.lineStyle {
+  color: rgb(100, 172, 231);
+  font-weight: 100;
+  font-size: 25px;
+  margin-left: auto;
+}
+
+.featureTitle {
+  font-size: 30px;
+  margin-right: 30px;
+  margin-bottom: 20px;
 }
 </style>

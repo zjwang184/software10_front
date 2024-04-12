@@ -81,6 +81,7 @@ export default {
       patient_form:[],
       predict_task_name: [],
       predict_model_name: [],
+      predValue:"",
     };
   },
   getters: {},

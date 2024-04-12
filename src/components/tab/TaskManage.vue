@@ -361,4 +361,12 @@ export default {
 .taskCard {
   width: 110%;
 }
+
+/* 修改树形控件高亮颜色 */
+::v-deep.el-tree--highlight-current
+  .el-tree-node.is-current
+  > .el-tree-node__content {
+  color: #ffffff;
+  background: #62a2e7 !important;
+}
 </style>

@@ -683,7 +683,7 @@ export default {
 }
 #add {
   float: right;
-  margin-right: 5vw;
+  margin-right: 1vw;
 }
 </style>
   

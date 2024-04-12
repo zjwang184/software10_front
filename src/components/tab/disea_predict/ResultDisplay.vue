@@ -3,9 +3,25 @@
     <div id="pdf_1">
       <div class="top">
         <!-- 风险预测 -->
-        <div>
+        <!-- <div>
           <h1 style="color: red; font-size: 40px" align="center">高风险</h1>
-        </div>
+        </div> -->
+         <el-card >
+          <h2 v-if="predValue == 1" style="color: red" align="center">高风险</h2>
+          <h2 v-if="predValue == 0" style="color: rgb(0, 255, 76)" align="center">
+            低风险
+          </h2>
+        <!-- <div
+            v-for="(item, index) in cardItems"
+            :key="index"
+            class="text item"
+          >
+            <el-card shadow="hover">
+
+              {{ item }}
+            </el-card>
+          </div> -->
+        </el-card>
         <!-- 特征信息 -->
         <div class="tableData">
           <el-table
@@ -30,23 +46,6 @@
             </el-table-column>
           </el-table>
         </div>
-
-        <!-- <el-card >
-          <h2 v-if="pred === 100" style="color: red" align="center">高风险</h2>
-          <h2 v-if="pred === 0" style="color: rgb(0, 255, 76)" align="center">
-            低风险
-          </h2> -->
-        <!-- <div
-            v-for="(item, index) in cardItems"
-            :key="index"
-            class="text item"
-          >
-            <el-card shadow="hover">
-
-              {{ item }}
-            </el-card>
-          </div> -->
-        <!-- </el-card> -->
         <div></div>
       </div>
     </div>
@@ -65,8 +64,9 @@
         各特征对结果的影响
       </div>
         <div class="box">
-          <div>
-            <img src="http://10.16.97.233:8088/fig/shap1.png" alt="Image" />
+          <div >
+            <img src="http://10.16.97.233:8088/fig/shap2.png" alt="Image" style="margin-left: 25%;"/>
+            <img src="http://10.16.97.233:8088/fig/shap1.png" alt="Image" style="margin-left: 5%;"/>
           </div>
           <!-- <PlusAndMinusBarVue /> -->
         </div>
@@ -103,10 +103,7 @@ export default {
   },
   data() {
     return {
-      pred: {
-        type: Number,
-        default: 0,
-      },
+      predValue:"",
       tableData: [],
       imageUrl:"",
       distribution: [
@@ -259,38 +256,15 @@ export default {
   },
   methods: {
     init() {
-      console.log("this.m_patient_form2222222   ", this.m_patient_form);
       this.tableData = this.m_patient_form;
-      console.log("this.tableData   ", this.tableData);
+      this.predValue = this.m_predValue;
       this.getImageFromBackend();
+      console.log("this.tableData   ", this.tableData);
+      console.log("this.m_patient_form2222222   ", this.m_patient_form);
+      console.log("this.predValue   ", this.predValue);
     },
 
-    getImageFromBackend() {
-      getRequest("")
-        .then((res) => {
-          this.imageUrl = res;
-        })
-        .catch((error) => {
-          console.error(
-            "获取失败",
-            error
-          );
-        });
-    },
 
-    getKnowledge() {
-      getRequest("")
-        .then((res) => {
-          console.log(this.pred);
-          this.cardItems = res.data;
-          console.log(123);
-          console.log(this.cardItems);
-          console.log(123);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    },
     exportExcel() {
       /* 从表生成工作簿对象 */
       this.type = "";
@@ -402,7 +376,8 @@ export default {
 .box {
   height: 80%;
   width: 90%;
-  margin: 20px;
+  margin: 30px;
+  margin-left: 4%;
   padding: 20px;
   border: 2px solid black;
 }

@@ -168,6 +168,7 @@ export default {
 
 <style scoped>
 #mainBox {
+  margin-left:10%;
   overflow: auto;
 }
 .form {

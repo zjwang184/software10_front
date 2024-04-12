@@ -80,6 +80,7 @@
                 active-text="DDPG"
                 style="margin-right: 20px; font-size: 40px"
                 @change="handleSwitchChange('ddpg', $event)"
+                disabled
               >
               </el-switch>
             </div>
@@ -94,6 +95,7 @@
                 active-text="PPO"
                 style="margin-right: 20px; font-size: 40px"
                 @change="handleSwitchChange('ppo', $event)"
+                disabled
               >
               </el-switch>
             </div>
@@ -143,6 +145,7 @@
                 active-text="RF"
                 style="margin-right: 20px; font-size: 40px"
                 @change="handleSwitchChange('rf', $event)"
+                disabled
               >
               </el-switch>
             </div>
@@ -151,8 +154,8 @@
       </div>
 
       <div class="right_middle">
-        <span
-          >任务名称：
+        <span>
+          <i class="el-icon-edit-outline"></i> 任务名称：
           <el-input
             v-model="taskname"
             placeholder="请输入任务名称进行搜索"
@@ -161,8 +164,8 @@
           >
           </el-input
         ></span>
-        <span
-          >任务负责人：
+        <span>
+          <i class="el-icon-user"></i> 任务负责人：
           <el-input
             v-model="leader"
             placeholder="请输入任务负责人进行搜索"
@@ -186,11 +189,36 @@
             shadow="always"
           >
             <div class="cardInfo">
-              <div><span class="ttl">任务名称：</span>{{ item.taskname }}</div>
-              <div><span class="ttl">负责人：</span>{{ item.leader }}</div>
-              <div><span class="ttl">所属疾病：</span>{{ item.disease }}</div>
-              <div><span class="ttl">所用算法：</span>{{ item.modelname }}</div>
-              <div><span class="ttl">数据表：</span>{{ item.dataset }}</div>
+              <div>
+                <span class="ttl">任务名称：</span
+                ><span :class="{ 'text-red': taskname === item.taskname }">{{
+                  item.taskname
+                }}</span>
+              </div>
+              <div>
+                <span class="ttl">负责人：</span
+                ><span :class="{ 'text-red': leader === item.leader }">{{
+                  item.leader
+                }}</span>
+              </div>
+              <div>
+                <span class="ttl">所属疾病：</span
+                ><span :class="{ 'text-red': disease === item.disease }">{{
+                  item.disease
+                }}</span>
+              </div>
+              <div>
+                <span class="ttl">所用算法：</span
+                ><span :class="{ 'text-red': modelList.includes(item.modelname)}">{{
+                  item.modelname
+                }}</span>
+              </div>
+              <div>
+                <span class="ttl">数据表：</span
+                ><span :class="{ 'text-red': dataset === item.dataset }">{{
+                  item.dataset
+                }}</span>
+              </div>
               <div>
                 <span class="ttl">创建时间：</span>{{ item.createtime }}
               </div>
@@ -492,7 +520,7 @@ export default {
       getRequest(`Task/result/${row.id}`).then((res) => {
         if (res.code == 200) {
           this.result = res.data;
-          console.log("this.result",this.result);
+          console.log("this.result", this.result);
           if (this.result.feature != null) {
             this.result.feature = this.result.feature.split(",");
           }
@@ -626,9 +654,9 @@ export default {
 
 .right {
   display: grid;
-  grid-template-rows: 5% 10% 10% auto;
+  grid-template-rows: 60px 100px 80px 800px;
   margin-left: 30px;
-  height: 100%;
+  height: auto;
 }
 
 .right_top {
@@ -648,8 +676,12 @@ export default {
 }
 
 .right_bottom {
-  height: auto;
+  /* margin-top:20px; */
+  height: 800px;
+  overflow-y: auto;
   width: 100%;
+  scrollbar-width: none; /* 隐藏 Firefox 的滚动条 */
+  -ms-overflow-style: none; /* 隐藏 IE/Edge 的滚动条 */
 }
 
 .lineStyle {
@@ -699,7 +731,6 @@ export default {
 .taskCard {
   margin-bottom: 10px;
   width: 95%;
-  height: auto;
   border: 1px solid #c0bebe; /* 边框颜色设置为黑色 */
   box-shadow: 0 2px 4px rgba(88, 88, 88, 0.1);
   border-radius: 10px;
@@ -758,5 +789,9 @@ export default {
   font-weight: 600;
   /* font-size: 20px; */
   color: #071135;
+}
+
+.text-red {
+  color: red;
 }
 </style>
