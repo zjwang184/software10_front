@@ -324,6 +324,12 @@ export default {
   },
 
   created() {
+    console.log("typeof XLSX",typeof XLSX);
+    if (typeof XLSX === "undefined") {
+      console.error("XLSX is not available.");
+    } else {
+      console.log("XLSX is available.");
+    };
     console.log("console.log(this.m_models);", this.m_models);
     console.log("console.log(this.m_target_featuress);", this.m_target_features);
     console.log("this.m_result" + JSON.stringify(this.m_result.res));
@@ -875,10 +881,10 @@ export default {
   width: 95%;
   height: auto;
   padding: 20px;
-  background-color: #f0f0f0;
+  border: 1px solid #fff;
   border-radius: 10px;
-  border: 1px solid #ccc;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.4); /* 修正阴影的颜色和透明度 */
+  background: rgba(118, 118, 118, 0.1);
 }
 
 .taskBox2 {
@@ -888,10 +894,10 @@ export default {
   width: 95%;
   /* height: auto; */
   padding: 20px;
-  background-color: #f0f0f0;
+  border: 1px solid #fff;
   border-radius: 10px;
-  border: 1px solid #ccc;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.4); /* 修正阴影的颜色和透明度 */
+  background: rgba(118, 118, 118, 0.1);
 }
 
 .taskBox2 div:last-child {
@@ -902,10 +908,10 @@ export default {
   margin-bottom: 20px;
   width: 95%;
   padding: 20px;
-  background-color: #f0f0f0;
+  border: 1px solid #fff;
   border-radius: 10px;
-  border: 1px solid #ccc;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.4); /* 修正阴影的颜色和透明度 */
+  background: rgba(118, 118, 118, 0.1);
 }
 
 

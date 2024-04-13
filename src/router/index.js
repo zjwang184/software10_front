@@ -15,6 +15,7 @@ import exceptionFeature from "@/components/tab/exceptionFeature";
 import DiseaPredict from '@/components/tab/disea_predict/DiseaPredict.vue';
 // import LogIn from "@/views/LogIn.vue"
 import SoftwareIntro from "@/components/tab/SoftwareIntro.vue";
+import TaskCheck from '@/components/tab/subcomponents/taskCheck.vue'; 
 Vue.use(VueRouter)
 
 const routes = [
@@ -89,6 +90,11 @@ const routes = [
         path: "exceptionFeature",
         name: "exceptionFeature",
         component: exceptionFeature,
+      },
+      {
+        path: '/tab/subcomponents/taskCheck',
+        name: 'taskCheck',
+        component: TaskCheck, // 将 taskCheck 组件与路由关联
       },
     ],
   },

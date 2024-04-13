@@ -12,14 +12,21 @@
           <span class="lineStyle">▍</span>
           <span>任务名称</span>
         </template>
-        <el-input v-model="taskInfoForm.taskName"></el-input>
+        <el-input
+          v-model="taskInfoForm.taskName"
+          :validate-event="'blur'"
+        ></el-input>
       </el-form-item>
       <el-form-item prop="principal" class="inputBox shortItem">
         <template slot="label">
           <span class="lineStyle">▍</span>
-          <span>任务创建人</span>
+          <span>任务负责人</span>
         </template>
-        <el-input v-model="taskInfoForm.principal" :disabled="true"></el-input>
+        <el-input
+          v-model="taskInfoForm.principal"
+          :disabled="true"
+          :validate-event="'blur'"
+        ></el-input>
       </el-form-item>
       <el-form-item prop="participants" class="inputBox shortItem">
         <template slot="label">
@@ -80,6 +87,13 @@ export default {
         participants: "",
         disease: "",
         comment: "",
+      },
+      invalidCharacters: /[\\\/]/, // 非法字符正则表达式，包含 / 和 \
+      rules: {
+        taskName: [
+          { required: true, message: "请输入任务名称", trigger: "blur" }, // 任务名称不能为空
+          { validator: this.validateTaskName, trigger: "blur" }, // 自定义验证方法验证任务名称是否包含非法字符
+        ],
       },
     };
   },
@@ -150,6 +164,7 @@ export default {
       this.m_changeTaskInfo(this.taskInfoForm);
     },
 
+
     next() {
       if (
         this.taskInfoForm.taskName.length < 1 ||
@@ -168,7 +183,7 @@ export default {
 
 <style scoped>
 #mainBox {
-  margin-left:10%;
+  margin-left: 10%;
   overflow: auto;
 }
 .form {

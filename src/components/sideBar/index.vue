@@ -3,7 +3,7 @@
     <el-container class="con">
       <el-header class="header">
         <el-menu
-        :default-active="activeIndex"
+          :default-active="activeIndex"
           background-color="#071135"
           text-color="#fff"
           active-text-color="#fff"
@@ -12,14 +12,16 @@
         >
           <span index="1" style="float: left; color: cornflowerblue">
             <i class="el-icon-box"></i>
-            <span style="font-size:20px">医学知识引导的多病种疾病风险预测强化学习工具软件</span>
+            <span style="font-size: 20px"
+              >医学知识引导的多病种疾病风险预测强化学习工具软件</span
+            >
           </span>
           <!--            <template slot="title">当前服务器：</template>-->
           <el-menu-item index="2" style="float: right" @click="logout"
             ><i class="el-icon-close"></i>退出登录</el-menu-item
           >
-          <span  index="3" style="float: right;color:#fff"
-            ><i class="el-icon-user"></i>欢迎您{{LoginUserName}}</span
+          <span index="3" style="float: right; color: #fff"
+            ><i class="el-icon-user"></i>欢迎您{{ LoginUserName }}</span
           >
         </el-menu>
       </el-header>
@@ -33,46 +35,95 @@
             text-color="#fff"
             active-text-color="#ffd04b"
             @select="changeMenu()"
+            :default-openeds="['task']"
           >
             <el-menu-item index="/sideBar/dash">
               <i class="el-icon-menu"></i>
               <span slot="title">首页</span>
             </el-menu-item>
+            <el-submenu index="task">
+              <template slot="title">
+                <i class="el-icon-menu"></i>
+                <span>任务管理</span>
+              </template>
+              <el-menu-item-group>
+                <el-menu-item index="/sideBar/taskManage"
+                  >历史任务查看</el-menu-item
+                >
+                <el-menu-item index="/sideBar/ModelTraining"
+                  >模型训练</el-menu-item
+                >
+                <el-menu-item index="/sideBar/DiseaPredict"
+                  >疾病风险预测</el-menu-item
+                >
+              </el-menu-item-group>
+            </el-submenu>
 
             <el-menu-item index="/sideBar/DataManage">
               <i class="el-icon-menu"></i>
               <span slot="title">数据管理</span>
             </el-menu-item>
-            <el-menu-item index="/sideBar/exceptionFeature">
+
+            <el-submenu index="settings">
+              <template slot="title">
+                <i class="el-icon-menu"></i>
+                <span>系统设置</span>
+              </template>
+              <el-menu-item-group>
+                <el-menu-item index="/sideBar/taskManage" disabled
+                  >用户管理</el-menu-item
+                >
+                <el-menu-item index="/sideBar/taskManage" disabled
+                  >专病数据管理</el-menu-item
+                >
+                <el-menu-item index="/sideBar/exceptionFeature"
+                  >知识管理</el-menu-item
+                >
+                <el-menu-item index="/sideBar/ModelTraining" disabled
+                  >通知管理</el-menu-item
+                >
+                <el-menu-item index="/sideBar/DiseaPredict" disabled
+                  >日志管理</el-menu-item
+                >
+                <el-menu-item index="/sideBar/taskManage" disabled
+                  >参数设置</el-menu-item
+                >
+              </el-menu-item-group>
+            </el-submenu>
+
+
+            <!-- <el-menu-item index="/sideBar/exceptionFeature">
               <i class="el-icon-menu"></i>
               <span slot="title">知识管理</span>
-            </el-menu-item>
-            <el-menu-item index="/sideBar/taskManage">
+            </el-menu-item> -->
+            <!-- <el-menu-item index="/sideBar/taskManage">
               <i class="el-icon-menu"></i>
               <span slot="title">任务管理</span>
-            </el-menu-item>
+            </el-menu-item> -->
+
             <!-- <el-menu-item index="/sideBar/TableManage">
               <i class="el-icon-menu"></i>
               <span slot="title">字段管理</span>
             </el-menu-item> -->
-            <el-menu-item index="/sideBar/ModelTraining">
+            <!-- <el-menu-item index="/sideBar/ModelTraining">
               <i class="el-icon-menu"></i>
               <span slot="title">模型训练</span>
             </el-menu-item>
             <el-menu-item index="/sideBar/DiseaPredict">
               <i class="el-icon-menu"></i>
               <span slot="title">风险预测</span>
-            </el-menu-item>
+            </el-menu-item> -->
             <!-- <el-menu-item index="/sideBar/FactorDis">
               <i class="el-icon-menu"></i>
               <span slot="title">危险因素相关疾病挖掘</span>
             </el-menu-item> -->
 
-             <div class="menu-footer">
-              <el-menu-item index="/sideBar/SoftwareIntro"> 软件介绍</el-menu-item>
-              <el-menu-item > 操作手册</el-menu-item>
+            <div class="menu-footer">
+              <el-menu-item index="/sideBar/SoftwareIntro">
+                软件介绍</el-menu-item
+              >
+              <el-menu-item> 操作手册</el-menu-item>
             </div>
-
           </el-menu>
         </el-aside>
         <el-main class="main">
@@ -83,40 +134,39 @@
 
       <el-footer>
         <h1>
-          重庆邮电大学 大数据智能计算创新研发团队 @CopyRight 2020-2023 All Rights
-          Reserved
+          重庆邮电大学 大数据智能计算创新研发团队 @CopyRight 2020-2023 All
+          Rights Reserved
         </h1>
       </el-footer>
-
     </el-container>
   </div>
 </template>
 
 <script>
-import { mapMutations } from 'vuex';
+import { mapMutations } from "vuex";
 // import AppMain from "@/components/AppMain";
 export default {
   // components: { AppMain },
   mounted() {
     this.LoginUserName = sessionStorage.getItem("username");
   },
-  computed :{},
+  computed: {},
   data() {
     return {
       activeIndex: "0",
       // describVision: false,
-      LoginUserName:''
+      LoginUserName: "",
     };
   },
   methods: {
-    ...mapMutations("modelTraining",{dfChangeStep:"ChangeStep"}),
-    changeMenu(){
+    ...mapMutations("modelTraining", { dfChangeStep: "ChangeStep" }),
+    changeMenu() {
       // this.dfChangeStep(1);
     },
-    logout(){
+    logout() {
       sessionStorage.clear();
       this.$router.replace("/");
-    }
+    },
   },
 };
 </script>
@@ -175,5 +225,4 @@ export default {
   bottom: 0;
   margin-left: 40px;
 }
-
 </style>

@@ -563,7 +563,7 @@
           >
           <el-button
             type="primary"
-            @click="exportCSV()"
+            @click="exportXLSX()"
             round
             v-show="tableData"
             >导出XLSX文件</el-button
@@ -584,7 +584,7 @@ import { disOptions } from "@/components/tab/constData.js";
 import { resetForm, debounce } from "@/components/mixins/mixin.js";
 import FileSaver from "file-saver";
 import XLSX from "xlsx";
-import { taskList } from "./constTaskList";
+// import { taskList } from "./constTaskList";
 
 let id = 1000;
 
@@ -721,6 +721,14 @@ export default {
   },
 
   created() {
+    console.log("window.XLSX", window.XLSX);
+
+    console.log("typeof XLSX", typeof XLSX);
+    if (typeof XLSX === "undefined") {
+      console.error("XLSX is not available.");
+    } else {
+      console.log("XLSX is available.");
+    }
     // 检查重名的防抖函数
     this.checkTableName = this.debounce(() => {
       getRequest("/api/DataTable/inspection", {

@@ -241,6 +241,12 @@ export default {
     };
   },
   mounted() {
+    console.log("typeof XLSX",typeof XLSX);
+    if (typeof XLSX === "undefined") {
+      console.error("XLSX is not available.");
+    } else {
+      console.log("XLSX is available.");
+    };
     this.init();
     // this.getKnowledge();
   },

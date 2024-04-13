@@ -217,7 +217,7 @@ export default {
   margin-right: 15%;
   border: 1px solid #fff;
   border-radius: 10px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1); /* 修正阴影的颜色和透明度 */
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.4); /* 修正阴影的颜色和透明度 */
   background: rgba(255, 255, 255, 0.1);
   margin-top: 30px;
   padding: 5%;

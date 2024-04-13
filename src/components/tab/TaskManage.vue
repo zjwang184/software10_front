@@ -55,7 +55,9 @@
           </el-select>
         </div>
         <el-button @click="clearFilter">清除</el-button>
-        <!-- <el-button type="success">新建任务</el-button> -->
+        <el-button type="success" @click="navigateToModelTraining"
+          >新建任务</el-button
+        >
       </div>
 
       <!--===============================    卡片组     ==============================================================-->
@@ -183,21 +185,19 @@
 </template>
 
 <script>
-import { getRequest } from "@/utils/api";
+import { getRequest, deleteRequest } from "@/utils/api";
 import { state } from "@antv/g2plot/lib/adaptor/common";
 import { mapGetters, mapMutations, mapState, mapActions } from "vuex";
 import { getCategory } from "@/api/category";
+import taskCheck from "@/components/tab/subcomponents/taskCheck.vue";
 
 export default {
+  components: {
+    taskCheck,
+  },
   computed: {
-    ...mapState([
-      "taskList",
-      ,"treeData"
-    ]),
-    ...mapGetters([
-      "taskLeaderList",
-      "taskDiseaseList",
-    ]),
+    ...mapState(["taskList", , "treeData"]),
+    ...mapGetters(["taskLeaderList", "taskDiseaseList"]),
   },
   mounted() {
     this.getCatgory();
@@ -222,10 +222,7 @@ export default {
   },
 
   methods: {
-    ...mapActions([
-      "getTaskList",
-      ,"getTreeData"
-    ]),
+    ...mapActions(["getTaskList", , "getTreeData"]),
     ...mapMutations(["SetTaskList"]),
     // getTreeData()
     // {
@@ -239,20 +236,79 @@ export default {
     //     }
     //   });
     // },
-    handleCheck(row) {
-      getRequest(`Task/result/${row.id}`).then((res) => {
-        if (res.code == 200) {
-          this.result = res.data;
-          console.log("result",this.result);
-          if (this.result.feature != null) {
-            this.result.feature = this.result.feature.split(",");
-          }
 
-          this.resultDialogShow = true;
-        } else {
-          this.$message.error("查看任务失败");
-        }
+    navigateToModelTraining() {
+      // 使用 $router.push() 方法导航到目标路由路径
+      this.$router.push("/sideBar/ModelTraining");
+    },
+    handleCheck(row) {
+      // 显示 loading
+      this.$loading({
+        lock: true,
+        text: "加载中...",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)",
       });
+
+      // 发送请求
+      getRequest(`Task/result/${row.id}`)
+        .then((res) => {
+          if (res.code === 200) {
+            // 更新数据
+            this.result = res.data;
+            console.log("result", this.result);
+            if (this.result.feature !== null) {
+              this.result.feature = this.result.feature.split(",");
+            }
+            // this.resultDialogShow = true;
+
+            // 构造目标路由
+            const routeData = {
+              path: "/tab/subcomponents/taskCheck",
+              query: { result: this.result },
+            };
+
+            // 隐藏 loading
+            this.$loading().close();
+
+            // 跳转页面
+            this.$router.push(routeData);
+          } else {
+            // 请求失败
+            this.$loading().close();
+            this.$message.error("查看任务失败");
+          }
+        })
+        .catch((error) => {
+          // 请求异常
+          this.$loading().close();
+          console.error("请求出错:", error);
+          this.$message.error("查看任务失败");
+        });
+    },
+    
+    handleDelete(row) {
+      // 发送删除请求到服务器
+      deleteRequest(`Task/${row.id}`, row)
+        .then((res) => {
+          console.log("res:", res);
+          if (res.code === 200) {
+            // 删除成功，更新界面或者提示用户
+            this.$message.success("删除成功");
+            // 在界面上移除被删除的任务（可选）
+            const index = this.tasks.indexOf(row);
+            if (index !== -1) {
+              this.tasks.splice(index, 1);
+            }
+          } else {
+            // 删除失败，提示用户
+            this.$message.error("删除任务失败");
+          }
+        })
+        .catch((error) => {
+          // 请求失败，提示用户
+          this.$message.error("删除任务失败：" + error.message);
+        });
     },
 
     getCatgory() {
@@ -278,6 +334,8 @@ export default {
 .main {
   display: grid;
   grid-template-columns: 15% 85%;
+  scrollbar-width: none; /* 隐藏 Firefox 的滚动条 */
+  -ms-overflow-style: none; /* 隐藏 IE/Edge 的滚动条 */
 }
 
 .left_tree {
@@ -285,11 +343,15 @@ export default {
   border-radius: 3px;
   border: 1px solid #fff;
   border-radius: 10px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1); /* 修正阴影的颜色和透明度 */
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.4); /* 修正阴影的颜色和透明度 */
   background: rgba(255, 255, 255, 0.1);
   overflow-y: scroll; /* 或者 auto */
   scrollbar-width: none; /* 隐藏 Firefox 的滚动条 */
   -ms-overflow-style: none; /* 隐藏 IE/Edge 的滚动条 */
+}
+
+.right {
+  width: 100%;
 }
 
 .custom-tree-node {
@@ -359,7 +421,14 @@ export default {
   justify-self: end;
 }
 .taskCard {
-  width: 110%;
+  /* width: 110%; */
+}
+
+.el-card {
+  border: 1px solid #fff !important;
+  border-radius: 10px !important;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.4) !important; /* 修正阴影的颜色和透明度 */
+  background: rgba(255, 255, 255, 0.1) !important;
 }
 
 /* 修改树形控件高亮颜色 */
