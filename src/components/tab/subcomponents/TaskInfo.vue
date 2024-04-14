@@ -10,23 +10,24 @@
       <el-form-item prop="taskName" class="inputBox shortItem">
         <template slot="label">
           <span class="lineStyle">▍</span>
-          <span>任务名称</span>
+          <span>任务名称</span
+          ><el-popover placement="top" trigger="hover">
+            <div>任务名称仅允许出现汉字、英文字母、数字及下划线</div>
+            <el-icon
+              class="el-icon-warning-outline"
+              slot="reference"
+              style="font-size: 15px; margin-left: 20px"
+            ></el-icon>
+          </el-popover>
         </template>
-        <el-input
-          v-model="taskInfoForm.taskName"
-          :validate-event="'blur'"
-        ></el-input>
+        <el-input v-model="taskInfoForm.taskName"></el-input>
       </el-form-item>
       <el-form-item prop="principal" class="inputBox shortItem">
         <template slot="label">
           <span class="lineStyle">▍</span>
           <span>任务负责人</span>
         </template>
-        <el-input
-          v-model="taskInfoForm.principal"
-          :disabled="true"
-          :validate-event="'blur'"
-        ></el-input>
+        <el-input v-model="taskInfoForm.principal" :disabled="true"></el-input>
       </el-form-item>
       <el-form-item prop="participants" class="inputBox shortItem">
         <template slot="label">
@@ -46,6 +47,7 @@
           v-model="taskInfoForm.comment"
           type="textarea"
           style="width: 60vh"
+          placeholder="请填写任务备注......"
         ></el-input>
       </el-form-item>
 
@@ -88,13 +90,7 @@ export default {
         disease: "",
         comment: "",
       },
-      invalidCharacters: /[\\\/]/, // 非法字符正则表达式，包含 / 和 \
-      rules: {
-        taskName: [
-          { required: true, message: "请输入任务名称", trigger: "blur" }, // 任务名称不能为空
-          { validator: this.validateTaskName, trigger: "blur" }, // 自定义验证方法验证任务名称是否包含非法字符
-        ],
-      },
+      showWarning: false,
     };
   },
 
@@ -164,15 +160,29 @@ export default {
       this.m_changeTaskInfo(this.taskInfoForm);
     },
 
-
     next() {
-      if (
-        this.taskInfoForm.taskName.length < 1 ||
-        this.taskInfoForm.principal.length < 1
-      ) {
-        this.$message("请填写任务名称和负责人");
+      // 定义一个正则表达式，匹配不允许出现的字符
+      const illegalCharacters = /[^\w\u4e00-\u9fa5]/;
+
+      // 检查任务名称是否包含非法字符
+      if (illegalCharacters.test(this.taskInfoForm.taskName)) {
+        this.$message({
+          showClose: true,
+          message: "任务名称不允许出现非法字符",
+          type: "error",
+        });
         return;
       }
+
+      if (this.taskInfoForm.taskName.length < 1) {
+        this.$message({
+          showClose: true,
+          message: "请填写任务名称",
+          type: "error",
+        });
+        return;
+      }
+
       this.m_changeTaskInfo(this.taskInfoForm);
       console.log("taskInfoForm:", this.taskInfoForm);
       this.m_changeStep(2);

@@ -1,6 +1,18 @@
 <template >
   <div class="main" v-loading="next_loading">
     <div class="left_tree">
+      <div class="tree-top">
+        <h2>
+          病种、数据集选择<el-popover placement="top" trigger="hover">
+            <div>叶子节点为数据集，非叶子节点为病种</div>
+            <el-icon
+              class="el-icon-warning-outline"
+              slot="reference"
+              style="font-size: 15px; margin-left: 20px"
+            ></el-icon>
+          </el-popover>
+        </h2>
+      </div>
       <el-tree
         ref="tree"
         :data="treeData"
@@ -19,9 +31,11 @@
     <div class="right_table">
       <el-card class="right_table_topCard">
         <div class="describe_content">
-          <h3 style="font-weight: bold">{{ showDataForm.tableName }}</h3>
+          <h2>数据集预览</h2>
           <p style="margin-top: 0.5%">
-            <i class="e l-icon-user"></i>创建人:
+            <i class="el-icon-folder"></i>数据集名称:
+            <span style="font-weight: bold">{{ showDataForm.tableName }}</span>
+            <i class="el-icon-user"></i>创建人:
             <span style="font-weight: bold">{{ showDataForm.createUser }}</span>
             <i class="el-icon-time"></i>创建时间:
             <span style="font-weight: bold">{{ showDataForm.createTime }}</span>
@@ -30,34 +44,59 @@
           </p>
         </div>
         <!-- 显示表数据 -->
-        <div class="tableData">
-          <el-table
-            :data="tableData"
-            stripe
-            v-loading="getData_loading"
-            style="width: 100%"
-            class="custom-table"
-            :header-cell-style="headerCellStyle"
+        <div v-if="!selectedDataset">
+          <div
+            class="container"
+            style="
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              width: 100%;
+              height: 100%;
+              font-size: 24px;
+              background-color: #f2f2f2;
+            "
           >
-            <el-table-column
-              v-for="(value, key) in tableData[0]"
-              :key="key"
-              :prop="key"
-              :label="key"
-              width="auto"
-              :show-overflow-tooltip="true"
-              :sortable="true"
+            <div class="blinking-text" style="margin-top: 20px">
+              请点击左边树节点选择数据集
+            </div>
+            <img src="@/assets/暂无数据_(1).png" class="imgStyle" />
+          </div>
+        </div>
+        <div v-else>
+          <div class="table-container">
+            <el-table
+              :data="tableData"
+              stripe
+              v-loading="loading"
+              class="custom-table"
+              :header-cell-style="headerCellStyle"
             >
-              <template slot-scope="{ row }">
-                <div class="truncate-text">{{ row[key] }}</div>
-              </template>
-              <template slot="header">
-                <el-tooltip effect="dark" :content="getCount(key)" placement="top">
-                  <div>{{ key }}</div>
-                </el-tooltip>
-              </template>
-            </el-table-column>
-          </el-table>
+              <el-table-column
+                v-for="(value, key) in tableData[0]"
+                :key="key"
+                :prop="key"
+                :label="key"
+                width="auto"
+                :show-overflow-tooltip="true"
+                :sortable="true"
+              >
+                <template slot-scope="{ row }">
+                  <div class="truncate-text">{{ row[key] }}</div>
+                </template>
+                <template slot="header">
+                  <el-tooltip
+                    effect="dark"
+                    :content="getCount(key)"
+                    placement="top"
+                  >
+                    <div>{{ key }}</div>
+                  </el-tooltip>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
         </div>
       </el-card>
       <div class="buttonGroup">
@@ -103,17 +142,18 @@ export default {
   data() {
     return {
       getData_loading: true,
-      next_loading:false,
+      next_loading: false,
+      selectedDataset: false,
 
       chosenData: "",
-      disease:"",
-      dataset: "", 
+      disease: "",
+      dataset: "",
       nodeid: "",
 
       pageSize: 4,
       currentPage: 1,
       dataTotal: 0,
-      
+
       dataTableVision: false,
       patientTable: [],
       allFeatures: [],
@@ -125,7 +165,7 @@ export default {
         classPath: "",
       },
       showList: [],
-    
+
       tableData: [],
       treeData: [],
     };
@@ -163,15 +203,15 @@ export default {
     }, 200);
 
     this.getCatgory();
-    if (this.m_nodeid != ''){
+    if (this.m_nodeid != "") {
       console.log("dataselect nodeid", this.m_nodeid);
       this.getTableDescribe(this.m_nodeid, this.m_dataset);
       this.getTableData(this.m_nodeid, this.m_dataset);
-    }else{
-      this.getTableDescribe("1772547909817176066", "diabetes10");
-      this.getTableData("1772547909817176066", "diabetes10");
+    } else {
+      // this.getTableDescribe("1772547909817176066", "diabetes10");
+      // this.getTableData("1772547909817176066", "diabetes10");
     }
-    this.getData_loading=false;
+    this.getData_loading = false;
   },
 
   methods: {
@@ -216,7 +256,8 @@ export default {
         .then((response) => {
           // 获取表数据
           this.tableData = response.data;
-          this.loading=false;
+          this.loading = false;
+          console.log("this.tableData", this.tableData);
           // console.log("数据长度" + response.data.length);
         })
         .catch((error) => {
@@ -229,65 +270,85 @@ export default {
       return `条数: ${this.tableData.length}`;
     },
 
-    changeData(data) { 
-      console.log("数据选择的data", data);
-      
-      
+    // changeData(data) {
+    //   console.log("数据选择的data", data);
 
+    //   if (data.isLeafs == 1) {
+    //     let pid = data.parentId;
+    //     console.log("pid", pid);
+    //     this.nodeid = data.id;
+
+    //     getRequestWithRestful("/api/getParentLabel/" + pid)
+    //       .then((response) => {
+    //         // 获取表数据
+    //         this.disease = response.msg;
+    //         console.log("pid: ", pid, this.disease);
+    //         // this.loading=false;
+    //         // console.log("数据长度" + response.data.length);
+    //       })
+    //       .catch((error) => {
+    //         console.log(error);
+    //       });
+
+    //     this.getData_loading = true;
+    //     this.tableData = [];
+    //     //获取描述信息
+    //     this.getTableDescribe(data.id, data.label);
+    //     //获取数据信息
+    //     this.getTableData(data.id, data.label);
+    //     this.getData_loading = false;
+    //   } else {
+    //     this.disease = data.label;
+    //   }
+    // },
+
+    changeData(data) {
       if (data.isLeafs == 1) {
-        let pid = data.parentId;
-        console.log("pid", pid);
-        this.nodeid=data.id;
-        
-
-        getRequestWithRestful("/api/getParentLabel/"+pid)
-        .then((response) => {
-          // 获取表数据
-          this.disease = response.msg;
-          console.log("pid: ", pid, this.disease)
-          // this.loading=false;
-          // console.log("数据长度" + response.data.length);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-
-
-        this.getData_loading=true;
-        this.tableData = [];
         //获取描述信息
         this.getTableDescribe(data.id, data.label);
         //获取数据信息
         this.getTableData(data.id, data.label);
-        this.getData_loading=false;
-      }else{
-        this.disease = data.label;
+        this.selectedDataset = true;
       }
     },
 
     handleCheckChange(data, checked) {
-      this.getData_loading=true;
+      this.getData_loading = true;
       if (checked) {
         this.$refs.tree.setCheckedKeys([data.id]);
       }
-      this.getData_loading=false;
+      this.getData_loading = false;
     },
 
     async next(name) {
-      this.next_loading=true;
+      this.next_loading = true;
       this.chosenData = name;
       // 如果选择了和缓存不一样的数据则进行重置
       this.m_reset_state_from_datasets();
 
-      this.m_changeTaskInfo({ dataset: this.chosenData, disease: this.disease, nodeid: this.nodeid});
-      console.log("chosenData:", this.chosenData, " disease:", this.disease, " nodeid:", this.nodeid);
-      
+      this.m_changeTaskInfo({
+        dataset: this.chosenData,
+        disease: this.disease,
+        nodeid: this.nodeid,
+      });
+      console.log(
+        "chosenData:",
+        this.chosenData,
+        " disease:",
+        this.disease,
+        " nodeid:",
+        this.nodeid
+      );
+
       try {
         // 等待第一个异步操作完成
-        const resFeatures = await postRequest("runtime_bus/getLackinfos_features", {
-          tableName: this.chosenData,
-          modename: "public",
-        });
+        const resFeatures = await postRequest(
+          "runtime_bus/getLackinfos_features",
+          {
+            tableName: this.chosenData,
+            modename: "public",
+          }
+        );
         this.allFeatures = resFeatures;
         this.m_changeTaskInfo({
           all_features: this.allFeatures,
@@ -304,11 +365,13 @@ export default {
         });
 
         // 确保所有异步操作完成后再进行下一步
-        this.next_loading=false;
+        this.next_loading = false;
         this.m_changeStep(3);
-        console.log("data_select—end this.targetFeatures:", this.m_target_features);
+        console.log(
+          "data_select—end this.targetFeatures:",
+          this.m_target_features
+        );
         console.log("this.m_all_features:", this.m_all_features);
-        
       } catch (error) {
         console.error(error); // 如果异步请求出错，打印错误信息
       }
@@ -332,7 +395,7 @@ export default {
 
 .main {
   display: grid;
-  grid-template-columns: 12% 85%;
+  grid-template-columns: 15% 85%;
 }
 
 .bottom {
@@ -352,7 +415,7 @@ export default {
   transform: translateX(-50%); /* 水平居中 */
   width: 200px;
   z-index: 9999; /* 置于最顶层 */
-  margin-left:6%;
+  margin-left: 6%;
 }
 
 .left_tree {
@@ -393,11 +456,29 @@ export default {
 
 .describe_content {
   display: inline-block;
-  width: 70%;
+  width: 100%;
+  color: #000000;
+  border-radius: 6px;
+  border: 1px solid #fff;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  background-color: rgba(146, 145, 145, 0.3);
+  margin-top:-20px;
 }
 
 .describe_content span {
   margin: 10px;
+}
+
+.blinking-text {
+  animation: blink-animation 1s infinite alternate; /* 定义闪烁动画 */
+}
+@keyframes blink-animation {
+  from {
+    opacity: 1; /* 起始状态为不透明 */
+  }
+  to {
+    opacity: 0.3; /* 终止状态为完全透明 */
+  }
 }
 
 /* 修改树形控件高亮颜色 */
@@ -406,5 +487,12 @@ export default {
   > .el-tree-node__content {
   color: #ffffff;
   background: #62a2e7 !important;
+}
+
+.tree-top {
+  background-color: rgba(146, 145, 145, 0.3);
+  width: 100%;
+  border: 1px solid #fff;
+  border-radius: 10px;
 }
 </style>
