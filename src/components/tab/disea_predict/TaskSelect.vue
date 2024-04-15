@@ -455,11 +455,11 @@ export default {
     //和vuex内数据同步
     init() {
       //初始化
-      const uniqueModels = new Set();
-      for (const item of this.filteredTaskListByModel) {
-        uniqueModels.add(item.modelname);
-      }
-      this.modelList = Array.from(uniqueModels);
+      // const uniqueModels = new Set();
+      // for (const item of this.filteredTaskListByModel) {
+      //   uniqueModels.add(item.modelname);
+      // }
+      // this.modelList = Array.from(uniqueModels);
       this.predict_features = this.m_predict_features;
       this.predict_model_name = this.m_predict_model_name;
       this.predict_task_name = this.m_predict_task_name;
@@ -471,7 +471,7 @@ export default {
       this.RF_selected = this.isModelListContainsRF;
       console.log("当前模块名👉", this.moduleName);
       console.log("this.m_predict_features111   ", this.m_predict_features);
-      console.log("taskList", taskList);
+      console.log("taskList", this.taskList);
     },
 
     getCatgory() {
