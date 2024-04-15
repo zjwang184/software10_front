@@ -55,12 +55,12 @@
   
         option = {
           title: {
-            text: this.titleText,
+            text: this.title_text,
             left: 'center', // 标题居中显示
           },
-          // tooltip: {
-          //   trigger: 'item',
-          // },
+          tooltip: {
+            trigger: 'item',
+          },
           grid: {
               height: '50%',
               width: '50%',

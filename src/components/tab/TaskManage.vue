@@ -256,7 +256,7 @@ export default {
           if (res.code === 200) {
             // 更新数据
             this.result = res.data;
-            console.log("result", this.result);
+            // console.log("result", this.result);
             if (this.result.feature !== null) {
               this.result.feature = this.result.feature.split(",");
             }
