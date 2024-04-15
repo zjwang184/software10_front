@@ -163,7 +163,17 @@
             :style="{ width: '300px' }"
           >
           </el-input
-        ></span>
+        >
+          <!-- <el-autocomplete
+            v-model="taskname"
+            placeholder="请输入任务名称进行搜索"
+            clearable
+            :style="{ width: '300px' }"
+            :fetch-suggestions="searchTasknames"
+            :trigger-on-focus="false"
+            @select="handleSelect"
+          ></el-autocomplete> -->
+        </span>
         <span>
           <i class="el-icon-user"></i> 任务负责人：
           <el-input
@@ -190,16 +200,12 @@
           >
             <div class="cardInfo">
               <div>
-                <span class="ttl">任务名称：</span
-                ><span :class="{ 'text-red': taskname === item.taskname }">{{
-                  item.taskname
-                }}</span>
+                <span class="ttl">任务名称：</span>
+                <span v-html="highlightMatch(item.taskname, taskname)"></span>
               </div>
               <div>
-                <span class="ttl">负责人：</span
-                ><span :class="{ 'text-red': leader === item.leader }">{{
-                  item.leader
-                }}</span>
+                <span class="ttl">任务负责人：</span>
+                <span v-html="highlightMatch(item.leader, leader)"></span>
               </div>
               <div>
                 <span class="ttl">所属疾病：</span
@@ -209,9 +215,10 @@
               </div>
               <div>
                 <span class="ttl">所用算法：</span
-                ><span :class="{ 'text-red': modelList.includes(item.modelname)}">{{
-                  item.modelname
-                }}</span>
+                ><span
+                  :class="{ 'text-red': modelList.includes(item.modelname) }"
+                  >{{ item.modelname }}</span
+                >
               </div>
               <div>
                 <span class="ttl">数据表：</span
@@ -395,8 +402,11 @@ export default {
           this.modelList.length === 0 ||
           this.modelList.includes(task.modelname);
         let datasetMatch = this.dataset === "" || task.dataset === this.dataset;
-        let leaderMatch = this.leader === "" || task.leader === this.leader;
-        let taskMatch = this.taskname === "" || task.taskname === this.taskname;
+        let leaderMatch =
+          this.leader === "" || new RegExp(this.leader, "i").test(task.leader);
+        let taskMatch =
+          this.taskname === "" ||
+          new RegExp(this.taskname, "i").test(task.taskname);
         return (
           diseaseMatch && modelMatch && datasetMatch && leaderMatch && taskMatch
         );
@@ -418,6 +428,7 @@ export default {
       disease: "",
       leader: "",
       taskname: "",
+      tasknames: [],
       modelList: [],
       dataset: "",
       // diseaseList: [],
@@ -471,7 +482,25 @@ export default {
       this.RF_selected = this.isModelListContainsRF;
       console.log("当前模块名👉", this.moduleName);
       console.log("this.m_predict_features111   ", this.m_predict_features);
-      console.log("taskList", this.taskList);
+      console.log("taskList",this.taskList);
+      this.getTasknames();
+    },
+
+    getTasknames() {
+      // 遍历 this.taskList 对象的属性
+      for (var key in this.taskList) {
+        // 检查属性是否是对象自身的属性，而不是继承的属性
+        if (this.taskList.hasOwnProperty(key)) {
+          // 获取当前属性对应的对象
+          var task = this.taskList[key];
+          // 检查对象是否具有 taskname 属性
+          if (task.hasOwnProperty("taskname")) {
+            // 将 taskname 属性的值推送到 tasknames 数组中
+            this.tasknames.push(task.taskname);
+          }
+        }
+      }
+      console.log(" this.tasknames", this.tasknames);
     },
 
     getCatgory() {
@@ -529,6 +558,29 @@ export default {
           this.$message.error("查看任务失败");
         }
       });
+    },
+
+    highlightMatch(text, query) {
+      if (!query) return text; // 如果查询字符串为空，则返回原始文本
+      const regex = new RegExp(query, "gi");
+      return text.replace(
+        regex,
+        (match) => `<span style="color:red;">${match}</span>`
+      ); // 对匹配到的部分应用红色样式
+    },
+
+    searchTasknames(queryString, cb) {
+      const results = queryString
+        ? this.tasknames.filter((taskname) =>
+            taskname.toLowerCase().includes(queryString.toLowerCase())
+          )
+        : [];
+      cb(results);
+    },
+    handleSelect(item) {
+      // 处理选中联想项的逻辑
+      console.log("选中的任务项:", item);
+      // 这里可以添加你希望执行的逻辑，比如根据选中的任务项执行相应的操作
     },
 
     // handleCheckChange(data, checked) {
@@ -602,6 +654,11 @@ export default {
     //   this.currentPage = page;
     //   this.loadData();
     // },
+
+    isMatch(query, text) {
+      if (!query) return false; // 如果查询字符串为空，则不需要匹配
+      return text.toLowerCase().includes(query.toLowerCase()); // 使用toLowerCase()将查询字符串和文本都转换为小写，然后检查文本是否包含查询字符串
+    },
 
     submit(row) {
       // this.m_changeStep(2);
