@@ -156,34 +156,26 @@
       <div class="right_middle">
         <span>
           <i class="el-icon-edit-outline"></i> 任务名称：
-          <el-input
-            v-model="taskname"
-            placeholder="请输入任务名称进行搜索"
-            clearable
-            :style="{ width: '300px' }"
-          >
-          </el-input
-        >
-          <!-- <el-autocomplete
+          <el-autocomplete
             v-model="taskname"
             placeholder="请输入任务名称进行搜索"
             clearable
             :style="{ width: '300px' }"
             :fetch-suggestions="searchTasknames"
-            :trigger-on-focus="false"
             @select="handleSelect"
-          ></el-autocomplete> -->
+          ></el-autocomplete>
         </span>
         <span>
           <i class="el-icon-user"></i> 任务负责人：
-          <el-input
+          <el-autocomplete
             v-model="leader"
             placeholder="请输入任务负责人进行搜索"
             clearable
             :style="{ width: '300px' }"
-          >
-          </el-input
-        ></span>
+            :fetch-suggestions="searchLeaders"
+            @select="handleSelect"
+          ></el-autocomplete>
+        </span>
         <div style="margin-top: 10px">
           共
           <span style="color: red">{{ filteredTaskList.length }} </span> 个任务
@@ -347,11 +339,9 @@
 
 <script>
 import vuex_mixin from "@/components/mixins/vuex_mixin";
-import { mapGetters, mapMutations, mapState, mapActions } from "vuex";
 import { getRequest, postRequest } from "@/utils/api";
 import { getCategory } from "@/api/category";
 import { getTableData } from "@/api/tableDescribe.js";
-import { FALSE } from "sass";
 // import { taskList } from "@/components/tab/constTaskList.js";
 
 export default {
@@ -364,12 +354,6 @@ export default {
     },
   },
   computed: {
-    ...mapState([
-      "taskList",
-      // ,"treeData"
-    ]),
-    ...mapGetters(["taskLeaderList", "taskDiseaseList"]),
-
     totalTasks() {
       return this.taskList.filter((item) => this.displayedCard(item)).length;
     },
@@ -429,11 +413,13 @@ export default {
       leader: "",
       taskname: "",
       tasknames: [],
+      leaders: [],
       modelList: [],
       dataset: "",
       // diseaseList: [],
       // datasetList: [],
       // taskList: JSON.parse(JSON.stringify(taskList)),
+      taskList: [],
       DQN_selected: false,
       DDPG_selected: false,
       PPO_selected: false,
@@ -452,17 +438,10 @@ export default {
   },
 
   created() {
-    this.getCatgory();
-    this.getTaskList();
     this.init();
   },
 
   methods: {
-    ...mapActions([
-      "getTaskList",
-      // ,"getTreeData"
-    ]),
-    ...mapMutations(["SetTaskList"]),
     //和vuex内数据同步
     init() {
       //初始化
@@ -480,13 +459,47 @@ export default {
       this.KNN_selected = this.isModelListContainsKNN;
       this.SVM_selected = this.isModelListContainsSVM;
       this.RF_selected = this.isModelListContainsRF;
+
+      this.getCatgory();
+      this.getTaskList();
+
       console.log("当前模块名👉", this.moduleName);
       console.log("this.m_predict_features111   ", this.m_predict_features);
-      console.log("taskList",this.taskList);
-      this.getTasknames();
     },
 
+    getTaskList() {
+      getRequest("/Task/all")
+        .then((res) => {
+          this.taskList = res.data;
+          this.getTasknames();
+          this.getLeaders();
+          console.log("this.taskList", this.taskList);
+        })
+        .catch((err) => {
+          console.log("任务列表获取错误，请联系管理员。");
+          console.log(err);
+        });
+    },
+
+    // getTasknames() {
+    //   // 遍历 this.taskList 对象的属性
+    //   for (var key in this.taskList) {
+    //     // 检查属性是否是对象自身的属性，而不是继承的属性
+    //     if (this.taskList.hasOwnProperty(key)) {
+    //       // 获取当前属性对应的对象
+    //       var task = this.taskList[key];
+    //       // 检查对象是否具有 taskname 属性
+    //       if (task.hasOwnProperty("taskname")) {
+    //         // 将 taskname 属性的值推送到 tasknames 数组中的 value 属性中
+    //         this.tasknames.push({ value: task.taskname });
+    //       }
+    //     }
+    //   }
+    //   console.log("this.tasknames", this.tasknames);
+    // },
     getTasknames() {
+      // 用于记录已经出现过的任务名称
+      var uniqueTasknames = {};
       // 遍历 this.taskList 对象的属性
       for (var key in this.taskList) {
         // 检查属性是否是对象自身的属性，而不是继承的属性
@@ -495,12 +508,38 @@ export default {
           var task = this.taskList[key];
           // 检查对象是否具有 taskname 属性
           if (task.hasOwnProperty("taskname")) {
-            // 将 taskname 属性的值推送到 tasknames 数组中
-            this.tasknames.push(task.taskname);
+            // 将任务名称添加到临时对象中进行记录
+            uniqueTasknames[task.taskname] = true;
           }
         }
       }
-      console.log(" this.tasknames", this.tasknames);
+      // 将记录的任务名称转为数组形式
+      this.tasknames = Object.keys(uniqueTasknames).map(function (taskname) {
+        return { value: taskname };
+      });
+    },
+
+    getLeaders() {
+      // 用于记录已经出现过的领导者名称
+      var uniqueLeaders = {};
+      // 遍历 this.taskList 对象的属性
+      for (var key in this.taskList) {
+        // 检查属性是否是对象自身的属性，而不是继承的属性
+        if (this.taskList.hasOwnProperty(key)) {
+          // 获取当前属性对应的对象
+          var task = this.taskList[key];
+          // 检查对象是否具有 leader 属性
+          if (task.hasOwnProperty("leader")) {
+            // 将领导者名称添加到临时对象中进行记录
+            uniqueLeaders[task.leader] = true;
+          }
+        }
+      }
+      // 将记录的领导者名称转为数组形式
+      this.leaders = Object.keys(uniqueLeaders).map(function (leader) {
+        return { value: leader };
+      });
+      console.log("this.leaders",this.leaders);
     },
 
     getCatgory() {
@@ -570,17 +609,33 @@ export default {
     },
 
     searchTasknames(queryString, cb) {
-      const results = queryString
-        ? this.tasknames.filter((taskname) =>
-            taskname.toLowerCase().includes(queryString.toLowerCase())
-          )
-        : [];
+      var tasknames = this.tasknames;
+      var results = queryString
+        ? tasknames.filter(this.createFilter(queryString))
+        : tasknames;
+      // 调用 callback 返回建议列表的数据
       cb(results);
     },
+
+    searchLeaders(queryString, cb) {
+      var leaders = this.leaders;
+      var results = queryString
+        ? leaders.filter(this.createFilter(queryString))
+        : leaders;
+      // 调用 callback 返回建议列表的数据
+      cb(results);
+    },
+    createFilter(queryString) {
+      return (data) => {
+        return (
+          data.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+        );
+      };
+    },
+
     handleSelect(item) {
       // 处理选中联想项的逻辑
       console.log("选中的任务项:", item);
-      // 这里可以添加你希望执行的逻辑，比如根据选中的任务项执行相应的操作
     },
 
     // handleCheckChange(data, checked) {
