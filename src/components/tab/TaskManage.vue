@@ -55,9 +55,15 @@
           </el-select>
         </div>
         <el-button @click="clearFilter">清除</el-button>
-        <el-button type="success" @click="navigateToModelTraining"
-          >新建任务</el-button
-        >
+        <el-popover placement="right" style="margin-left: 20px" trigger="hover">
+          <div>跳转到模型训练进行新建任务</div>
+          <el-button
+            type="success"
+            @click="navigateToModelTraining"
+            slot="reference"
+            >新建任务</el-button
+          >
+        </el-popover>
       </div>
 
       <!--===============================    卡片组     ==============================================================-->
@@ -189,11 +195,11 @@ import { getRequest, deleteRequest } from "@/utils/api";
 import { state } from "@antv/g2plot/lib/adaptor/common";
 import { mapGetters, mapMutations, mapState, mapActions } from "vuex";
 import { getCategory } from "@/api/category";
-import taskCheck from "@/components/tab/subcomponents/taskCheck.vue";
+import TaskCheck from "./subcomponents/TaskCheck";
 
 export default {
   components: {
-    taskCheck,
+    TaskCheck,
   },
   computed: {
     ...mapState(["taskList", , "treeData"]),
@@ -264,7 +270,7 @@ export default {
 
             // 构造目标路由
             const routeData = {
-              path: "/tab/subcomponents/taskCheck",
+              path: "/tab/subcomponents/TaskCheck",
               query: { result: this.result },
             };
 
@@ -286,7 +292,7 @@ export default {
           this.$message.error("查看任务失败");
         });
     },
-    
+
     handleDelete(row) {
       // 发送删除请求到服务器
       deleteRequest(`Task/${row.id}`, row)

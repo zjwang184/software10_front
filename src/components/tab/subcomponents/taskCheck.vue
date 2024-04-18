@@ -1,11 +1,15 @@
 <template>
-  <div>
+  <div style="padding: 10px">
     <el-page-header
+      style="float: left"
       @back="goBack"
       content="任务详情页面"
       class="custom-page-header"
     ></el-page-header>
-    <div class="taskBox1">
+    <div class="buttonGroup">
+      <el-button type="success" @click="exportToPDF()" round>导出PDF</el-button>
+    </div>
+    <div class="taskBox1" id="pdf_1">
       <span style="font-size: 40px; margin-bottom: 20px">任务信息：</span
       ><span></span><span></span><span></span>
       <div class="taskInfoBox_taskname">
@@ -49,10 +53,13 @@
       </div>
     </div>
 
-    <div class="taskBox2">
-      <div style="font-size: 40px; margin-bottom: 20px"
-        >{{ this.taskData.modelname }}模型信息：</div
-      ><div></div><div></div><div></div>
+    <div class="taskBox2" id="pdf_2">
+      <div style="font-size: 40px; margin-bottom: 20px">
+        {{ this.taskData.modelname }}模型信息：
+      </div>
+      <div></div>
+      <div></div>
+      <div></div>
 
       <div>
         <span class="lineStyle">▍</span
@@ -83,7 +90,10 @@
       <div></div>
 
       <!-------------------------- loss曲线图和reward曲线图 ----------------------------->
-      <div class="graphBox" v-if="this.taskData.totalrewards && this.taskData.totallosses">
+      <div
+        class="graphBox"
+        v-if="this.taskData.totalrewards && this.taskData.totallosses"
+      >
         <div>
           <RewardCurve :rewardData="rewardData" />
         </div>
@@ -94,13 +104,15 @@
 
       <!--------------------------- 特征饼图和混淆矩阵 ------------------------------------>
       <div class="graphBox">
-        <featuresPie :data="transToPie(this.taskData.avgshapvalue)"></featuresPie>
+        <featuresPie
+          :data="transToPie(this.taskData.avgshapvalue)"
+        ></featuresPie>
         <treeMap
           :TP="transTONumber(this.taskData.tp)"
           :FN="transTONumber(this.taskData.fn)"
           :FP="transTONumber(this.taskData.fp)"
           :TN="transTONumber(this.taskData.tn)"
-        ></treeMap> 
+        ></treeMap>
       </div>
     </div>
   </div>
@@ -112,17 +124,17 @@ import GraphVue from "./Graph.vue";
 import LossCurve from "@/components/tab/subcomponents/LossCurve.vue";
 import RewardCurve from "@/components/tab/subcomponents/RewardCurve.vue";
 import treeMap from "./treeMap.vue";
-import PredictLineChart from "./PredictLineChart.vue";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 export default {
-  name: "taskCheck",
+  name: "TaskCheck",
   components: {
     GraphVue,
     RewardCurve,
     LossCurve,
     featuresPie,
     treeMap,
-    PredictLineChart,
   },
   props: {
     result: Object, // 声明 result 属性为对象类型
@@ -153,7 +165,7 @@ export default {
       // 从路由参数中获取 result 数据
       this.result = this.$route.query.result;
       this.taskData = this.result;
-      console.log("this.taskData",this.taskData);
+      console.log("this.taskData", this.taskData);
       this.init_reward_and_loss();
     },
     goBack() {
@@ -176,25 +188,25 @@ export default {
       // console.log("this.rewardData", this.rewardData);
       // console.log("this.lossData", this.lossData);
     },
-    transTONumber(confusion){
+    transTONumber(confusion) {
       return parseInt(confusion);
     },
-    transToPie(shapeValueStr){
+    transToPie(shapeValueStr) {
       console.log("shapeValueStr", shapeValueStr);
       // 将字符串按逗号分割成对象数组
-      const objectArray = shapeValueStr.split('},{').map(item => {
+      const objectArray = shapeValueStr.split("},{").map((item) => {
         // 去除大括号，然后按照键值对分割
-        const keyValuePairs = item.replace(/[{}]/g, '').split(',');
+        const keyValuePairs = item.replace(/[{}]/g, "").split(",");
         // console.log()
         // 构建对象
         const obj = {};
-        keyValuePairs.forEach(pair => {
-          const [key, value] = pair.split(':');
+        keyValuePairs.forEach((pair) => {
+          const [key, value] = pair.split(":");
           const trimmedKey = key.trim();
           const trimmedValue = value.trim();
-          if (trimmedKey === "value"){
-            obj[trimmedKey] = parseFloat(trimmedValue)
-          }else{
+          if (trimmedKey === "value") {
+            obj[trimmedKey] = parseFloat(trimmedValue);
+          } else {
             obj[trimmedKey] = trimmedValue;
           }
 
@@ -204,14 +216,55 @@ export default {
         return obj;
       });
 
-    // 构建期望的 data 数组
-    const dataArray = objectArray.map(obj => {
-      return { value: obj.value, name: obj.name };
-    });
+      // 构建期望的 data 数组
+      const dataArray = objectArray.map((obj) => {
+        return { value: obj.value, name: obj.name };
+      });
 
       // 返回转换后的数据
-      console.log("dataArray", dataArray)
+      console.log("dataArray", dataArray);
       return dataArray;
+    },
+
+    async exportToPDF() {
+      const divsToExport = ["pdf_1", "pdf_2"];
+      const pdf_positions = [];
+
+      const pdf = new jsPDF();
+
+      // 初始位置相对于顶部的偏移量
+      let offsetY = 10;
+
+      // 遍历每个要导出的div
+      for (const divId of divsToExport) {
+        const div = document.getElementById(divId);
+        // 获取div相对于父元素的位置信息
+        const parentRect = div.parentElement.getBoundingClientRect();
+        const divRect = div.getBoundingClientRect();
+        const relativeX = divRect.left - parentRect.left;
+        const relativeY = divRect.top - parentRect.top - offsetY;
+        // 计算div在PDF页面中的位置
+        const pdfX =
+          relativeX * (pdf.internal.pageSize.getWidth() / parentRect.width);
+        const pdfY =
+          relativeY * (pdf.internal.pageSize.getHeight() / parentRect.height);
+        // 将位置信息添加到pdf_positions数组中
+        pdf_positions.push({ x: pdfX, y: pdfY });
+
+        // 更新下一个div相对于顶部的偏移量
+        offsetY += 20;
+
+        // 使用html2canvas将div转换为图片并添加到PDF中
+        const canvas = await html2canvas(div, { dpi: 300, scale: 2 });
+        const imgData = canvas.toDataURL("image/png");
+        const imgProps = pdf.getImageProperties(imgData);
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        pdf.addImage(imgData, "PNG", pdfX, pdfY, pdfWidth, pdfHeight);
+      }
+
+      // 保存PDF文件
+      pdf.save(`${this.taskData.taskname}.pdf`);
     },
   },
 };
@@ -247,10 +300,9 @@ export default {
   background: rgba(118, 118, 118, 0.1);
 }
 
-.taskBox2 div:nth-child(n+13):nth-child(-n+16) {
+.taskBox2 div:nth-child(n + 13):nth-child(-n + 16) {
   grid-column: span 4; /* 合并第 13 到第 16 个 div 为 4 列 */
 }
-
 
 .lineStyle {
   color: rgb(100, 172, 231);
@@ -280,5 +332,9 @@ export default {
 
 .graphBox > div {
   flex: 1; /* 子元素平均占据可用空间 */
+}
+.buttonGroup {
+  float: right;
+  margin-right: 50px;
 }
 </style>
