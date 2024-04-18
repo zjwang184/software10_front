@@ -387,6 +387,7 @@ export default {
         },
 
         getLevel3ById(pid){
+            this.dialogForm.dataDisease2=''
             getRequest(`/api/sysManage/getLabelByPid`, {
                 pid: pid
             }).then(res => {
@@ -487,6 +488,8 @@ export default {
 
             payload.append("tableStatus", "2");
             payload.append("tableSize", fileSizeInMB);
+            payload.append("current_uid", sessionStorage.getItem("userid") - 0);
+          
             this.options = {
                 method: "post",
                 data: payload,
@@ -615,20 +618,7 @@ export default {
             },
 
 
-        addAdminDataManage() {
-            postRequest("/user/addUser", this.addUserForm).then(res => {
-                if (res.code == 200) {
-                    this.$message.success("新增用户成功")
-                    this.closeDialog();
-                    this.getAllAdminDataTable();
-                }
-                else {
-                    this.$message.error("新增用户失败")
-                    this.closeDialog();
-                    this.getAllAdminDataTable();
-                }
-            })
-        },
+     
         closeDialog() {
             this.uploadDataDialogVisible = false;
             this.dialogForm= {
@@ -668,7 +658,8 @@ export default {
                 uid: uid, 
                 tableId:tableId,    
                 tableSize:tableSize,            
-                tableName: tableName
+                tableName: tableName,
+                current_uid: sessionStorage.getItem("userid") - 0
             }).then(res => {
                 if (res.code == 200) {
                     this.$message.success("删除数据表成功")
@@ -705,7 +696,8 @@ export default {
                 tableid: this.adminDataManageForm.tableId,
                 oldTableName: this.oldTableName,
                 tableName: this.adminDataManageForm.tableName,
-                tableStatus: this.adminDataManageForm.tableStatus
+                tableStatus: this.adminDataManageForm.tableStatus,
+                
             }).then(res => {
                 if (res.code == 200) {
                     this.$message.success("修改成功");
