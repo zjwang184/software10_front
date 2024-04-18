@@ -73,8 +73,8 @@
                 <el-menu-item index="/sideBar/taskManage" disabled
                   >用户管理</el-menu-item
                 >
-                <el-menu-item index="/sideBar/taskManage" disabled
-                  >专病数据管理</el-menu-item
+                <el-menu-item index="/sideBar/AdminDataManage" 
+                  >数据管理</el-menu-item
                 >
                 <el-menu-item index="/sideBar/exceptionFeature"
                   >知识管理</el-menu-item

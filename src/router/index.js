@@ -16,6 +16,7 @@ import DiseaPredict from '@/components/tab/disea_predict/DiseaPredict.vue';
 // import LogIn from "@/views/LogIn.vue"
 import SoftwareIntro from "@/components/tab/SoftwareIntro.vue";
 import TaskCheck from '@/components/tab/subcomponents/TaskCheck.vue'; 
+import AdminDataManage from '@/components/tab/AdminDataManage/AdminDataManage.vue';
 Vue.use(VueRouter)
 
 const routes = [
@@ -95,6 +96,11 @@ const routes = [
         path: '/tab/subcomponents/TaskCheck',
         name: 'TaskCheck',
         component: TaskCheck, // 将 TaskCheck 组件与路由关联
+      },
+      {
+        path: 'AdminDataManage',
+        name: 'AdminDataManage',
+        component: AdminDataManage, 
       },
     ],
   },

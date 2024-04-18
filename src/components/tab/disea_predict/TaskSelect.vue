@@ -176,7 +176,7 @@
             @select="handleSelect"
           ></el-autocomplete>
         </span>
-        <div style="margin-top: 10px">
+        <div style="margin-top: 10px;margin-right: 20px;text-align: right;">
           共
           <span style="color: red">{{ filteredTaskList.length }} </span> 个任务
         </div>
@@ -460,7 +460,7 @@ export default {
       this.SVM_selected = this.isModelListContainsSVM;
       this.RF_selected = this.isModelListContainsRF;
 
-      this.getCatgory();
+      // this.getCatgory();
       this.getTaskList();
 
       console.log("当前模块名👉", this.moduleName);
@@ -816,7 +816,7 @@ export default {
 }
 
 .algorithmSelect_box {
-  width: 45%;
+  width: 50%;
   height: auto;
   border: 1px solid #fff;
   border-radius: 10px;
