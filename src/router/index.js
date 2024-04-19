@@ -18,7 +18,11 @@ import SoftwareIntro from "@/components/tab/SoftwareIntro.vue";
 import TaskCheck from '@/components/tab/subcomponents/TaskCheck.vue'; 
 
 // 系统管理的几个功能模块
+import UserManage from '@/components/tab/sysManage/UserManage.vue';
 import AdminDataManage from '@/components/tab/sysManage/AdminDataManage.vue';
+
+import Inform from '@/components/tab/sysManage/Inform.vue';
+import LogManage from '@/components/tab/sysManage/LogManage.vue';
 import SettingDisease from '@/components/tab/sysManage/SettingDisease.vue';
 Vue.use(VueRouter)
 
@@ -101,9 +105,19 @@ const routes = [
         component: TaskCheck, // 将 TaskCheck 组件与路由关联
       },
       {
+        path: 'UserManage',
+        name: 'UserManage',
+        component: UserManage, 
+      },
+      {
         path: 'AdminDataManage',
         name: 'AdminDataManage',
         component: AdminDataManage, 
+      },
+      {
+        path: 'Inform',
+        name: 'Inform',
+        component: Inform, 
       },
       {
         path: 'LogManage',

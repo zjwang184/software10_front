@@ -70,7 +70,7 @@
                 <span>系统设置</span>
               </template>
               <el-menu-item-group>
-                <el-menu-item index="/sideBar/taskManage" disabled
+                <el-menu-item index="/sideBar/UserManage" 
                   >用户管理</el-menu-item
                 >
                 <el-menu-item index="/sideBar/AdminDataManage" 
@@ -79,10 +79,10 @@
                 <el-menu-item index="/sideBar/exceptionFeature"
                   >知识管理</el-menu-item
                 >
-                <el-menu-item index="/sideBar/ModelTraining" disabled
+                <el-menu-item index="/sideBar/Inform" 
                   >通知管理</el-menu-item
                 >
-                <el-menu-item index="/sideBar/LogManage" disabled
+                <el-menu-item index="/sideBar/LogManage" 
                   >日志管理</el-menu-item
                 >
                 <el-menu-item index="/sideBar/SettingDisease" 
