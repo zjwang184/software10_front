@@ -340,13 +340,14 @@ export default {
   },
 
   methods: {
-      getUserAll(){
-          getRequest('user/querUser').then((res)=>{
-              if(res){
-                    this.tableData = res;
-              }
-          })
-      },
+    getUserAll(){
+        getRequest('user/querUser').then((res)=>{
+            if(res){
+                  this.tableData = res;
+                  this.currentUserList=res;
+            }
+        })
+    },
     getUserTable(pageNum) {
       getRequest("user/allUser?pageNum=" + pageNum).then((res) => {
         if (res) {
@@ -359,8 +360,9 @@ export default {
           }));
           this.total = res.total;
           this.filterData(); // 加载完数据后进行筛选
-             this.currentTotal = res.total;s
-         
+          this.tableData=dataWithEditing;
+          this.currentTotal = res.total;
+          this.currentUserList=dataWithEditing;
         }
       });
     },
@@ -368,7 +370,8 @@ export default {
       if (row.editing) {
         this.saveChanges(row); // 如果当前是保存状态，保存数据
       }
-      row.editing = !row.editing; // 切换编辑状态
+      // row.editing = !row.editing; // 切换编辑状态
+      this.$set(row, "editing", !row.editing)
     },
     saveChanges(row) {
 
@@ -381,6 +384,7 @@ export default {
       postRequest("user/updateStatus", params).then((res) => {
         if (res.code == 200) {
           this.$message.success("修改成功");
+          this.getUserTable(1);
         } else {
           this.$message.warning("修改失败！");
           this.getUserTable(1);

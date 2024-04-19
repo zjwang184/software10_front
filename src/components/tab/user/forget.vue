@@ -194,7 +194,7 @@
 </template>
 
 <script>
-import { postRequest, getRequest } from "@/utils/api";
+import { postRequest, getRequest } from "@/api/user.js";
 import { mapActions } from "vuex";
 import _ from "lodash";
 export default {

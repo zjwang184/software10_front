@@ -295,7 +295,7 @@ export default {
                   sessionStorage.setItem("username", resp.data.username);
                   sessionStorage.setItem("userid", resp.data.uid);
                   sessionStorage.setItem("userrole", resp.data.role);
-                  this.$router.push("/first");
+                  this.$router.push("/sideBar/SoftwareIntro");
                   this.$message.success("登录成功");
                 } else if (resp.data.userStatus === "0") {
                   this.$message.warning("您的账号待激活，请等待管理员处理");
