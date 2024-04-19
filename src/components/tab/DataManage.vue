@@ -42,7 +42,6 @@
         :check-on-click-node="true"
         :highlight-current="true"
         @node-click="changeData"
-        @check="changeData"
         @check-change="handleCheckChange"
       >
         <span class="custom-tree-node" slot-scope="{ node, data }">
@@ -486,17 +485,21 @@
         <h2 style="text-align: center">数据集预览</h2>
         <p>
           <i class="el-icon-folder"></i>数据集名称:
-          <span style="font-weight: bold">{{ showDataForm.tableName }}</span>
+          <span>{{ showDataForm.tableName }}</span>
           <i class="el-icon-user"></i>创建人:
-          <span style="font-weight: bold">{{ showDataForm.createUser }}</span>
+          <span>{{ showDataForm.createUser }}</span>
           <i class="el-icon-time"></i>创建时间:
-          <span style="font-weight: bold">{{ showDataForm.createTime }}</span>
+          <span>{{ showDataForm.createTime }}</span>
           <i class="el-icon-folder-opened"></i>所属类别:
-          <span style="font-weight: bold">{{ showDataForm.classPath }}</span>
+          <span>{{ showDataForm.classPath }}</span>
+          <i class="el-icon-date"></i>特征个数:
+          <!-- <span >{{ showDataForm.classPath }}</span> -->
+          <i class="el-icon-s-data"></i>样本条数:
+          <span>{{ showDataForm.dataLength }}</span>
         </p>
       </div>
       <!-- 显示表数据 -->
-      <!-- 点击左树之前显示的内容 -->
+      <!-- 点击左树之前显示的提示内容 -->
       <div v-if="!selectedDataset">
         <div
           class="container"
@@ -517,6 +520,7 @@
           <img src="@/assets/暂无数据_(1).png" class="imgStyle" />
         </div>
       </div>
+      <!----------- 显示表数据 -------------->
       <div v-else>
         <div class="table-container">
           <!-- <el-table
@@ -550,10 +554,11 @@
             </el-table-column>
           </el-table> -->
 
+          <!---------------------------------- 骨架屏 --------------------------------->
           <el-skeleton
             v-if="!dataLoaded"
             style="width: 100%"
-            :rows="25"
+            :rows="30"
             animated
           />
           <el-table
@@ -574,15 +579,6 @@
             >
               <template slot-scope="{ row }">
                 <div class="truncate-text">{{ row[key] }}</div>
-              </template>
-              <template slot="header">
-                <el-tooltip
-                  effect="dark"
-                  :content="getCount(key)"
-                  placement="top"
-                >
-                  <div>{{ key }}</div>
-                </el-tooltip>
               </template>
             </el-table-column>
           </el-table>
@@ -621,7 +617,7 @@ import { resetForm, debounce } from "@/components/mixins/mixin.js";
 import FileSaver from "file-saver";
 import XLSX from "xlsx";
 // import { taskList } from "./constTaskList";
-import { treeData } from "@/components/tab/treeData.js";
+// import { treeData } from "@/components/tab/treeData.js";
 
 let id = 1000;
 
@@ -651,9 +647,7 @@ export default {
     return {
       // 获取虚拟树形结构数据
       // treeData: JSON.parse(JSON.stringify(treeData)),
-      // treeData: [],
-      // 获取虚拟表格数据
-      treeData: JSON.parse(JSON.stringify(treeData)),
+      treeData: [],
       topLevelNodeCount: 0, // 一级节点计数器
       allChildNodeCount: 0, // 所有子节点计数器
       tableData: [],
@@ -671,6 +665,7 @@ export default {
         createUser: "",
         createTime: "",
         classPath: "",
+        dataLength: "",
       },
       addDataForm: {
         dataName: "",
@@ -759,14 +754,6 @@ export default {
   },
 
   created() {
-    console.log("window.XLSX", window.XLSX);
-
-    console.log("typeof XLSX", typeof XLSX);
-    if (typeof XLSX === "undefined") {
-      console.error("XLSX is not available.");
-    } else {
-      console.log("XLSX is available.");
-    }
     // 检查重名的防抖函数
     this.checkTableName = this.debounce(() => {
       getRequest("/api/DataTable/inspection", {
@@ -795,7 +782,7 @@ export default {
         return true;
       });
     }, 200);
-    // this.getCatgory();
+    this.getCatgory();
     // this.getTableDescribe("1005", "copd");
     // this.getTableData("1005", "copd");
     this.init();
@@ -1027,10 +1014,11 @@ export default {
       getTableDes("/api/tableDescribe", id)
         .then((response) => {
           console.log("res", response);
-          this.showDataForm.createUser = response.data.create_user;
-          this.showDataForm.createTime = response.data.create_time;
-          this.showDataForm.classPath = response.data.class_path;
-          this.tableData = [];
+          this.showDataForm.createUser = response.data.createUser;
+          this.showDataForm.createTime = response.data.createTime;
+          this.showDataForm.classPath = response.data.classPath;
+          // this.tableData = [];
+          console.log("this.showDataForm11111", this.showDataForm);
         })
         .catch((error) => {
           console.log("错误", error);
@@ -1041,8 +1029,10 @@ export default {
         .then((response) => {
           // 获取表数据
           this.tableData = response.data;
+          this.showDataForm.dataLength = response.data.length;
+          //获取描述信息
+          this.getTableDescribe(tableId, tableName);
           this.dataLoaded = true;
-          console.log("数据长度" + response.data.length);
         })
         .catch((error) => {
           console.log(error);
@@ -1050,11 +1040,16 @@ export default {
     },
     changeData(data) {
       if (data.isLeafs == 1) {
+        //数据获取前显示骨架屏
+        this.dataLoaded = false;
         //获取描述信息
-        this.getTableDescribe(data.id, data.label);
+        // this.getTableDescribe(data.id, data.label);
         //获取数据信息
         this.getTableData(data.id, data.label);
+        //显示表数据
         this.selectedDataset = true;
+        console.log("this.showDataForm2222", this.showDataForm);
+
       }
     },
 
@@ -1146,10 +1141,6 @@ export default {
       if (checked) {
         this.$refs.tree.setCheckedKeys([data.id]);
       }
-    },
-    getCount(key) {
-      // 在这里根据 key 计算对应属性的条数，并返回显示在 tooltip 中的内容
-      return `条数: ${this.tableData.length}`;
     },
 
     markNode(data) {
@@ -1371,6 +1362,7 @@ export default {
       }
     },
 
+    //导出CSV文件
     exportCSV() {
       console.log(this.tableData); // 打印表格数据到控制台
 
@@ -1405,6 +1397,7 @@ export default {
       }, 1000);
     },
 
+    //导出XLSX文件
     exportXLSX() {
       console.log(this.tableData); // 打印表格数据到控制台
 
@@ -1434,7 +1427,6 @@ export default {
         }
       }, 1000);
     },
-
     s2ab(s) {
       // 将字符串转换为 ArrayBuffer
       var buf = new ArrayBuffer(s.length);
@@ -1522,7 +1514,7 @@ export default {
 .right_table {
   display: inline-block;
   height: auto;
-  width: 95%;
+  width: 98%;
   margin-left: 30px;
   overflow-y: auto;
   border-radius: 3px;
@@ -1531,8 +1523,13 @@ export default {
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1); /* 修正阴影的颜色和透明度 */
   background: rgba(255, 255, 255, 0.1);
   padding: 0 10px 10px 10px;
-  scrollbar-width: none; /* 隐藏 Firefox 的滚动条 */
-  -ms-overflow-style: none; /* 隐藏 IE/Edge 的滚动条 */
+  font-size: 20px;
+  font-weight: bold;
+}
+.describe_content span {
+  margin-right: 25px;
+  color: rgb(40, 39, 39);
+  font-weight: 100;
 }
 
 .describe_content {
@@ -1642,8 +1639,6 @@ export default {
   height: auto;
   overflow-y: auto;
   overflow-x: auto;
-  scrollbar-width: none; /* 隐藏 Firefox 的滚动条 */
-  -ms-overflow-style: none; /* 隐藏 IE/Edge 的滚动条 */
 }
 /* 修改树形控件高亮颜色 */
 ::v-deep.el-tree--highlight-current
@@ -1665,5 +1660,4 @@ export default {
     opacity: 0.3; /* 终止状态为完全透明 */
   }
 }
-
 </style>
