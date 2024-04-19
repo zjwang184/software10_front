@@ -25,25 +25,53 @@
         @node-click="changeData"
         @check-change="handleCheckChange"
       >
+        <span class="custom-tree-node" slot-scope="{ node }">
+          <span
+            :style="{
+              fontWeight: node.level === 1 ? 'bold' : 'normal',
+              fontSize: node.level === 1 ? '20px' : 'inherit',
+            }"
+            >{{ node.label }}</span
+          >
+        </span>
       </el-tree>
     </div>
 
     <div class="right_table">
-      <el-card class="right_table_topCard">
-        <div class="describe_content">
-          <h2>数据集预览</h2>
-          <p style="margin-top: 0.5%">
-            <i class="el-icon-folder"></i>数据集名称:
-            <span style="font-weight: bold">{{ showDataForm.tableName }}</span>
-            <i class="el-icon-user"></i>创建人:
-            <span style="font-weight: bold">{{ showDataForm.createUser }}</span>
-            <i class="el-icon-time"></i>创建时间:
-            <span style="font-weight: bold">{{ showDataForm.createTime }}</span>
-            <i class="el-icon-folder-opened"></i>所属类别:
-            <span style="font-weight: bold">{{ showDataForm.classPath }}</span>
-          </p>
+      <!--------------------------------- 数据集预览头部 ----------------------------------------------->
+      <div class="describe_content">
+        <div></div>
+        <h2 style="text-align: center">
+          <i class="el-icon-s-data"></i>数据集预览
+        </h2>
+        <div></div>
+        <div>
+          <i class="el-icon-folder"></i>数据集名称:
+          <span>{{ showDataForm.tableName }}</span>
         </div>
-        <!-- 显示表数据 -->
+        <div>
+          <i class="el-icon-user"></i>创建人:
+          <span>{{ showDataForm.createUser }}</span>
+        </div>
+        <div>
+          <i class="el-icon-time"></i>创建时间:
+          <span>{{ showDataForm.createTime }}</span>
+        </div>
+        <div>
+          <i class="el-icon-folder-opened"></i>所属类别:
+          <span>{{ showDataForm.classPath }}</span>
+        </div>
+        <div>
+          <i class="el-icon-date"></i>特征个数:
+          <!-- <span >{{ showDataForm.classPath }}</span> -->
+        </div>
+        <div>
+          <i class="el-icon-coin"></i>样本条数:
+          <span>{{ showDataForm.dataLength }}</span>
+        </div>
+      </div>
+      <!-- 点击左树之前显示的提示内容 -->
+      <div>
         <div v-if="!selectedDataset">
           <div
             class="container"
@@ -64,14 +92,25 @@
             <img src="@/assets/暂无数据_(1).png" class="imgStyle" />
           </div>
         </div>
+        <!----------- 显示表数据 -------------->
         <div v-else>
           <div class="table-container">
+            <!---------------------------------- 骨架屏 --------------------------------->
+            <el-skeleton
+              v-if="!dataLoaded"
+              style="width: 100%"
+              :rows="30"
+              animated
+            />
+
             <el-table
+              v-else
               :data="tableData"
               stripe
-              v-loading="loading"
               class="custom-table"
               :header-cell-style="headerCellStyle"
+              ref="scrollTable"
+              height="700vh"
             >
               <el-table-column
                 v-for="(value, key) in tableData[0]"
@@ -85,20 +124,11 @@
                 <template slot-scope="{ row }">
                   <div class="truncate-text">{{ row[key] }}</div>
                 </template>
-                <template slot="header">
-                  <el-tooltip
-                    effect="dark"
-                    :content="getCount(key)"
-                    placement="top"
-                  >
-                    <div>{{ key }}</div>
-                  </el-tooltip>
-                </template>
               </el-table-column>
             </el-table>
           </div>
         </div>
-      </el-card>
+      </div>
       <div class="buttonGroup">
         <el-button @click="backStep()" round>上一步</el-button>
         <el-button type="primary" @click="next(showDataForm.tableName)" round
@@ -117,7 +147,7 @@ import { mapGetters, mapMutations, mapState, mapActions } from "vuex";
 import { getCategory } from "@/api/category";
 import { getTableDes, getTableData } from "@/api/tableDescribe.js";
 import { resetForm, debounce } from "@/components/mixins/mixin.js";
-import { treeData } from "@/components/tab/treeData.js";
+// import { treeData } from "@/components/tab/treeData.js";
 // import { tableData, tableData2 } from "@/components/tab/TableData.js";
 
 export default {
@@ -144,12 +174,11 @@ export default {
       getData_loading: true,
       next_loading: false,
       selectedDataset: false,
-
+      dataLoaded: false, //骨架屏加载
       chosenData: "",
       disease: "",
       dataset: "",
       nodeid: "",
-
       pageSize: 4,
       currentPage: 1,
       dataTotal: 0,
@@ -167,8 +196,8 @@ export default {
       showList: [],
 
       tableData: [],
-      // treeData: [],
-      treeData: JSON.parse(JSON.stringify(treeData)),
+      treeData: [],
+      // treeData: JSON.parse(JSON.stringify(treeData)),
     };
   },
 
@@ -203,7 +232,7 @@ export default {
       });
     }, 200);
 
-    // this.getCatgory();
+    this.getCatgory();
     if (this.m_nodeid != "") {
       console.log("dataselect nodeid", this.m_nodeid);
       this.getTableDescribe(this.m_nodeid, this.m_dataset);
@@ -257,59 +286,24 @@ export default {
         .then((response) => {
           // 获取表数据
           this.tableData = response.data;
-          this.loading = false;
-          console.log("this.tableData", this.tableData);
-          // console.log("数据长度" + response.data.length);
+          this.showDataForm.dataLength = response.data.length;
+          this.dataLoaded = true;
         })
         .catch((error) => {
           console.log(error);
         });
     },
-
-    getCount(key) {
-      // 在这里根据 key 计算对应属性的条数，并返回显示在 tooltip 中的内容
-      return `条数: ${this.tableData.length}`;
-    },
-
-    // changeData(data) {
-    //   console.log("数据选择的data", data);
-
-    //   if (data.isLeafs == 1) {
-    //     let pid = data.parentId;
-    //     console.log("pid", pid);
-    //     this.nodeid = data.id;
-
-    //     getRequestWithRestful("/api/getParentLabel/" + pid)
-    //       .then((response) => {
-    //         // 获取表数据
-    //         this.disease = response.msg;
-    //         console.log("pid: ", pid, this.disease);
-    //         // this.loading=false;
-    //         // console.log("数据长度" + response.data.length);
-    //       })
-    //       .catch((error) => {
-    //         console.log(error);
-    //       });
-
-    //     this.getData_loading = true;
-    //     this.tableData = [];
-    //     //获取描述信息
-    //     this.getTableDescribe(data.id, data.label);
-    //     //获取数据信息
-    //     this.getTableData(data.id, data.label);
-    //     this.getData_loading = false;
-    //   } else {
-    //     this.disease = data.label;
-    //   }
-    // },
-
     changeData(data) {
       if (data.isLeafs == 1) {
+        //数据获取前显示骨架屏
+        this.dataLoaded = false;
         //获取描述信息
         this.getTableDescribe(data.id, data.label);
         //获取数据信息
         this.getTableData(data.id, data.label);
+        //显示表数据
         this.selectedDataset = true;
+        console.log("this.showDataForm2222", this.showDataForm);
       }
     },
 
@@ -320,8 +314,15 @@ export default {
       }
       this.getData_loading = false;
     },
-
     async next(name) {
+      if (!name) {
+        this.$message({
+          message: '请先选择数据！',
+          type: 'warning'
+        });
+        return;
+      }
+
       this.next_loading = true;
       this.chosenData = name;
       // 如果选择了和缓存不一样的数据则进行重置
@@ -354,7 +355,6 @@ export default {
         this.m_changeTaskInfo({
           all_features: this.allFeatures,
         });
-
         // 等待第二个异步操作完成
         const resLabels = await postRequest("runtime_bus/getLackinfos_labels", {
           tableName: this.chosenData,
@@ -397,6 +397,7 @@ export default {
 .main {
   display: grid;
   grid-template-columns: 15% 85%;
+  height: 70vh;
 }
 
 .bottom {
@@ -411,8 +412,8 @@ export default {
 
 .buttonGroup {
   position: fixed;
-  bottom: 5vh; /* 距离页面底部 10vh */
-  left: 50%;
+  bottom: 6vh; /* 距离页面底部 10vh */
+  left: 55%;
   transform: translateX(-50%); /* 水平居中 */
   width: 200px;
   z-index: 9999; /* 置于最顶层 */
@@ -440,34 +441,41 @@ export default {
 }
 
 .right_table {
-  display: inline-block;
+  display: grid;
+  grid-template-rows: auto auto;
   height: auto;
-  width: 100%;
-}
-
-.right_table_topCard {
-  padding: 0;
-  height: auto;
-  width: 95%;
+  width: 98%;
+  margin-left: 30px;
+  overflow-y: hidden;
   border-radius: 3px;
-  border-bottom: 1px solid #e6e6e6;
-  position: relative;
-  left: 1%;
+  border: 1px solid #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1); /* 修正阴影的颜色和透明度 */
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0 10px 10px 0;
+  font-size: 20px;
+  font-weight: bold;
 }
-
 .describe_content {
-  display: inline-block;
+  display: grid;
+  grid-template-rows: auto auto auto;
+  grid-template-columns: 1fr 1fr 1fr;
   width: 100%;
   color: #000000;
   border-radius: 6px;
   border: 1px solid #fff;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
   background-color: rgba(146, 145, 145, 0.3);
-  margin-top:-20px;
+  display: sticky;
+  top: 0;
 }
-
+.describe_content i {
+  margin: 0 5px;
+}
 .describe_content span {
-  margin: 10px;
+  margin-right: 25px;
+  color: rgb(40, 39, 39);
+  font-weight: 100;
 }
 
 .blinking-text {
@@ -495,5 +503,16 @@ export default {
   width: 100%;
   border: 1px solid #fff;
   border-radius: 10px;
+}
+
+/* 隐藏浏览器滚动条 */
+
+.scrollHidden {
+  scrollbar-width: none; /* 隐藏 Firefox 的滚动条 */
+  -ms-overflow-style: none; /* 隐藏 IE/Edge 的滚动条 */
+}
+.imgStyle {
+  width: 40%;
+  border-radius: 15px;
 }
 </style>

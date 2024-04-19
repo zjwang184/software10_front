@@ -2,9 +2,9 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 
 //用户登录
-import Login from '@/components/tab/user/Login.vue'
-import forget from '@/components/tab/user/forget.vue'
-import register from '@/components/tab/user/register.vue'
+// import Login from '@/components/tab/user/Login.vue'
+// import forget from '@/components/tab/user/forget.vue'
+// import register from '@/components/tab/user/register.vue'
 
 import SideBar from '@/components/sideBar/index.vue'
 import dash from '@/views/dash/index.vue'
@@ -15,8 +15,8 @@ import ModelTraining from "@/components/tab/ModelTraining.vue"
 import F_Factor from "@/components/tab/F_Factor.vue";
 import FactorDis from "@/components/tab/FactorDis.vue";
 import TableManage from "@/components/tab/TableManage.vue";
-// import Login from "@/components/login/Login.vue";
-// import Register from "@/components/login/register.vue";
+import Login from "@/components/login/Login.vue";
+import Register from "@/components/login/register.vue";
 import exceptionFeature from "@/components/tab/exceptionFeature";
 import DiseaPredict from '@/components/tab/disea_predict/DiseaPredict.vue';
 // import LogIn from "@/views/LogIn.vue"
@@ -42,14 +42,14 @@ const routes = [
   },
   {
     path: "/register",
-    name: "register",
-    component: register,
+    name: "Register",
+    component: Register,
   },
-  {
-    path: "/forget",
-    name: "forget",
-    component: forget,
-  },
+  // {
+  //   path: "/forget",
+  //   name: "forget",
+  //   component: forget,
+  // },
   {
      path: "/sideBar",
     //path: "/SoftwareIntro",

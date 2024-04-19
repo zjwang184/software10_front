@@ -480,127 +480,124 @@
         </div>
       </el-dialog>
     </el-dialog>
+    <!------------------------------------ 数据表展示 -------------------------------------------------->
     <div class="right_table">
+      <!--------------------------------- 数据集预览头部 ----------------------------------------------->
       <div class="describe_content">
-        <h2 style="text-align: center">数据集预览</h2>
-        <p>
+        <div></div>
+        <h2 style="text-align: center">
+          <i class="el-icon-s-data"></i>数据集预览
+        </h2>
+        <div></div>
+        <div>
           <i class="el-icon-folder"></i>数据集名称:
           <span>{{ showDataForm.tableName }}</span>
+        </div>
+        <div>
           <i class="el-icon-user"></i>创建人:
           <span>{{ showDataForm.createUser }}</span>
+        </div>
+        <div>
           <i class="el-icon-time"></i>创建时间:
           <span>{{ showDataForm.createTime }}</span>
+        </div>
+        <div>
           <i class="el-icon-folder-opened"></i>所属类别:
           <span>{{ showDataForm.classPath }}</span>
+        </div>
+        <div>
           <i class="el-icon-date"></i>特征个数:
           <!-- <span >{{ showDataForm.classPath }}</span> -->
-          <i class="el-icon-s-data"></i>样本条数:
+        </div>
+        <div>
+          <i class="el-icon-coin"></i>样本条数:
           <span>{{ showDataForm.dataLength }}</span>
-        </p>
+        </div>
       </div>
-      <!-- 显示表数据 -->
       <!-- 点击左树之前显示的提示内容 -->
-      <div v-if="!selectedDataset">
+      <div>
+        <div v-if="!selectedDataset">
+          <div
+            class="container"
+            style="
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              width: 100%;
+              height: 100%;
+              font-size: 24px;
+              background-color: #f2f2f2;
+            "
+          >
+            <div class="blinking-text" style="margin-top: 20px">
+              请点击左边树节点选择数据集
+            </div>
+            <img src="@/assets/暂无数据_(1).png" class="imgStyle" />
+          </div>
+        </div>
+        <!----------- 显示表数据 -------------->
+        <div v-else>
+          <div class="table-container">
+            <!---------------------------------- 骨架屏 --------------------------------->
+            <el-skeleton
+              v-if="!dataLoaded"
+              style="width: 100%"
+              :rows="30"
+              animated
+            />
+
+            <el-table
+              v-else
+              :data="tableData"
+              stripe
+              class="custom-table"
+              :header-cell-style="headerCellStyle"
+              ref="scrollTable"
+              height="700vh"
+            >
+              <el-table-column
+                v-for="(value, key) in tableData[0]"
+                :key="key"
+                :prop="key"
+                :label="key"
+                width="auto"
+                :show-overflow-tooltip="true"
+                :sortable="true"
+              >
+                <template slot-scope="{ row }">
+                  <div class="truncate-text">{{ row[key] }}</div>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+        </div>
         <div
-          class="container"
           style="
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            height: 100%;
-            font-size: 24px;
-            background-color: #f2f2f2;
+            position: fixed;
+            bottom: 50px;
+            left: 70%;
+            transform: translateX(-50%);
+            width: 800px;
+            z-index: 9999;
+            margin-left: 6%;
           "
         >
-          <div class="blinking-text" style="margin-top: 20px">
-            请点击左边树节点选择数据集
-          </div>
-          <img src="@/assets/暂无数据_(1).png" class="imgStyle" />
-        </div>
-      </div>
-      <!----------- 显示表数据 -------------->
-      <div v-else>
-        <div class="table-container">
-          <!-- <el-table
-            :data="tableData"
-            stripe
-            v-loading="loading"
-            class="custom-table"
-            :header-cell-style="headerCellStyle"
+          <el-button
+            type="primary"
+            @click="exportCSV()"
+            round
+            v-show="tableData"
+            >导出CSV文件</el-button
           >
-            <el-table-column
-              v-for="(value, key) in tableData[0]"
-              :key="key"
-              :prop="key"
-              :label="key"
-              width="auto"
-              :show-overflow-tooltip="true"
-              :sortable="true"
-            >
-              <template slot-scope="{ row }">
-                <div class="truncate-text">{{ row[key] }}</div>
-              </template>
-              <template slot="header">
-                <el-tooltip
-                  effect="dark"
-                  :content="getCount(key)"
-                  placement="top"
-                >
-                  <div>{{ key }}</div>
-                </el-tooltip>
-              </template>
-            </el-table-column>
-          </el-table> -->
-
-          <!---------------------------------- 骨架屏 --------------------------------->
-          <el-skeleton
-            v-if="!dataLoaded"
-            style="width: 100%"
-            :rows="30"
-            animated
-          />
-          <el-table
-            v-else
-            :data="tableData"
-            stripe
-            class="custom-table"
-            :header-cell-style="headerCellStyle"
+          <el-button
+            type="primary"
+            @click="exportXLSX()"
+            round
+            v-show="tableData"
+            >导出XLSX文件</el-button
           >
-            <el-table-column
-              v-for="(value, key) in tableData[0]"
-              :key="key"
-              :prop="key"
-              :label="key"
-              width="auto"
-              :show-overflow-tooltip="true"
-              :sortable="true"
-            >
-              <template slot-scope="{ row }">
-                <div class="truncate-text">{{ row[key] }}</div>
-              </template>
-            </el-table-column>
-          </el-table>
         </div>
-      </div>
-      <div
-        style="
-          position: fixed;
-          bottom: 50px;
-          left: 65%;
-          transform: translateX(-50%);
-          width: 800px;
-          z-index: 9999;
-          margin-left: 6%;
-        "
-      >
-        <el-button type="primary" @click="exportCSV()" round v-show="tableData"
-          >导出CSV文件</el-button
-        >
-        <el-button type="primary" @click="exportXLSX()" round v-show="tableData"
-          >导出XLSX文件</el-button
-        >
       </div>
     </div>
   </div>
@@ -701,7 +698,7 @@ export default {
       loading: false,
       loading2: false,
       getData_loading: false,
-      dataLoaded: false,
+      dataLoaded: false, //骨架屏加载
       loadText: "拼命加载中",
       loadText2: "拼命加载中",
       disease: "",
@@ -749,7 +746,6 @@ export default {
           "Content-Type": "multipart/form-data",
         },
       },
-      counts: {}, // 用于存储每个属性的条数
     };
   },
 
@@ -1030,9 +1026,8 @@ export default {
           // 获取表数据
           this.tableData = response.data;
           this.showDataForm.dataLength = response.data.length;
-          //获取描述信息
-          this.getTableDescribe(tableId, tableName);
           this.dataLoaded = true;
+          console.log("this.tableData[0]", this.tableData[0]);
         })
         .catch((error) => {
           console.log(error);
@@ -1043,13 +1038,12 @@ export default {
         //数据获取前显示骨架屏
         this.dataLoaded = false;
         //获取描述信息
-        // this.getTableDescribe(data.id, data.label);
+        this.getTableDescribe(data.id, data.label);
         //获取数据信息
         this.getTableData(data.id, data.label);
         //显示表数据
         this.selectedDataset = true;
         console.log("this.showDataForm2222", this.showDataForm);
-
       }
     },
 
@@ -1469,19 +1463,12 @@ export default {
   overflow-y: hidden; /* 隐藏垂直滚动条 */
   overflow-x: hidden;
 }
-
-.featureLabel {
-  height: 55vh;
+.tree-top {
+  background-color: rgba(146, 145, 145, 0.3);
   width: 100%;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  overflow: auto;
+  border: 1px solid #fff;
+  border-radius: 10px;
 }
-
-.featureLabel .el-form-item__label {
-  color: #252525;
-}
-
 .left_tree {
   height: auto;
   display: inline-block;
@@ -1494,7 +1481,16 @@ export default {
   scrollbar-width: none; /* 隐藏 Firefox 的滚动条 */
   -ms-overflow-style: none; /* 隐藏 IE/Edge 的滚动条 */
 }
-
+.featureLabel {
+  height: 55vh;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  overflow: auto;
+}
+.featureLabel .el-form-item__label {
+  color: #252525;
+}
 .custom-tree-node {
   flex: 1;
   display: flex;
@@ -1503,43 +1499,42 @@ export default {
   font-size: 14px;
   padding-right: 8px;
 }
-
-.tree-top {
-  background-color: rgba(146, 145, 145, 0.3);
-  width: 100%;
-  border: 1px solid #fff;
-  border-radius: 10px;
-}
-
 .right_table {
-  display: inline-block;
+  display: grid;
+  grid-template-rows: auto auto;
   height: auto;
   width: 98%;
   margin-left: 30px;
-  overflow-y: auto;
+  overflow-y: hidden;
   border-radius: 3px;
   border: 1px solid #fff;
   border-radius: 10px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1); /* 修正阴影的颜色和透明度 */
   background: rgba(255, 255, 255, 0.1);
-  padding: 0 10px 10px 10px;
+  padding: 0 10px 10px 0;
   font-size: 20px;
   font-weight: bold;
 }
-.describe_content span {
-  margin-right: 25px;
-  color: rgb(40, 39, 39);
-  font-weight: 100;
-}
-
 .describe_content {
-  display: inline-block;
+  display: grid;
+  grid-template-rows: auto auto auto;
+  grid-template-columns: 1fr 1fr 1fr;
   width: 100%;
   color: #000000;
   border-radius: 6px;
   border: 1px solid #fff;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
   background-color: rgba(146, 145, 145, 0.3);
+  display: sticky;
+  top: 0;
+}
+.describe_content i {
+  margin:0 5px;
+}
+.describe_content span {
+  margin-right: 25px;
+  color: rgb(40, 39, 39);
+  font-weight: 100;
 }
 
 .add_button {
@@ -1550,11 +1545,9 @@ export default {
   z-index: 9999; /* 置于最顶层 */
   bottom: 50px;
 }
-
 .nameInput {
   width: 70%;
 }
-
 .addDataClass {
   border-radius: 10px;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
@@ -1597,7 +1590,6 @@ export default {
   letter-spacing: 1px;
   cursor: pointer;
 }
-
 .cool-button::before {
   content: "";
   position: absolute;
@@ -1611,11 +1603,9 @@ export default {
   transition: transform 0.3s ease;
   z-index: -1;
 }
-
 .cool-button:hover {
   background: linear-gradient(to right, #51bae2, #80e7bb);
 }
-
 .cool-button:hover::before {
   transform: scaleX(1);
 }
@@ -1623,20 +1613,15 @@ export default {
   width: 100%;
   height: auto;
 }
-
 .custom-table tr {
   background-color: #dcf3fc !important;
 }
-
 .imgStyle {
-  height: 900px;
-  width: 900px;
+  width:50%;
   border-radius: 15px;
 }
-
 .table-container {
   width: 100%;
-  height: auto;
   overflow-y: auto;
   overflow-x: auto;
 }

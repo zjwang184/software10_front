@@ -231,8 +231,7 @@
                     label-position="top"
                     ref="KNN_ref"
                   >
-                    
-
+                
                     <el-form-item prop="random_state">
                       <template slot="label">
                         <span class="paramTitle">随机种子</span>
@@ -603,8 +602,8 @@ export default {
 }
 
 .paramBox .el-form {
-  margin-top: 2vh;
-  margin-left: 60vh;
+  margin-top: 3vh;
+  margin-left: 40vh;
 }
 .paramBox .el-form .el-input {
   width: 25vh;

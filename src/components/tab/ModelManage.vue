@@ -286,5 +286,12 @@
   #table{
       margin-top: 10px;
   }
+  
+/* 隐藏浏览器滚动条 */
+
+.scrollHidden {
+  scrollbar-width: none; /* 隐藏 Firefox 的滚动条 */
+  -ms-overflow-style: none; /* 隐藏 IE/Edge 的滚动条 */
+}
 
 </style>
