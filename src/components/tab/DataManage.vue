@@ -46,7 +46,14 @@
         @check-change="handleCheckChange"
       >
         <span class="custom-tree-node" slot-scope="{ node, data }">
-          <span>{{ node.label }}</span>
+          <span
+            :style="{
+              fontWeight: node.level === 1 ? 'bold' : 'normal',
+              fontSize: node.level === 1 ? '20px' : 'inherit',
+            }"
+            >{{ node.label }}</span
+          >
+          <!-- <span>{{ node.label }}</span> -->
           <span>
             <!--公共数据集confirm-->
             <el-popconfirm
@@ -512,7 +519,7 @@
       </div>
       <div v-else>
         <div class="table-container">
-          <el-table
+          <!-- <el-table
             :data="tableData"
             stripe
             v-loading="loading"
@@ -541,34 +548,63 @@
                 </el-tooltip>
               </template>
             </el-table-column>
+          </el-table> -->
+
+          <el-skeleton
+            v-if="!dataLoaded"
+            style="width: 100%"
+            :rows="25"
+            animated
+          />
+          <el-table
+            v-else
+            :data="tableData"
+            stripe
+            class="custom-table"
+            :header-cell-style="headerCellStyle"
+          >
+            <el-table-column
+              v-for="(value, key) in tableData[0]"
+              :key="key"
+              :prop="key"
+              :label="key"
+              width="auto"
+              :show-overflow-tooltip="true"
+              :sortable="true"
+            >
+              <template slot-scope="{ row }">
+                <div class="truncate-text">{{ row[key] }}</div>
+              </template>
+              <template slot="header">
+                <el-tooltip
+                  effect="dark"
+                  :content="getCount(key)"
+                  placement="top"
+                >
+                  <div>{{ key }}</div>
+                </el-tooltip>
+              </template>
+            </el-table-column>
           </el-table>
         </div>
-        <div
-          style="
-            position: fixed;
-            bottom: 50px;
-            left: 65%;
-            transform: translateX(-50%);
-            width: 800px;
-            z-index: 9999;
-            margin-left: 6%;
-          "
+      </div>
+      <div
+        style="
+          position: fixed;
+          bottom: 50px;
+          left: 65%;
+          transform: translateX(-50%);
+          width: 800px;
+          z-index: 9999;
+          margin-left: 6%;
+        "
+      >
+        <el-button type="primary" @click="exportCSV()" round v-show="tableData"
+          >导出CSV文件</el-button
         >
-          <el-button
-            type="primary"
-            @click="exportCSV()"
-            round
-            v-show="tableData"
-            >导出CSV文件</el-button
-          >
-          <el-button
-            type="primary"
-            @click="exportXLSX()"
-            round
-            v-show="tableData"
-            >导出XLSX文件</el-button
-          >
-        </div>
+        <el-button type="primary" @click="exportXLSX()" round v-show="tableData"
+          >导出XLSX文件</el-button
+        >
       </div>
     </div>
   </div>
@@ -585,6 +621,7 @@ import { resetForm, debounce } from "@/components/mixins/mixin.js";
 import FileSaver from "file-saver";
 import XLSX from "xlsx";
 // import { taskList } from "./constTaskList";
+import { treeData } from "@/components/tab/treeData.js";
 
 let id = 1000;
 
@@ -614,9 +651,9 @@ export default {
     return {
       // 获取虚拟树形结构数据
       // treeData: JSON.parse(JSON.stringify(treeData)),
-      treeData: [],
+      // treeData: [],
       // 获取虚拟表格数据
-      // tableData: JSON.parse(JSON.stringify(tableData)),
+      treeData: JSON.parse(JSON.stringify(treeData)),
       topLevelNodeCount: 0, // 一级节点计数器
       allChildNodeCount: 0, // 所有子节点计数器
       tableData: [],
@@ -669,6 +706,7 @@ export default {
       loading: false,
       loading2: false,
       getData_loading: false,
+      dataLoaded: false,
       loadText: "拼命加载中",
       loadText2: "拼命加载中",
       disease: "",
@@ -757,7 +795,7 @@ export default {
         return true;
       });
     }, 200);
-    this.getCatgory();
+    // this.getCatgory();
     // this.getTableDescribe("1005", "copd");
     // this.getTableData("1005", "copd");
     this.init();
@@ -988,9 +1026,10 @@ export default {
       this.showDataForm.tableName = label;
       getTableDes("/api/tableDescribe", id)
         .then((response) => {
-          this.showDataForm.createUser = response.data.createUser;
-          this.showDataForm.createTime = response.data.createTime;
-          this.showDataForm.classPath = response.data.classPath;
+          console.log("res", response);
+          this.showDataForm.createUser = response.data.create_user;
+          this.showDataForm.createTime = response.data.create_time;
+          this.showDataForm.classPath = response.data.class_path;
           this.tableData = [];
         })
         .catch((error) => {
@@ -1002,6 +1041,7 @@ export default {
         .then((response) => {
           // 获取表数据
           this.tableData = response.data;
+          this.dataLoaded = true;
           console.log("数据长度" + response.data.length);
         })
         .catch((error) => {
@@ -1625,4 +1665,5 @@ export default {
     opacity: 0.3; /* 终止状态为完全透明 */
   }
 }
+
 </style>

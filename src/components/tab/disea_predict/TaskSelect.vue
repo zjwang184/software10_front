@@ -36,6 +36,15 @@
         :highlight-current="true"
         @node-click="changeData"
       >
+        <template slot="default" slot-scope="{ node }">
+          <span
+            :style="{
+              fontWeight: node.level === 1 ? 'bold' : 'normal',
+              fontSize: node.level === 1 ? '20px' : 'inherit',
+            }"
+            >{{ node.label }}</span
+          >
+        </template>
       </el-tree>
     </div>
 
@@ -176,7 +185,7 @@
             @select="handleSelect"
           ></el-autocomplete>
         </span>
-        <div style="margin-top: 10px;margin-right: 20px;text-align: right;">
+        <div style="margin-top: 10px; margin-right: 20px; text-align: right">
           共
           <span style="color: red">{{ filteredTaskList.length }} </span> 个任务
         </div>
@@ -342,6 +351,7 @@ import vuex_mixin from "@/components/mixins/vuex_mixin";
 import { getRequest, postRequest } from "@/utils/api";
 import { getCategory } from "@/api/category";
 import { getTableData } from "@/api/tableDescribe.js";
+import { treeData } from "@/components/tab/treeData.js";
 // import { taskList } from "@/components/tab/constTaskList.js";
 
 export default {
@@ -408,7 +418,8 @@ export default {
       isAllChecked: false, // 全选按钮的状态
       resultDialogShow: false,
       result: {},
-      treeData: [],
+      // treeData: [],
+      treeData: JSON.parse(JSON.stringify(treeData)),
       disease: "",
       leader: "",
       taskname: "",
@@ -520,7 +531,7 @@ export default {
     },
 
     getLeaders() {
-      // 用于记录已经出现过的领导者名称
+      // 用于记录已经出现过的负责人名称
       var uniqueLeaders = {};
       // 遍历 this.taskList 对象的属性
       for (var key in this.taskList) {
@@ -530,21 +541,22 @@ export default {
           var task = this.taskList[key];
           // 检查对象是否具有 leader 属性
           if (task.hasOwnProperty("leader")) {
-            // 将领导者名称添加到临时对象中进行记录
+            // 将负责人名称添加到临时对象中进行记录
             uniqueLeaders[task.leader] = true;
           }
         }
       }
-      // 将记录的领导者名称转为数组形式
+      // 将记录的负责人名称转为数组形式
       this.leaders = Object.keys(uniqueLeaders).map(function (leader) {
         return { value: leader };
       });
-      console.log("this.leaders",this.leaders);
+      console.log("this.leaders", this.leaders);
     },
 
     getCatgory() {
       getCategory("/api/category").then((response) => {
-        this.treeData = response.data;
+        console.log("getCatgory", response);
+        // this.treeData = response.data;
         console.log("222222");
       });
     },
@@ -660,6 +672,7 @@ export default {
     // },
 
     changeData(node) {
+      console.log("node: ", node);
       if (this.lastClickedNode && this.lastClickedNode === node) {
         // 如果当前节点已经被高亮，则取消高亮
         this.$refs.tree.setCurrentKey(null);

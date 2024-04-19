@@ -117,7 +117,7 @@ import { mapGetters, mapMutations, mapState, mapActions } from "vuex";
 import { getCategory } from "@/api/category";
 import { getTableDes, getTableData } from "@/api/tableDescribe.js";
 import { resetForm, debounce } from "@/components/mixins/mixin.js";
-// import { treeData } from "@/components/tab/treeData.js";
+import { treeData } from "@/components/tab/treeData.js";
 // import { tableData, tableData2 } from "@/components/tab/TableData.js";
 
 export default {
@@ -167,7 +167,8 @@ export default {
       showList: [],
 
       tableData: [],
-      treeData: [],
+      // treeData: [],
+      treeData: JSON.parse(JSON.stringify(treeData)),
     };
   },
 
@@ -202,7 +203,7 @@ export default {
       });
     }, 200);
 
-    this.getCatgory();
+    // this.getCatgory();
     if (this.m_nodeid != "") {
       console.log("dataselect nodeid", this.m_nodeid);
       this.getTableDescribe(this.m_nodeid, this.m_dataset);

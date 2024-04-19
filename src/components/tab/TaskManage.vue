@@ -196,6 +196,7 @@ import { state } from "@antv/g2plot/lib/adaptor/common";
 import { mapGetters, mapMutations, mapState, mapActions } from "vuex";
 import { getCategory } from "@/api/category";
 import TaskCheck from "./subcomponents/TaskCheck";
+import { treeData } from "@/components/tab/treeData.js";
 
 export default {
   components: {
@@ -206,7 +207,7 @@ export default {
     ...mapGetters(["taskLeaderList", "taskDiseaseList"]),
   },
   mounted() {
-    this.getCatgory();
+    // this.getCatgory();
   },
   created() {
     this.getTaskList();
@@ -224,6 +225,7 @@ export default {
 
       dialogDiseaseVisible: false,
       diseaseName: "",
+      treeData: JSON.parse(JSON.stringify(treeData)),
     };
   },
 
@@ -329,8 +331,33 @@ export default {
       this.leader = "";
     },
 
+    // changeData(node) {
+    //   this.disease = node.label;
+    // },
     changeData(node) {
-      this.disease = node.label;
+      console.log("node: ", node);
+      if (this.lastClickedNode && this.lastClickedNode === node) {
+        // 如果当前节点已经被高亮，则取消高亮
+        this.$refs.tree.setCurrentKey(null);
+        this.lastClickedNode = null;
+        this.disease = "";
+        this.dataset = "";
+      } else {
+        // 高亮当前节点
+        this.$refs.tree.setCurrentKey(node.id);
+        this.lastClickedNode = node;
+        if (node.isLeafs == 0) {
+          this.disease = node.label;
+          this.dataset = "";
+        } else {
+          this.dataset = node.label;
+          this.disease = "";
+        }
+      }
+      console.log("this.disease: ", this.disease);
+      console.log("this.dataset: ", this.dataset);
+      console.log("this.taskname: ", this.taskname);
+      console.log("this.leader: ", this.leader);
     },
   },
 };

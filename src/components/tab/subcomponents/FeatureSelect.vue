@@ -14,7 +14,7 @@
 
     <div class="right">
       <!-------------------------------------------------------- 标签特征 ------------------------------------------------------>
-      <div style="margin-bottom: 50px">
+      <div  style="margin-bottom: 50px">
         <div>
           <span class="lineStyle">▍</span
           ><span class="featureTitle">标签特征：</span>
@@ -36,22 +36,32 @@
             :label="item.riskFactor"
             :key="item.riskFactor"
             border
-            style="width: auto; margin: 10px"
+            style="width: auto; margin: 10px; padding: 3px"
           >
-            <el-popover
-              placement="top-end"
-              width="150"
-              :title="popovername"
-              trigger="hover"
-              :content="item.rate"
-              :open-delay="200"
-            >
-              <span slot="reference">{{ item.riskFactor }}</span>
-              <el-progress
-                :percentage="item.rate * 100"
-                :color="changeProgressColor(item.rate * 100)"
-              ></el-progress>
-            </el-popover>
+            <div style="display: flex; flex-direction: column">
+              <el-popover
+                placement="top-end"
+                width="150"
+                :title="popovername"
+                trigger="hover"
+                :content="item.rate"
+                :open-delay="200"
+              >
+                <span slot="reference">{{ item.riskFactor }}</span>
+                <el-progress
+                  :percentage="item.rate * 100"
+                  :color="changeProgressColor(item.rate * 100)"
+                ></el-progress>
+              </el-popover>
+              <meter
+                :value="item.rate"
+                min="0"
+                max="1"
+                low="0.6"
+                hight="0.8"
+                optimum="0.9"
+              ></meter>
+            </div>
           </el-checkbox>
         </el-checkbox-group>
       </div>
@@ -73,7 +83,7 @@
           </el-checkbox>
         </div>
 
-        <div style="margin: 15px 0"></div>
+        <div style="margin: 15px"></div>
 
         <el-checkbox-group
           v-model="computeFeatures"
@@ -84,9 +94,44 @@
             :label="item.riskFactor"
             :key="item.riskFactor"
             border
-            style="width: auto; margin: 10px"
+            style="width: auto; margin: 10px; padding: 5px"
           >
-            <el-popover
+            <div style="display: flex; flex-direction: column">
+              <el-popover
+                placement="top-end"
+                width="150"
+                :title="popovername"
+                trigger="hover"
+                :content="item.rate"
+                :open-delay="200"
+              >
+                <span slot="reference">{{ item.riskFactor }}</span>
+                <el-progress
+                  :percentage="item.rate * 100"
+                  :color="changeProgressColor(item.rate * 100)"
+                ></el-progress>
+              </el-popover>
+              <meter
+                :value="item.rate"
+                min="0"
+                max="1"
+                low="0.6"
+                hight="0.8"
+                optimum="0.9"
+              ></meter>
+            </div>
+            <!-- <div style="display: flex; flex-direction: column">
+              <span>{{ item.riskFactor }}</span>
+              <meter
+                value="20"
+                min="0"
+                max="100"
+                low="30"
+                hight="60"
+                optimum="90"
+              ></meter>
+            </div> -->
+            <!-- <el-popover
               placement="top-end"
               width="150"
               :title="popovername"
@@ -99,7 +144,7 @@
                 :percentage="item.rate * 100"
                 :color="changeProgressColor(item.rate * 100)"
               ></el-progress>
-            </el-popover>
+            </el-popover> -->
           </el-checkbox>
         </el-checkbox-group>
 
@@ -119,8 +164,8 @@
       <el-divider></el-divider>
 
       <!---------------------------------------------------------- 特征重要性拖动滑块 -------------------------------------------------->
-      <div  v-loading="compute_loading">
-        <div style="margin-bottom: 50px"  >
+      <div v-loading="compute_loading">
+        <div style="margin-bottom: 50px">
           <div calss="top">
             <span class="lineStyle">▍</span
             ><span class="featureTitle"
@@ -133,16 +178,16 @@
               </div>
               <el-icon slot="reference" class="el-icon-warning-outline"></el-icon>
             </el-popover> -->
-          
+
             <!------- 下拉框得到默认值 ----------------->
             <el-icon slot="reference" class="el-icon-warning-outline"></el-icon>
-              选择一个算法初步计算各特征的特征重要性：
+            选择一个算法初步计算各特征的特征重要性：
             <el-select
-              v-model="value"            
+              v-model="value"
               style="margin: 20px"
               default-first-option
-              @change="runDefaultReward(value)"            
-              :disabled="isDisabled"            
+              @change="runDefaultReward(value)"
+              :disabled="isDisabled"
             >
               <!-- <div>
                 手动设置奖励程度大小              
@@ -156,7 +201,6 @@
               >
               </el-option>
             </el-select>
-            
           </div>
         </div>
 
@@ -170,18 +214,17 @@
               style="width: 100%"
             ></el-slider>
           </el-col>
-          
+
           <!-- <el-col :span="4"> &nbsp; &nbsp; &nbsp;{{ item.rate }}%</el-col> -->
         </el-row>
       </div>
 
       <div class="buttonGroup">
         <el-button @click="backStep()" round>上一步</el-button>
-        <!-- <el-button @click="printALLFeatures()">测试</el-button> --> 
+        <!-- <el-button @click="printALLFeatures()">测试</el-button> -->
         <el-button type="primary" @click="next()" round>下一步</el-button>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -215,12 +258,14 @@ export default {
     totalFeatures() {
       return this.allFeatures.length;
     },
+    //填充率
+    fillingRate() {},
   },
   data() {
     return {
       // 所有特征计算重要性
       compute_loading: false,
-      
+
       // 获取虚拟树形结构数据
       // treeData: JSON.parse(JSON.stringify(treeData)),
       isChange: false,
@@ -237,7 +282,7 @@ export default {
       computeFeatures: [],
       knownFeatures: [],
       targetFeatures: [],
-      
+
       labelFeatures: [],
       defaultReward: [],
 
@@ -262,7 +307,7 @@ export default {
         doctorRate: "",
       },
       formDatalist: [],
-      
+
       isDisabled: true,
       value: "",
       options: [
@@ -287,7 +332,7 @@ export default {
 
   mounted() {
     this.init();
-    // this.getData();       
+    // this.getData();
   },
   methods: {
     init() {
@@ -349,10 +394,10 @@ export default {
       // 处理全选复选框状态改变
       if (checked) {
         this.computeFeatures = this.allFeatures.map((item) => item.riskFactor);
-        this.isDisabled=false;
+        this.isDisabled = false;
       } else {
         this.computeFeatures = [];
-        this.isDisabled=true;
+        this.isDisabled = true;
       }
     },
 
@@ -360,38 +405,44 @@ export default {
       // 处理全选复选框状态改变
       if (checked) {
         this.labelFeatures = this.targetFeatures.map((item) => item.riskFactor);
-        
       } else {
         this.labelFeatures = [];
-        
       }
     },
 
     changeBox_compute() {
-      if (this.computeFeatures.length === this.allFeatures.length && this.computeFeatures.length > 0) {
+      if (
+        this.computeFeatures.length === this.allFeatures.length &&
+        this.computeFeatures.length > 0
+      ) {
         this.checkAll_compute = true;
       } else {
         this.checkAll_compute = false;
       }
 
-      if (this.computeFeatures.length > 0){
-        this.isDisabled=false;
-      }else{
-        this.isDisabled=true;
+      if (this.computeFeatures.length > 0) {
+        this.isDisabled = false;
+      } else {
+        this.isDisabled = true;
       }
     },
 
     changeBox_2() {
-      if (this.knownFeatures.length === this.allFeatures.length && this.knownFeatures.length != 0) {
+      if (
+        this.knownFeatures.length === this.allFeatures.length &&
+        this.knownFeatures.length != 0
+      ) {
         this.checkAll_2 = true;
       } else {
         this.checkAll_2 = false;
       }
-      
     },
 
     changeBox_label() {
-      if (this.labelFeatures.length === this.targetFeatures.length && this.labelFeatures.length > 0) {
+      if (
+        this.labelFeatures.length === this.targetFeatures.length &&
+        this.labelFeatures.length > 0
+      ) {
         this.checkAll_label = true;
       } else {
         this.checkAll_label = false;
@@ -399,14 +450,14 @@ export default {
     },
 
     runDefaultReward(model) {
-      if (this.computeFeatures.length < 5 ) {
+      if (this.computeFeatures.length < 5) {
         this.$message({
           type: "warning",
           message: "请选择至少5个特征参与运算",
         });
         return;
       }
-      if (this.labelFeatures.length < 1){
+      if (this.labelFeatures.length < 1) {
         this.$message({
           type: "warning",
           message: "请选择至少1个标签参与运算",
@@ -423,42 +474,42 @@ export default {
         return;
       }
 
-      this.compute_loading=true,
-      postRequest("/runtime_bus/submitBus", {
-        // "model": model,
+      (this.compute_loading = true),
+        postRequest("/runtime_bus/submitBus", {
+          // "model": model,
 
-        tableName: this.m_dataset,
-        features: this.computeFeatures,
-        labels: this.labelFeatures,
-        alg: model,
-        mode: "public",
-      }).then((res) => {
-        // console.log("defaultReward:", this.defaultReward);
-        // console.log("allFeatures:", this.allFeatures);
-        this.defaultReward = res;
-        for (var risk in this.defaultReward) {
-          // console.log(" risk ",this.defaultReward[risk]["riskFactor"], this.defaultReward[risk]["rate"]);
-          for (var risk2 in this.allFeatures) {
-            if (
-              this.defaultReward[risk]["riskFactor"] == this.defaultReward[risk2]["riskFactor"]
-            ) {
-              this.allFeatures[risk2]["doctorRate"] =
-                parseFloat(this.defaultReward[risk]["rate"]) * 100;
-              break;
+          tableName: this.m_dataset,
+          features: this.computeFeatures,
+          labels: this.labelFeatures,
+          alg: model,
+          mode: "public",
+        }).then((res) => {
+          // console.log("defaultReward:", this.defaultReward);
+          // console.log("allFeatures:", this.allFeatures);
+          this.defaultReward = res;
+          for (var risk in this.defaultReward) {
+            // console.log(" risk ",this.defaultReward[risk]["riskFactor"], this.defaultReward[risk]["rate"]);
+            for (var risk2 in this.allFeatures) {
+              if (
+                this.defaultReward[risk]["riskFactor"] ==
+                this.defaultReward[risk2]["riskFactor"]
+              ) {
+                this.allFeatures[risk2]["doctorRate"] =
+                  parseFloat(this.defaultReward[risk]["rate"]) * 100;
+                break;
+              }
             }
+            console.log(
+              " risk ",
+              this.allFeatures[risk]["riskFactor"],
+              this.allFeatures[risk]["doctorRate"]
+            );
           }
-          console.log(
-            " risk ",
-            this.allFeatures[risk]["riskFactor"],
-            this.allFeatures[risk]["doctorRate"]
-          );
-        }
-        this.compute_loading=false;
-      });
+          this.compute_loading = false;
+        });
     },
 
     next() {
-      
       if (this.labelFeatures.length < 1) {
         alert("该数据没有标签特征，请重新选择或上传数据表");
         return;
@@ -598,6 +649,13 @@ export default {
   transform: translateX(-50%); /* 水平居中 */
   width: 200px;
   z-index: 9999; /* 置于最顶层 */
-  margin-left:6%;
+  margin-left: 6%;
+}
+.card-border {
+  border: 1px solid #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px 0 rgba(151, 150, 150, 0.4); 
+  /* background: rgba(255, 255, 255, 0.1); */
+  padding: 10px;
 }
 </style>
