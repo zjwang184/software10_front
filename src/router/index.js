@@ -16,7 +16,10 @@ import DiseaPredict from '@/components/tab/disea_predict/DiseaPredict.vue';
 // import LogIn from "@/views/LogIn.vue"
 import SoftwareIntro from "@/components/tab/SoftwareIntro.vue";
 import TaskCheck from '@/components/tab/subcomponents/TaskCheck.vue'; 
-import AdminDataManage from '@/components/tab/AdminDataManage/AdminDataManage.vue';
+
+// 系统管理的几个功能模块
+import AdminDataManage from '@/components/tab/sysManage/AdminDataManage.vue';
+import SettingDisease from '@/components/tab/sysManage/SettingDisease.vue';
 Vue.use(VueRouter)
 
 const routes = [
@@ -101,6 +104,16 @@ const routes = [
         path: 'AdminDataManage',
         name: 'AdminDataManage',
         component: AdminDataManage, 
+      },
+      {
+        path: 'LogManage',
+        name: 'LogManage',
+        component: LogManage, 
+      },
+      {
+        path: 'SettingDisease',
+        name: 'SettingDisease',
+        component: SettingDisease, 
       },
     ],
   },

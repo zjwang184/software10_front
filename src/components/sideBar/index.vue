@@ -82,10 +82,10 @@
                 <el-menu-item index="/sideBar/ModelTraining" disabled
                   >通知管理</el-menu-item
                 >
-                <el-menu-item index="/sideBar/DiseaPredict" disabled
+                <el-menu-item index="/sideBar/LogManage" disabled
                   >日志管理</el-menu-item
                 >
-                <el-menu-item index="/sideBar/taskManage" disabled
+                <el-menu-item index="/sideBar/SettingDisease" 
                   >参数设置</el-menu-item
                 >
               </el-menu-item-group>
