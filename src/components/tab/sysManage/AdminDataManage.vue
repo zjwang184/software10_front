@@ -1,31 +1,28 @@
 <template>
     <div>
         <el-row :gutter="20">
-            
-                <div class="grid-content ">
-                    <el-select
-                        v-model="type"            
-                        class="search_input"
-                        default-first-option    
-                        placeholder="请选择搜索类型"       
-                        >
-                        <el-option
-                            v-for="item in searchTypes"                            
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value"
-                        >
-                        </el-option>
-                    </el-select>
+            <div class="grid-content ">
+                <el-select
+                    v-model="type"            
+                    class="search_input"
+                    default-first-option    
+                    placeholder="请选择搜索类型"       
+                    >
+                    <el-option
+                        v-for="item in searchTypes"                            
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                    >
+                    </el-option>
+                </el-select>
 
-                    <el-input placeholder="输入信息进行模糊搜索" v-model="searchByName" class="search_input" clearable @clear="getAllAdminDataTable()">
-                        <i slot="prefix" class="el-input__icon el-icon-search"></i>
-                    </el-input>
+                <el-input placeholder="输入信息进行模糊搜索" v-model="searchByName" class="search_input" clearable @clear="getAllAdminDataTable()">
+                    <i slot="prefix" class="el-input__icon el-icon-search"></i>
+                </el-input>
 
-                    <el-button icon="el-icon-search" circle class="search_btn" @click="getAdminDataTableByName()"></el-button>
-                </div>
-         
-            
+                <el-button icon="el-icon-search" circle class="search_btn" @click="getAdminDataTableByName()"></el-button>
+            </div>   
         </el-row>
 
         <el-divider></el-divider>

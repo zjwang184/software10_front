@@ -452,34 +452,6 @@ export default {
       }
     },
 
-    // pagehelper() {
-    //   getRequest(
-    //     `user/selectByPage?pageNum=${this.params.page}&pageSize=${this.params.size}&searchUser=${this.searchUser}`
-    //   ).then((res) => {
-    //     if (res) {
-    //       this.total = res.data.total;
-    //       this.currentUserList = res.data.list;
-    //     }
-    //   });
-    // },
-    // addUser() {
-    //   postRequest("/user/addUser", this.addUserForm).then((res) => {
-    //     if (res.code == 200) {
-    //       this.$message.success("新增用户成功");
-    //       this.closeDialog();
-    //       this.pagehelper();
-    //     } else {
-    //       this.$message.error("新增用户失败");
-    //       this.closeDialog();
-    //       this.pagehelper();
-    //     }
-    //   });
-    // },
-    // closeDialog() {
-    //   this.addUserDialogVisible = false;
-    //   this.addUserForm.username = "";
-    //   this.addUserForm.password = "";
-    // },
     deleteUser(row) {
       const params = {
         uid: row.uid,
@@ -497,32 +469,6 @@ export default {
       });
     },
 
-    // getInfoUser(uid) {
-    //   getRequest(`user/getInfo/${uid}`).then((res) => {
-    //     if (res.code == 200) {
-    //       this.editUserDialogVisible = true;
-    //       this.showUserForm.username = res.data.username;
-    //       this.showUserForm.password = res.data.password;
-    //       this.showUserForm.role = res.data.role;
-    //       this.showUserForm.createTime = res.data.createTime;
-    //       this.showUserForm.uid = res.data.uid;
-    //     } else {
-    //       this.$message.error("获取用户信息失败");
-    //       this.pagehelper();
-    //     }
-    //   });
-    // },
-    // confirmEditUser() {
-    //   postRequest("user/edit", this.showUserForm).then((res) => {
-    //     if (res.code == 200) {
-    //       this.$message.success("修改用户成功");
-    //       this.pagehelper();
-    //     } else {
-    //       this.$message.error("修改用户失败");
-    //       this.pagehelper();
-    //     }
-    //   });
-    // },
   },
 };
 </script>
