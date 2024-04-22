@@ -7,7 +7,7 @@
             src="http://www.cqupt.edu.cn/dfiles/13011/cqupt/img/favicon_128x128.ico"
             style="height: 100px; width: 100px"
           />
-          <h1>人群队列数据特征表征工具软件</h1>
+          <h1>医学知识引导的多病种疾病风险预测强化学习工具软件</h1>
         </div>
         <div class="mainImg">
           <img
