@@ -31,28 +31,28 @@
             <div slot="header" class="clearfix">
                 <span>数据信息</span>
                 <el-button type="success" round style="margin-left: 90%;"
-                    @click="uploadDataDialogVisible = true">
+                    @click="uploadDataDialogVisible = true; getDataDiseases()">
                     <i  class="el-icon-upload"></i>上传数据集</el-button>
             </div>
 
             <el-table class="el-table" :data="displayedAdminDataManageList" stripe style="width: 100%">
                 <el-table-column prop="id" label="id" width="200">
                 </el-table-column>
-                <el-table-column prop="tableName" label="数据表名称" width="250">                    
+                <el-table-column prop="tableName" label="数据表名称" width="150">                    
                 </el-table-column>
-                <el-table-column prop="createUser" label="创建用户" width="250">
+                <el-table-column prop="createUser" label="用户名称" width="150">
                 </el-table-column>
-                <el-table-column prop="classPath" label="所属类别" width="250">
+                <el-table-column prop="classPath" label="所属类别" width="300">
                     <!-- <template slot-scope="scope">
                         <el-tag type="success" v-if="scope.row.role == '0'">管理员</el-tag>
                         <el-tag v-if="scope.row.role == '1'">普通用户</el-tag>
                     </template> -->
                 </el-table-column>
-                <el-table-column prop="createTime" label="创建时间" width="250">
+                <el-table-column prop="createTime" label="创建时间" width="150">
                 </el-table-column>
-                <el-table-column prop="tableStatus" label="数据表状态" width="250">
+                <el-table-column prop="tableStatus" label="数据表状态" width="100">
                 </el-table-column>
-                <el-table-column prop="tableSize" label="数据表大小" width="250">
+                <el-table-column prop="tableSize" label="数据表大小" width="100">
                 </el-table-column>
 
                 <el-table-column label="操作">
@@ -126,38 +126,18 @@
                     placeholder="请输入数据表名称"
                 ></el-input>
                 </el-form-item>
-                <el-form-item label="涉及一级疾病">
-                    <el-select
-                        v-model="dialogForm.dataDisease"
-                        filterable
-                        placeholder="请选择或搜索"
-                    >
-                        <el-option
-                        v-for="item in disOptions.firstSelect"
-                        :key="item.label"
-                        :label="item.label"                        
-                        :value="item.label"
-                        @click.native="getLevel3ById(item.id)"
-                        >
-                        </el-option>
-                    </el-select>
+                <el-form-item label="请选择病种">
+                    <div class="block">                        
+                        <el-cascader
+                            clearable
+                            :options="disOptions"
+                            :props="{ checkStrictly: true }"
+                            v-model="selectedOptions"
+                            @change="handleCascaderChange"
+                            ></el-cascader>
+                        </div>
                 </el-form-item>
-                <el-form-item label="涉及二级疾病">
-                    <el-select
-                        v-model="dialogForm.dataDisease2"
-                        filterable
-                        placeholder="请选择或搜索"
-                    >
-                    <el-option
-                        v-for="item in disOptions.secondSelect"
-                        :key="item.label"
-                        :label="item.label"
-                        :value="item.label"
-                        @click.native="setPid(item.id)"
-                        >
-                        </el-option>
-                    </el-select>
-                </el-form-item>
+                
             </el-form>
 
             <div slot="footer" class="dialog-footer">
@@ -175,7 +155,10 @@
                 <el-form-item label="数据表名称" label-width="120">
                     <el-input v-model="adminDataManageForm.tableName" autocomplete="off" size="medium"></el-input>
                 </el-form-item>
-                <el-form-item label="创建用户" label-width="120">
+                <el-form-item label="用户名称" label-width="120">
+                    <el-input v-model="adminDataManageForm.createUser" autocomplete="off" disabled size="medium"></el-input>
+                </el-form-item>
+                <el-form-item label="用户角色" label-width="120">
                     <el-input v-model="adminDataManageForm.createUser" autocomplete="off" disabled size="medium"></el-input>
                 </el-form-item>
                 <el-form-item label="所属类别" label-width="120">
@@ -273,16 +256,15 @@ export default {
             pid:'',
             loading: false,
             loadText: "拼命加载中",
-            disOptions:{
-                firstSelect:[],
-                secondSelect:[]
-            },
+            disOptions: [],
+            selectedOptions: [],
             dialogForm: {
                 filesInfo: [],
                 tableName: "",
                 isOnly: true,
                 dataDisease: "",
                 dataDisease2:"",
+                dataDisease3:"",
                 featuresNum: 1,
                 fields: [{ name: "", type: "" }],
                 rules: {
@@ -318,7 +300,18 @@ export default {
                 uid: '',
                 tableStatus:"",
                 tableSize:0
-            },            
+            },   
+            
+            roles: [
+                {
+                label: "管理员",
+                value: 0,
+                },
+                {
+                label: "普通用户",
+                value: 1,
+                },
+            ],
             
 
             status:{
@@ -383,19 +376,50 @@ export default {
             })            
         },
 
-        getLevel3ById(pid){
-            this.dialogForm.dataDisease2=''
-            getRequest(`/api/sysManage/getLabelByPid`, {
-                pid: pid
-            }).then(res => {
-                if (res.code == 200) {
-                    console.log("secondSelect", res.data);
-                    this.disOptions.secondSelect=res.data;
-                }
-            })
+        async getLevel3ById(pid, level){
+            let data = [];
+            console.log("pid, level", pid, level)
+            await getRequest(`/api/sysManage/getLabelByPid`, {
+                    pid: pid
+                }).then(res => {
+                    if (res.code == 200) {
+                        data=res.data;                       
+                    }
+                })
+            
+            if (level === 2){
+                this.dialogForm.dataDisease2='';
+                this.dialogForm.dataDisease3='';
+                this.disOptions.secondSelect = data;
+            }
+            if (level === 3){
+                this.dialogForm.dataDisease3='';
+                this.disOptions.thirdSelect = data;
+                console.log("this.thirdSelect", this.disOptions.thirdSelect)
+            }
+
+            console.log("this.disOptions", this.disOptions.secondSelect, this.disOptions.thirdSelect)
+            
+           
+        },
+        handleCascaderChange(value) {
+            // console.log('Selected Options:',value, this.selectedOptions[this.selectedOptions.length-1]);
+            // 如果你希望同时更新 dataDisease
+            this.pid = value[value.length-1];
+            console.log(this.pid, this.dataDisease)
         },
         setPid(pid){
-            this.pid = pid;
+            this.pid = pid===''?this.pid:pid;
+        },
+        getDataDiseases(){
+            getRequest(`/api/sysManage/selectDataDiseases`).then(res => {
+                if (res.code == 200) {
+                    console.log("selectDataDiseases", res.data);
+                    this.disOptions = res.data; 
+                }else{
+                    console.logt("res", res.data)
+                }
+            })
         },
 
 
@@ -455,24 +479,25 @@ export default {
         },
         // 数据表上传函数
         upRequest(data) {
-            if (this.dialogForm.dataDisease === ''){
+            if (this.selectedOptions.length < 1){
                 this.$message({
                     type: "warning",
-                    message: "请选择该数据表应该在什么一级病种",
+                    message: "请选择该数据表应该属于什么病种",
                 });
                 return;
             }
-            if (this.dialogForm.dataDisease2 === ''){
-                this.$message({
-                    type: "warning",
-                    message: "请选择该数据表应该在什么二级病种",
-                });
-                return;
-            }
+            // if (this.dialogForm.dataDisease2 === ''){
+            //     this.$message({
+            //         type: "warning",
+            //         message: "请选择该数据表应该在什么二级病种",
+            //     });
+            //     return;
+            // }
             console.log("开始上传文件");
 
             const fileSize = data.file.size;
-            const fileSizeInMB = fileSize / (1024.0 * 1024.0)
+           
+            const fileSizeInMB = (fileSize / (1024.0 * 1024.0)).toFixed(2)
             console.log("fileSize", fileSize, fileSizeInMB);
 
             const payload = new FormData();
@@ -480,9 +505,10 @@ export default {
             payload.append("pid", this.pid);
             payload.append("tableName", this.dialogForm.tableName);
             payload.append("userName", sessionStorage.getItem("username"));
-            payload.append("classPath", "公共数据集/"+this.dialogForm.dataDisease + "/" + this.dialogForm.dataDisease2 + "/" + this.dialogForm.tableName)
-            payload.append("uid", sessionStorage.getItem("userid") - 0);           
 
+            payload.append("ids", this.selectedOptions)
+
+            payload.append("uid", sessionStorage.getItem("userid") - 0);   
             payload.append("tableStatus", "2");
             payload.append("tableSize", fileSizeInMB);
             payload.append("current_uid", sessionStorage.getItem("userid") - 0);
@@ -520,20 +546,20 @@ export default {
             
             },
         uploadFile() {
-            if (this.dialogForm.dataDisease === ''){
+            if (this.selectedOptions.length < 1){
                 this.$message({
                     type: "warning",
-                    message: "请选择该数据表应该在什么一级病种",
+                    message: "请选择该数据表应该属于什么病种",
                 });
                 return;
             }
-            if (this.dialogForm.dataDisease2 === ''){
-                this.$message({
-                    type: "warning",
-                    message: "请选择该数据表应该在什么二级病种",
-                });
-                return;
-            }
+            // if (this.dialogForm.dataDisease2 === ''){
+            //     this.$message({
+            //         type: "warning",
+            //         message: "请选择该数据表应该在什么二级病种",
+            //     });
+            //     return;
+            // }
             console.log("开始上传文件");
             if (this.$refs["uploadRef"].uploadFiles.length < 1) {
                 this.$message({
