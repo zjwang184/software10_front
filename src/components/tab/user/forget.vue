@@ -343,7 +343,7 @@ export default {
                username:this.forgetForm1.username,
                password:this.forgetForm3.password
              }
-             postRequest(`user/updatePwd?curUid=${sessionStorage.getItem("userid") - 0}`,params).then((res)=>{
+             postRequest(`user/updatePwd`,params).then((res)=>{
                console.log('res',res)
                if(res){
                if(res.code===200){
