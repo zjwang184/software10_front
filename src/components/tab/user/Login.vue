@@ -301,7 +301,8 @@ export default {
       this.$refs.loginForm.validate((valid) => {
         if (valid) {
           this.loading = true;
-          postRequest(`user/login?curUid=${sessionStorage.getItem("userid") - 0}`, this.loginForm).then((resp) => {
+          console.log("dengl")
+          postRequest(`user/login`, this.loginForm).then((resp) => {
             if (resp) {
               this.loading = false;
               console.log(resp);
