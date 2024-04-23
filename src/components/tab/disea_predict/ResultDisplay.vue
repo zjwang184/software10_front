@@ -65,8 +65,10 @@
       </div>
         <div class="box">
           <div >
-            <img src="http://10.16.97.233:8088/fig/shap2.png" alt="Image" style="margin-left: 25%;"/>
-            <img src="http://10.16.97.233:8088/fig/shap1.png" alt="Image" style="margin-left: 5%;"/>
+            <img :src="imgurl1" alt="Image" style="margin-left: 25%;"/>
+            <img :src="imgurl2" alt="Image" style="margin-left: 5%;"/>
+            <!-- <img src="http://10.16.97.233:8088/fig/shap2.png" alt="Image" style="margin-left: 25%;"/>
+            <img src="http://10.16.97.233:8088/fig/shap1.png" alt="Image" style="margin-left: 5%;"/> -->
           </div>
           <!-- <PlusAndMinusBarVue /> -->
         </div>
@@ -106,6 +108,9 @@ export default {
       predValue:"",
       tableData: [],
       imageUrl:"",
+      imgurl1:"",
+      imgurl2:"",
+
       distribution: [
         {
           feature_name: "age",
@@ -241,13 +246,14 @@ export default {
     };
   },
   mounted() {
-    console.log("typeof XLSX",typeof XLSX);
-    if (typeof XLSX === "undefined") {
-      console.error("XLSX is not available.");
-    } else {
-      console.log("XLSX is available.");
-    };
     this.init();
+    // console.log("typeof XLSX",typeof XLSX);
+    // if (typeof XLSX === "undefined") {
+    //   console.error("XLSX is not available.");
+    // } else {
+    //   console.log("XLSX is available.");
+    // };
+    
     // this.getKnowledge();
   },
   computed: {
@@ -264,7 +270,10 @@ export default {
     init() {
       this.tableData = this.m_patient_form;
       this.predValue = this.m_predValue;
-      this.getImageFromBackend();
+      // this.getImageFromBackend();
+      this.imgurl1 = `http://10.16.97.233:8088/fig/${this.m_predict_task_name}_${this.m_predict_model_name}_shap2.png`
+      this.imgurl2 = `http://10.16.97.233:8088/fig/${this.m_predict_task_name}_${this.m_predict_model_name}_shap1.png`
+      console.log("imgurl:", this.imgurl1, this.imgurl2)
       console.log("this.tableData   ", this.tableData);
       console.log("this.m_patient_form2222222   ", this.m_patient_form);
       console.log("this.predValue   ", this.predValue);

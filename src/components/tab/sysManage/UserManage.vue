@@ -466,10 +466,10 @@ export default {
         if (res.code == 200) {
           console.log("删除成功");
           this.$message.success("删除用户成功");
-          this.getUserTable();
+          this.getUserTable(1);
         } else {
           this.$message.error("删除用户失败");
-          this.getUserTable();
+          this.getUserTable(1);
         }
       });
     },

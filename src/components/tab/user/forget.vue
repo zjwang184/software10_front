@@ -303,7 +303,7 @@ export default {
           q3: this.questions[2] + ":" + this.forgetForm2.q3,
         };
     
-        postRequest(`user/verify?curUid=${sessionStorage.getItem("userid") - 0}`, params).then((res) => {
+        postRequest(`user/verify`, params).then((res) => {
    
           if (res.code === 200) {
             this.$message.success(`${res.msg}`);
