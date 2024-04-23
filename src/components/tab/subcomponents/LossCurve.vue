@@ -1,9 +1,5 @@
 <template>
-  <div
-    id="LossCurve"
-    ref="LossCurve"
-    style="width: 100%; height: 400px"
-  ></div>
+  <div id="LossCurve" ref="LossCurve" style="width: 100%; height: 400px"></div>
 </template>
 
 <script>
@@ -14,7 +10,7 @@ export default {
   props: {
     title_text: {
       type: String,
-      default: "LossCurve",
+      default: "Loss Curve",
     },
     data: {
       type: Object,
@@ -42,26 +38,49 @@ export default {
       const data = this.lossData;
       const dateList = data.map((item) => item[0]);
       const valueList = data.map((item) => item[1]);
-      
+
       option = {
-        visualMap: [
-          { show: false, type: "continuous", seriesIndex: 0, min: 0, max: 400 },
+        legend: {
+          // 添加图例
+          data: ["Loss"], // 图例的名称
+          align: "right", // 图例的位置
+          top: 20, // 图例距离容器顶部的距离
+        },
+        title: [{ left: "center", text: this.title_text }], // 使用组件的标题属性作为图表的标题
+        tooltip: { trigger: "axis" },
+        xAxis: [
           {
-            show: false,
-            type: "continuous",
-            seriesIndex: 1,
-            dimension: 0,
-            min: 0,
-            max: dateList.length - 1,
+            type: "category", // 横坐标类型为类目轴
+            data: dateList, // 设置横坐标数据
+            name: "迭代次数", // 设置横坐标名称
+            nameTextStyle: {
+              // 设置横坐标名称的样式
+              fontSize: 14,
+              fontWeight: "bold",
+            },
           },
         ],
-        title: [{ left: "center", text: "Loss Curve" }],
-        tooltip: { trigger: "axis" },
-        xAxis: [{ data: dateList }, { data: dateList, gridIndex: 1 }],
-        yAxis: [{}, { gridIndex: 1 }],
-        grid: [{}, { top: "100%" }],
-        series: [{ type: "line", showSymbol: false, data: valueList }],
+        yAxis: [
+          {
+            type: "value", // 纵坐标类型为数值轴
+            name: "损失值", // 设置纵坐标名称
+            nameTextStyle: {
+              // 设置纵坐标名称的样式
+              fontSize: 14,
+              fontWeight: "bold",
+            },
+          },
+        ],
+        series: [
+          {
+            name: "Loss", // 设置系列的名称，用于图例显示
+            type: "line",
+            showSymbol: false,
+            data: valueList,
+          },
+        ],
       };
+
       option && myChart.setOption(option);
     },
   },

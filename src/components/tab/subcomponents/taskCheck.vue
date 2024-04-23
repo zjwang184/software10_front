@@ -17,71 +17,78 @@
       <div></div>
       <div></div>
       <div></div>
-      <div class="taskInfoBox_taskname">
-        <el-icon class="el-icon-edit-outline"></el-icon>
+      <div class="taskInfoBox taskname">
+        <el-icon class="el-icon-edit-outline el-icon"></el-icon>
         <sp>任务名称：</sp>
         <span>{{ this.taskData.taskname }}</span>
       </div>
-      <div class="taskInfoBox_principal">
-        <el-icon class="el-icon-user"></el-icon><sp>任务负责人：</sp>
+      <div class="taskInfoBox principal">
+        <el-icon class="el-icon-user el-icon"></el-icon><sp>任务负责人：</sp>
         <span>{{ this.taskData.leader }}</span>
       </div>
-      <div class="taskInfoBox_participants">
-        <el-icon class="el-icon-user-solid"></el-icon><spa>参与人：</spa>
+      <div class="taskInfoBox participants">
+        <el-icon class="el-icon-user-solid el-icon"></el-icon
+        ><spa>参与人：</spa>
         <span>{{ this.taskData.participant }}</span>
       </div>
-      <div class="taskInfoBox_comment">
-        <el-icon class="el-icon-edit"></el-icon><spa>任务备注：</spa>
+      <div class="taskInfoBox comment">
+        <el-icon class="el-icon-edit el-icon"></el-icon><spa>任务备注：</spa>
       </div>
-      <div class="taskInfoBox_disease">
-        <el-icon class="el-icon-edit-outline"></el-icon><sp>研究病种：</sp>
+      <div class="taskInfoBox disease">
+        <el-icon class="el-icon-price-tag el-icon"></el-icon><sp>研究病种：</sp>
         <span>{{ this.taskData.disease }}</span>
       </div>
-      <div class="taskInfoBox dataset">
-        <el-icon class="el-icon-edit-outline"></el-icon><span>所用数据：</span>
+      <div class="taskInfoBox dataset el-icon">
+        <el-icon class="el-icon-coin el-icon"></el-icon><span>所用数据：</span>
         <span>{{ this.taskData.dataset }}</span>
       </div>
       <div class="taskInfoBox algorithm">
-        <el-icon class="el-icon-edit-outline"></el-icon><span>所用算法：</span>
+        <el-icon class="el-icon-cpu el-icon"></el-icon><span>所用算法：</span>
         <span>{{ this.taskData.modelname }}</span>
       </div>
       <div class="taskInfoBox use_features">
-        <el-icon class="el-icon-edit-outline"></el-icon><span>所用特征：</span>
+        <el-icon class="el-icon-date el-icon"></el-icon
+        ><span>创建时间：</span>
+        <span>{{ this.taskData.createtime }}</span>
+      </div>
+      <div class="taskInfoBox use_features">
+        <el-icon class="el-icon-notebook-2 el-icon"></el-icon
+        ><span>所用特征：</span>
         <span>{{ featureString }}</span>
       </div>
     </div>
 
     <div class="taskBox2" id="pdf_2">
-      <div style="font-size: 30px; margin-bottom: 20px">
-        {{ this.taskData.modelname }}模型信息：
+      <div>
+        <span class="lineStyle">▍</span
+        ><span class="featureTitle"
+          >{{ this.taskData.modelname }}模型信息：</span
+        >
       </div>
       <div></div>
       <div></div>
       <div></div>
 
-      <div>
-        <span class="lineStyle">▍</span
-        ><span class="featureTitle">精确率acc：</span>
+      <div class="taskInfoBox">
+        <el-icon class="el-icon-s-data el-icon"></el-icon><span>精确率acc：</span>
         <span>{{ transTOPercent(this.taskData.accuracy) }}</span>
       </div>
-      <div>
-        <span class="lineStyle">▍</span
-        ><span class="featureTitle">准确率precision：</span>
+      <div class="taskInfoBox">
+        <el-icon class="el-icon-s-claim el-icon"></el-icon
+        ><span>准确率precision：</span>
         <span>{{ transTOPercent(this.taskData.precision) }}</span>
       </div>
-      <div class="taskInfoBox algorithm">
-        <span class="lineStyle">▍</span
-        ><span class="featureTitle">召回率recall：</span>
+      <div class="taskInfoBox">
+        <el-icon class="el-icon-s-order el-icon"></el-icon
+        ><span>召回率recall：</span>
         <span>{{ transTOPercent(this.taskData.recall) }}</span>
       </div>
-      <div class="taskInfoBox use_features">
-        <span class="lineStyle">▍</span
-        ><span class="featureTitle">f1-score：</span>
+      <div class="taskInfoBox">
+        <el-icon class="el-icon-s-grid el-icon"></el-icon><span>f1-score：</span>
         <span>{{ transTOPercent(this.taskData.f1) }}</span>
       </div>
-      <div class="taskInfoBox result">
-        <span class="lineStyle">▍</span
-        ><span class="featureTitle">任务结果：</span>
+      <div class="taskInfoBox">
+        <el-icon class="el-icon-s-promotion el-icon"></el-icon><span>任务结果可视化：</span>
       </div>
       <div></div>
       <div></div>
@@ -293,10 +300,13 @@ export default {
   margin-bottom: 20px;
 }
 
+.taskBox1 div:nth-child(n + 13):nth-child(-n + 16),
 .taskBox2 div:nth-child(n + 13):nth-child(-n + 16) {
   grid-column: span 4;
 }
-
+.el-icon {
+  margin-right: 5px;
+}
 .lineStyle {
   color: rgb(100, 172, 231);
   font-weight: 100;
@@ -307,6 +317,10 @@ export default {
   font-size: 25px;
   margin-right: 30px;
   margin-bottom: 20px;
+}
+.taskInfoBox{
+  font-size:20px;
+  margin-top:8px;
 }
 
 .graphBox {
