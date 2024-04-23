@@ -303,7 +303,7 @@ export default {
           q3: this.questions[2] + ":" + this.forgetForm2.q3,
         };
     
-        postRequest("user/verify", params).then((res) => {
+        postRequest(`user/verify?curUid=${sessionStorage.getItem("userid") - 0}`, params).then((res) => {
    
           if (res.code === 200) {
             this.$message.success(`${res.msg}`);
@@ -343,7 +343,7 @@ export default {
                username:this.forgetForm1.username,
                password:this.forgetForm3.password
              }
-             postRequest('user/updatePwd',params).then((res)=>{
+             postRequest(`user/updatePwd?curUid=${sessionStorage.getItem("userid") - 0}`,params).then((res)=>{
                console.log('res',res)
                if(res){
                if(res.code===200){

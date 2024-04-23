@@ -226,7 +226,7 @@ export default {
       // 在这里实现保存数据到服务器的逻辑
       // 假设保存成功，更新userStatus显示
 
-      postRequest("notice/updateNotice", row).then((res) => {
+      postRequest(`notice/updateNotice?curUid=${sessionStorage.getItem("userid") - 0}`, row).then((res) => {
         if (res.code == 200) {
           this.$message.success("修改成功");
         } else {
@@ -268,7 +268,7 @@ export default {
     },
 
     deleteInform(row) {
-      postRequest("notice/delNotice", row).then((res) => {
+      postRequest(`notice/delNotice?curUid=${sessionStorage.getItem("userid") - 0}`, row).then((res) => {
         if (res.code == 200) {
           this.$message.success("删除通告成功");
           this.getInformTable(1);
@@ -285,7 +285,7 @@ export default {
         uid: sessionStorage.getItem("userid"),
         username: sessionStorage.getItem("username"),
       };
-      postRequest("notice/insertNotice", params).then((res) => {
+      postRequest(`notice/insertNotice?curUid=${sessionStorage.getItem("userid") - 0}`, params).then((res) => {
         if (res.code == 200) {
           this.$message.success("发布通告成功");
           this.closeDialog();

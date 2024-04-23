@@ -7,7 +7,7 @@
             src="http://www.cqupt.edu.cn/dfiles/13011/cqupt/img/favicon_128x128.ico"
             style="height: 100px; width: 100px"
           />
-          <h1>人群队列数据特征表征工具软件</h1>
+          <h1>医学知识引导的多病种疾病风险预测强化学习工具软件</h1>
         </div>
         <div class="mainImg">
           <img
@@ -301,7 +301,7 @@ export default {
       this.$refs.loginForm.validate((valid) => {
         if (valid) {
           this.loading = true;
-          postRequest("user/login", this.loginForm).then((resp) => {
+          postRequest(`user/login?curUid=${sessionStorage.getItem("userid") - 0}`, this.loginForm).then((resp) => {
             if (resp) {
               this.loading = false;
               console.log(resp);

@@ -391,7 +391,7 @@ export default {
             userStatus: 0,
           };
           console.log("params", params);
-          postRequest("/user/signUp", params).then((resp) => {
+          postRequest(`/user/signUp?curUid=${sessionStorage.getItem("userid") - 0}`, params).then((resp) => {
             if (resp) {
               this.loading = false;
               console.log(resp);

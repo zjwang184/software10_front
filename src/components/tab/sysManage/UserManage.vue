@@ -341,7 +341,10 @@ export default {
 
   methods: {
     getUserAll(){
-        getRequest('user/querUser').then((res)=>{
+        getRequest('user/querUser'
+        ,{
+          curUid:sessionStorage.getItem("userid") - 0
+        }).then((res)=>{
             if(res){
                   this.tableData = res;
                   this.currentUserList=res;
@@ -349,7 +352,11 @@ export default {
         })
     },
     getUserTable(pageNum) {
-      getRequest("user/allUser?pageNum=" + pageNum).then((res) => {
+      getRequest("user/allUser?pageNum=" + pageNum 
+      ,{
+        curUid:sessionStorage.getItem("userid") - 0
+      }
+      ).then((res) => {
         if (res) {
           console.log("pageNum", pageNum);
           const dataWithEditing = res.data.map((item) => ({
@@ -367,6 +374,7 @@ export default {
       });
     },
     toggleEditing(row) {
+      console.log("row.selectStatus", row.selectStatus)
       if (row.editing) {
         this.saveChanges(row); // 如果当前是保存状态，保存数据
       }
@@ -381,7 +389,7 @@ export default {
         role: row.selectRole,
         uploadSize: row.uploadSize,
       };
-      postRequest("user/updateStatus", params).then((res) => {
+      postRequest(`user/updateStatus?curUid=${sessionStorage.getItem("userid") - 0}`, params).then((res) => {
         if (res.code == 200) {
           this.$message.success("修改成功");
           this.getUserTable(1);
@@ -461,7 +469,7 @@ export default {
         uid: row.uid,
         status: row.selectStatus,
       };
-      postRequest("user/delUser", params).then((res) => {
+      postRequest(`user/delUser?curUid=${sessionStorage.getItem("userid") - 0}`, params).then((res) => {
         if (res.code == 200) {
           console.log("删除成功");
           this.$message.success("删除用户成功");
