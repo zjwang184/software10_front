@@ -341,10 +341,7 @@ export default {
 
   methods: {
     getUserAll(){
-        getRequest('user/querUser'
-        ,{
-          curUid:sessionStorage.getItem("userid") - 0
-        }).then((res)=>{
+        getRequest('user/querUser').then((res)=>{
             if(res){
                   this.tableData = res;
                   this.currentUserList=res;
@@ -352,11 +349,7 @@ export default {
         })
     },
     getUserTable(pageNum) {
-      getRequest("user/allUser?pageNum=" + pageNum 
-      ,{
-        curUid:sessionStorage.getItem("userid") - 0
-      }
-      ).then((res) => {
+      getRequest("user/allUser?pageNum=" + pageNum ).then((res) => {
         if (res) {
           console.log("pageNum", pageNum);
           const dataWithEditing = res.data.map((item) => ({
