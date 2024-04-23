@@ -193,7 +193,7 @@ export default {
       this.m_changeTaskInfo(this.taskInfoForm);
       console.log("taskInfoForm:", this.taskInfoForm);
       this.$notify({
-        title: "提示",
+        title: "任务信息填写成功",
         message: "请选择数据集进行下一步操作",
         type: "success",
       });

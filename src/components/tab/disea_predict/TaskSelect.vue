@@ -401,7 +401,7 @@ export default {
       result: {},
       // treeData: [],
       diseaseNum: "",
-      datasetNum:"",
+      datasetNum: "",
       treeData: JSON.parse(JSON.stringify(treeData)),
       disease: "",
       leader: "",
@@ -796,7 +796,6 @@ export default {
 }
 
 .right_bottom {
-  /* margin-top:20px; */
   height: 800px;
   overflow-y: auto;
   width: 100%;
@@ -834,6 +833,7 @@ export default {
 }
 
 .cardGroup {
+  padding-top:10px;
   width: 100%; /* 调整宽度 */
   height: auto;
   display: grid;
@@ -850,17 +850,24 @@ export default {
 
 .taskCard {
   margin-bottom: 10px;
+  margin-left:10px;
   width: 95%;
-  border: 1px solid #c0bebe; /* 边框颜色设置为黑色 */
-  box-shadow: 0 2px 4px rgba(88, 88, 88, 0.1);
-  border-radius: 10px;
   overflow-y: scroll; /* 或者 auto */
   scrollbar-width: none; /* 隐藏 Firefox 的滚动条 */
   -ms-overflow-style: none; /* 隐藏 IE/Edge 的滚动条 */
+  position: relative;
+  top: 0;
 }
 
-.taskCard::-webkit-scrollbar {
-  display: none; /* 隐藏 Chrome/Safari 的滚动条 */
+.taskCard:hover {
+  top: -5px;
+}
+
+.el-card {
+  border: 1px solid #fff !important;
+  border-radius: 10px !important;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.4) !important; /* 修正阴影的颜色和透明度 */
+  background: rgba(255, 255, 255, 0.1) !important;
 }
 
 .cardInfo {

@@ -10,51 +10,49 @@
       <el-button type="success" @click="exportToPDF()" round>导出PDF</el-button>
     </div>
     <div class="taskBox1" id="pdf_1">
-      <span style="font-size: 40px; margin-bottom: 20px">任务信息：</span
-      ><span></span><span></span><span></span>
-      <div class="taskInfoBox_taskname">
+      <div>
         <span class="lineStyle">▍</span
-        ><span class="featureTitle">任务名称：</span>
+        ><span class="featureTitle">任务信息：</span>
+      </div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div class="taskInfoBox_taskname">
+        <el-icon class="el-icon-edit-outline"></el-icon>
+        <sp>任务名称：</sp>
         <span>{{ this.taskData.taskname }}</span>
       </div>
       <div class="taskInfoBox_principal">
-        <span class="lineStyle">▍</span
-        ><span class="featureTitle">任务负责人：</span>
+        <el-icon class="el-icon-user"></el-icon><sp>任务负责人：</sp>
         <span>{{ this.taskData.leader }}</span>
       </div>
       <div class="taskInfoBox_participants">
-        <span class="lineStyle">▍</span
-        ><span class="featureTitle">参与人：</span>
+        <el-icon class="el-icon-user-solid"></el-icon><spa>参与人：</spa>
         <span>{{ this.taskData.participant }}</span>
       </div>
       <div class="taskInfoBox_comment">
-        <span class="lineStyle">▍</span
-        ><span class="featureTitle">任务备注：</span>
+        <el-icon class="el-icon-edit"></el-icon><spa>任务备注：</spa>
       </div>
       <div class="taskInfoBox_disease">
-        <span class="lineStyle">▍</span
-        ><span class="featureTitle">研究病种：</span>
+        <el-icon class="el-icon-edit-outline"></el-icon><sp>研究病种：</sp>
         <span>{{ this.taskData.disease }}</span>
       </div>
       <div class="taskInfoBox dataset">
-        <span class="lineStyle">▍</span
-        ><span class="featureTitle">所用数据：</span>
+        <el-icon class="el-icon-edit-outline"></el-icon><span>所用数据：</span>
         <span>{{ this.taskData.dataset }}</span>
       </div>
       <div class="taskInfoBox algorithm">
-        <span class="lineStyle">▍</span
-        ><span class="featureTitle">所用算法：</span>
+        <el-icon class="el-icon-edit-outline"></el-icon><span>所用算法：</span>
         <span>{{ this.taskData.modelname }}</span>
       </div>
       <div class="taskInfoBox use_features">
-        <span class="lineStyle">▍</span
-        ><span class="featureTitle">所用特征：</span>
+        <el-icon class="el-icon-edit-outline"></el-icon><span>所用特征：</span>
         <span>{{ featureString }}</span>
       </div>
     </div>
 
     <div class="taskBox2" id="pdf_2">
-      <div style="font-size: 40px; margin-bottom: 20px">
+      <div style="font-size: 30px; margin-bottom: 20px">
         {{ this.taskData.modelname }}模型信息：
       </div>
       <div></div>
@@ -275,24 +273,13 @@ export default {
   padding: 20px;
 }
 
-.taskBox1 {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  margin-bottom: 20px;
-  width: 95%;
-  height: auto;
-  padding: 20px;
-  border: 1px solid #fff;
-  border-radius: 10px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.4); /* 修正阴影的颜色和透明度 */
-  background: rgba(118, 118, 118, 0.1);
-}
-
+.taskBox1,
 .taskBox2 {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   margin-bottom: 20px;
-  width: 95%;
+  width: 99%;
+  height: auto;
   padding: 20px;
   border: 1px solid #fff;
   border-radius: 10px;
@@ -300,8 +287,14 @@ export default {
   background: rgba(118, 118, 118, 0.1);
 }
 
+.taskBox1 > span:first-child,
+.taskBox2 > span:first-child {
+  font-size: 30px;
+  margin-bottom: 20px;
+}
+
 .taskBox2 div:nth-child(n + 13):nth-child(-n + 16) {
-  grid-column: span 4; /* 合并第 13 到第 16 个 div 为 4 列 */
+  grid-column: span 4;
 }
 
 .lineStyle {

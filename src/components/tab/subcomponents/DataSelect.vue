@@ -1,5 +1,10 @@
 <template >
-  <div class="main" v-loading="next_loading">
+  <div
+    class="main"
+    v-loading="next_loading"
+    element-loading-text="正在加载中"
+    element-loading-spinner="el-icon-loading"
+  >
     <div class="left_tree">
       <div class="tipInfo">
         <h3>可选数据</h3>
@@ -56,7 +61,7 @@
         </div>
         <div>
           <i class="el-icon-date"></i>特征个数:
-          <span >{{ showDataForm.columnCount }}</span>
+          <span>{{ showDataForm.columnCount }}</span>
         </div>
         <div>
           <i class="el-icon-coin"></i>样本条数:
@@ -175,7 +180,7 @@ export default {
         createTime: "",
         classPath: "",
         columnCount: "",
-        rowCount:"",
+        rowCount: "",
       },
       showList: [],
 
@@ -222,8 +227,6 @@ export default {
       this.getTableDescribe(this.m_nodeid, this.m_dataset);
       this.getTableData(this.m_nodeid, this.m_dataset);
     } else {
-      // this.getTableDescribe("1772547909817176066", "diabetes10");
-      // this.getTableData("1772547909817176066", "diabetes10");
     }
     this.getData_loading = false;
   },
@@ -250,7 +253,6 @@ export default {
         this.treeData = response.data;
       });
     },
-
     getTableDescribe(id, label) {
       getTableDes("/api/tableDescribe", id)
         .then((response) => {
@@ -303,12 +305,11 @@ export default {
     async next(name) {
       if (!name) {
         this.$message({
-          message: '请先选择数据！',
-          type: 'warning'
+          message: "请先选择数据！",
+          type: "warning",
         });
         return;
       }
-
       this.next_loading = true;
       this.chosenData = name;
       // 如果选择了和缓存不一样的数据则进行重置
@@ -354,6 +355,11 @@ export default {
         // 确保所有异步操作完成后再进行下一步
         this.next_loading = false;
         this.m_changeStep(3);
+        this.$notify({
+          title: "数据选择成功",
+          message:"请选择特征进行下一步",
+          type:"success",
+        });
         console.log(
           "data_select—end this.targetFeatures:",
           this.m_target_features
@@ -496,7 +502,6 @@ export default {
   color: #ffffff;
   background: #62a2e7 !important;
 }
-
 
 /* 隐藏浏览器滚动条 */
 

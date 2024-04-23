@@ -17,7 +17,7 @@
         :highlight-current="true"
         @node-click="changeData"
       >
-      <template slot="default" slot-scope="{ node }">
+        <template slot="default" slot-scope="{ node }">
           <span
             :style="{
               fontWeight: node.level === 1 ? 'bold' : 'normal',
@@ -239,8 +239,6 @@ import TaskCheck from "./subcomponents/TaskCheck";
 import { treeData } from "@/components/tab/treeData.js";
 // import { taskList } from "@/components/tab/constTaskList.js";
 
-
-
 export default {
   components: {
     TaskCheck,
@@ -273,7 +271,6 @@ export default {
       diseaseName: "",
       treeData: JSON.parse(JSON.stringify(treeData)),
       // taskList: JSON.parse(JSON.stringify(taskList)),
-
     };
   },
 
@@ -511,7 +508,12 @@ export default {
   justify-self: end;
 }
 .taskCard {
-  /* width: 110%; */
+  position: relative;
+  top: 0;
+  cursor: pointer;
+}
+.taskCard:hover {
+  top: -5px;
 }
 
 .el-card {
