@@ -1,17 +1,10 @@
 <template >
   <div class="main" v-loading="next_loading">
     <div class="left_tree">
-      <div class="tree-top">
-        <h2>
-          病种、数据集选择<el-popover placement="top" trigger="hover">
-            <div>叶子节点为数据集，非叶子节点为病种</div>
-            <el-icon
-              class="el-icon-warning-outline"
-              slot="reference"
-              style="font-size: 15px; margin-left: 20px"
-            ></el-icon>
-          </el-popover>
-        </h2>
+      <div class="tipInfo">
+        <h3>可选数据</h3>
+        <span class="statistic"> 一级病种: {{ diseaseNum }} 个 </span>
+        <span class="statistic"> 数据表: {{ datasetNum }} 个 </span>
       </div>
       <el-tree
         ref="tree"
@@ -29,7 +22,7 @@
           <span
             :style="{
               fontWeight: node.level === 1 ? 'bold' : 'normal',
-              fontSize: node.level === 1 ? '20px' : 'inherit',
+              fontSize: node.level === 1 ? '16px' : 'inherit',
             }"
             >{{ node.label }}</span
           >
@@ -41,9 +34,9 @@
       <!--------------------------------- 数据集预览头部 ----------------------------------------------->
       <div class="describe_content">
         <div></div>
-        <h2 style="text-align: center">
+        <h3 style="text-align: center">
           <i class="el-icon-s-data"></i>数据集预览
-        </h2>
+        </h3>
         <div></div>
         <div>
           <i class="el-icon-folder"></i>数据集名称:
@@ -63,33 +56,22 @@
         </div>
         <div>
           <i class="el-icon-date"></i>特征个数:
-          <!-- <span >{{ showDataForm.classPath }}</span> -->
+          <span >{{ showDataForm.columnCount }}</span>
         </div>
         <div>
           <i class="el-icon-coin"></i>样本条数:
-          <span>{{ showDataForm.dataLength }}</span>
+          <span>{{ showDataForm.rowCount }}</span>
         </div>
       </div>
       <!-- 点击左树之前显示的提示内容 -->
       <div>
         <div v-if="!selectedDataset">
-          <div
-            class="container"
-            style="
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              justify-content: center;
-              width: 100%;
-              height: 100%;
-              font-size: 24px;
-              background-color: #f2f2f2;
-            "
-          >
+          <div class="table-container-before">
             <div class="blinking-text" style="margin-top: 20px">
               请点击左边树节点选择数据集
             </div>
-            <img src="@/assets/暂无数据_(1).png" class="imgStyle" />
+            <br />
+            <img src="@/assets/暂无数据.png" class="imgStyle" />
           </div>
         </div>
         <!----------- 显示表数据 -------------->
@@ -192,6 +174,8 @@ export default {
         createUser: "",
         createTime: "",
         classPath: "",
+        columnCount: "",
+        rowCount:"",
       },
       showList: [],
 
@@ -268,19 +252,22 @@ export default {
     },
 
     getTableDescribe(id, label) {
-      this.showDataForm.tableName = label;
       getTableDes("/api/tableDescribe", id)
         .then((response) => {
-          this.showDataForm.createUser = response.data.createUser;
-          this.showDataForm.createTime = response.data.createTime;
-          this.showDataForm.classPath = response.data.classPath;
-          // this.tableData = [];
+          // 将 JSON 字符串解析为对象
+          var res = JSON.parse(response.data);
+          console.log("res", res);
+          this.showDataForm.tableName = res.tableName;
+          this.showDataForm.createUser = res.createUser;
+          this.showDataForm.createTime = res.createTime;
+          this.showDataForm.classPath = res.classPath;
+          this.showDataForm.columnCount = res.columnCount;
+          this.showDataForm.rowCount = res.rowCount;
         })
         .catch((error) => {
           console.log("错误", error);
         });
     },
-
     getTableData(tableId, tableName) {
       getTableData("/api/getTableData", tableId, tableName)
         .then((response) => {
@@ -303,7 +290,6 @@ export default {
         this.getTableData(data.id, data.label);
         //显示表数据
         this.selectedDataset = true;
-        console.log("this.showDataForm2222", this.showDataForm);
       }
     },
 
@@ -397,7 +383,7 @@ export default {
 .main {
   display: grid;
   grid-template-columns: 15% 85%;
-  height: 70vh;
+  height: 85vh;
 }
 
 .bottom {
@@ -431,6 +417,16 @@ export default {
   scrollbar-width: none; /* 隐藏 Firefox 的滚动条 */
   -ms-overflow-style: none; /* 隐藏 IE/Edge 的滚动条 */
 }
+.tipInfo {
+  background-color: rgba(124, 124, 124, 0.1);
+  height: 50px;
+  text-align: center;
+}
+
+.tipInfo .statistic {
+  font-size: 13px;
+  color: #585858;
+}
 .custom-tree-node {
   flex: 1;
   display: flex;
@@ -454,36 +450,39 @@ export default {
   background: rgba(255, 255, 255, 0.1);
   padding: 0 10px 10px 0;
   font-size: 20px;
-  font-weight: bold;
 }
 .describe_content {
   display: grid;
   grid-template-rows: auto auto auto;
   grid-template-columns: 1fr 1fr 1fr;
   width: 100%;
-  color: #000000;
-  border-radius: 6px;
-  border: 1px solid #fff;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-  background-color: rgba(146, 145, 145, 0.3);
-  display: sticky;
-  top: 0;
+  height: 15vh;
+  color: #585858;
+  background-color: rgba(124, 124, 124, 0.1);
 }
 .describe_content i {
   margin: 0 5px;
 }
 .describe_content span {
-  margin-right: 25px;
-  color: rgb(40, 39, 39);
-  font-weight: 100;
+  margin-right: 13px;
 }
-
+.table-container-before {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-size: 24px;
+}
 .blinking-text {
+  color: #585858;
   animation: blink-animation 1s infinite alternate; /* 定义闪烁动画 */
 }
+
 @keyframes blink-animation {
   from {
-    opacity: 1; /* 起始状态为不透明 */
+    opacity: 0.9; /* 起始状态为不透明 */
   }
   to {
     opacity: 0.3; /* 终止状态为完全透明 */
@@ -498,12 +497,6 @@ export default {
   background: #62a2e7 !important;
 }
 
-.tree-top {
-  background-color: rgba(146, 145, 145, 0.3);
-  width: 100%;
-  border: 1px solid #fff;
-  border-radius: 10px;
-}
 
 /* 隐藏浏览器滚动条 */
 
@@ -512,7 +505,7 @@ export default {
   -ms-overflow-style: none; /* 隐藏 IE/Edge 的滚动条 */
 }
 .imgStyle {
-  width: 40%;
-  border-radius: 15px;
+  width: 25%;
+  margin-left: 50px;
 }
 </style>

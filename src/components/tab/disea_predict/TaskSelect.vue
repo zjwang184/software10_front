@@ -1,30 +1,11 @@
 <template>
   <div class="main">
     <div class="left_tree">
-      <!-- <el-checkbox v-model="isAllChecked" @change="handleAllCheckedChange"
-        >全选</el-checkbox
-      > -->
-      <!-- <el-alert>叶子节点为数据集，非叶子节点为病种</el-alert> -->
-      <div
-        style="
-          background-color: rgba(146, 145, 145, 0.3);
-          width: 100%;
-          border: 1px solid #fff;
-          border-radius: 10px;
-        "
-      >
-        <h2>
-          病种、数据集选择<el-popover placement="top" trigger="hover">
-            <div>叶子节点为数据集，非叶子节点为病种</div>
-            <el-icon
-              class="el-icon-warning-outline"
-              slot="reference"
-              style="font-size: 15px; margin-left: 20px"
-            ></el-icon>
-          </el-popover>
-        </h2>
+      <div class="tipInfo">
+        <h3>病种、数据集选择</h3>
+        <span class="statistic"> 一级病种: {{ diseaseNum }} 个 </span>
+        <span class="statistic"> 数据表: {{ datasetNum }} 个 </span>
       </div>
-
       <el-tree
         ref="tree"
         :data="treeData"
@@ -40,7 +21,7 @@
           <span
             :style="{
               fontWeight: node.level === 1 ? 'bold' : 'normal',
-              fontSize: node.level === 1 ? '20px' : 'inherit',
+              fontSize: node.level === 1 ? '17px' : 'inherit',
             }"
             >{{ node.label }}</span
           >
@@ -52,7 +33,7 @@
       <div>
         <span class="lineStyle" style="display: inline-block">▍</span
         ><span class="featureTitle" style="display: inline-block"
-          >请选择一个训练好的任务</span
+          >根据条件选择已训练好的任务</span
         >
         <span style="display: inline-block"
           ><el-alert>
@@ -419,6 +400,8 @@ export default {
       resultDialogShow: false,
       result: {},
       // treeData: [],
+      diseaseNum: "",
+      datasetNum:"",
       treeData: JSON.parse(JSON.stringify(treeData)),
       disease: "",
       leader: "",
@@ -427,8 +410,6 @@ export default {
       leaders: [],
       modelList: [],
       dataset: "",
-      // diseaseList: [],
-      // datasetList: [],
       // taskList: JSON.parse(JSON.stringify(taskList)),
       taskList: [],
       DQN_selected: false,
@@ -455,6 +436,11 @@ export default {
   methods: {
     //和vuex内数据同步
     init() {
+      this.$notify({
+        title: "提示",
+        message: "请选择一个训练好的任务进行下一步操作",
+        type: "success",
+      });
       //初始化
       // const uniqueModels = new Set();
       // for (const item of this.filteredTaskListByModel) {
@@ -475,7 +461,6 @@ export default {
       this.getTaskList();
 
       console.log("当前模块名👉", this.moduleName);
-      console.log("this.m_predict_features111   ", this.m_predict_features);
     },
 
     getTaskList() {
@@ -556,7 +541,7 @@ export default {
     getCatgory() {
       getCategory("/api/category").then((response) => {
         console.log("getCatgory", response);
-        // this.treeData = response.data;
+        this.treeData = response.data;
         console.log("222222");
       });
     },
@@ -776,6 +761,16 @@ export default {
   color: #ffffff;
   background: #62a2e7 !important;
 }
+.tipInfo {
+  background-color: rgba(124, 124, 124, 0.1);
+  height: 50px;
+  text-align: center;
+}
+
+.tipInfo .statistic {
+  font-size: 13px;
+  color: #585858;
+}
 
 .right {
   display: grid;
@@ -817,7 +812,7 @@ export default {
 }
 
 .featureTitle {
-  font-size: 30px;
+  font-size: 25px;
   margin-right: 30px;
   margin-bottom: 20px;
 }

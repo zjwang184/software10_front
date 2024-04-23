@@ -1,6 +1,11 @@
 <template>
   <div class="main">
     <div class="left_tree">
+      <div class="tipInfo">
+        <h3>病种、数据集选择</h3>
+        <span class="statistic"> 一级病种: {{ diseaseNum }} 个 </span>
+        <span class="statistic"> 数据表: {{ datasetNum }} 个 </span>
+      </div>
       <el-tree
         ref="tree"
         :data="treeData"
@@ -12,6 +17,15 @@
         :highlight-current="true"
         @node-click="changeData"
       >
+      <template slot="default" slot-scope="{ node }">
+          <span
+            :style="{
+              fontWeight: node.level === 1 ? 'bold' : 'normal',
+              fontSize: node.level === 1 ? '17px' : 'inherit',
+            }"
+            >{{ node.label }}</span
+          >
+        </template>
         <!-- <span class="custom-tree-node" slot-scope="{ node, data }">
           <span>{{ node.label }}</span>
           <span>
@@ -43,8 +57,34 @@
       <!--==========================     头部按钮     ==============================================================-->
       <div id="top_buttons">
         <div id="task_leader">
-          <span>任务负责人：</span>
-          <el-select v-model="leader" placeholder="请选择">
+          <el-select v-model="leader" placeholder="请选择任务负责人">
+            <el-option
+              v-for="item in taskLeaderList"
+              :key="item"
+              :label="item"
+              :value="item"
+            >
+            </el-option>
+          </el-select>
+          <el-select v-model="leader" placeholder="请搜索任务名称">
+            <el-option
+              v-for="item in taskLeaderList"
+              :key="item"
+              :label="item"
+              :value="item"
+            >
+            </el-option>
+          </el-select>
+          <el-select v-model="leader" placeholder="请选择所用模型">
+            <el-option
+              v-for="item in taskLeaderList"
+              :key="item"
+              :label="item"
+              :value="item"
+            >
+            </el-option>
+          </el-select>
+          <el-select v-model="leader" placeholder="请选择创建时间">
             <el-option
               v-for="item in taskLeaderList"
               :key="item"
@@ -197,6 +237,9 @@ import { mapGetters, mapMutations, mapState, mapActions } from "vuex";
 import { getCategory } from "@/api/category";
 import TaskCheck from "./subcomponents/TaskCheck";
 import { treeData } from "@/components/tab/treeData.js";
+// import { taskList } from "@/components/tab/constTaskList.js";
+
+
 
 export default {
   components: {
@@ -205,6 +248,9 @@ export default {
   computed: {
     ...mapState(["taskList", , "treeData"]),
     ...mapGetters(["taskLeaderList", "taskDiseaseList"]),
+    filteredTaskListByModel() {
+      return this.taskList.filter((item) => item.modelname);
+    },
   },
   mounted() {
     // this.getCatgory();
@@ -226,12 +272,14 @@ export default {
       dialogDiseaseVisible: false,
       diseaseName: "",
       treeData: JSON.parse(JSON.stringify(treeData)),
+      // taskList: JSON.parse(JSON.stringify(taskList)),
+
     };
   },
 
   methods: {
     ...mapActions(["getTaskList", , "getTreeData"]),
-    ...mapMutations(["SetTaskList"]),
+    // ...mapMutations(["SetTaskList"]),
     // getTreeData()
     // {
     //   getRequest("nodes/all").then((res) => {
@@ -370,7 +418,16 @@ export default {
   scrollbar-width: none; /* 隐藏 Firefox 的滚动条 */
   -ms-overflow-style: none; /* 隐藏 IE/Edge 的滚动条 */
 }
+.tipInfo {
+  background-color: rgba(124, 124, 124, 0.1);
+  height: 50px;
+  text-align: center;
+}
 
+.tipInfo .statistic {
+  font-size: 13px;
+  color: #585858;
+}
 .left_tree {
   display: inline-block;
   border-radius: 3px;

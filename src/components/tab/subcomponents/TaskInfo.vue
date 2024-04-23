@@ -20,7 +20,10 @@
             ></el-icon>
           </el-popover>
         </template>
-        <el-input v-model="taskInfoForm.taskName"></el-input>
+        <el-input
+          v-model="taskInfoForm.taskName"
+          placeholder="任务名称仅允许出现汉字、英文字母、数字及下划线"
+        ></el-input>
       </el-form-item>
       <el-form-item prop="principal" class="inputBox shortItem">
         <template slot="label">
@@ -46,7 +49,6 @@
         <el-input
           v-model="taskInfoForm.comment"
           type="textarea"
-          style="width: 60vh"
           placeholder="请填写任务备注......"
         ></el-input>
       </el-form-item>
@@ -109,6 +111,11 @@ export default {
   methods: {
     // ...mapMutations("modelTraining",["ChangeStep","ChangeTaskInfo"]),
     init() {
+      this.$notify({
+        title: "提示",
+        message: "请填写任务信息进行下一步操作",
+        type: "success",
+      });
       //和vuex内数据同步
       console.log("当前模块名👉", this.moduleName);
       this.taskInfoForm.taskName = this.m_taskName;
@@ -185,6 +192,11 @@ export default {
 
       this.m_changeTaskInfo(this.taskInfoForm);
       console.log("taskInfoForm:", this.taskInfoForm);
+      this.$notify({
+        title: "提示",
+        message: "请选择数据集进行下一步操作",
+        type: "success",
+      });
       this.m_changeStep(2);
     },
   },
@@ -197,11 +209,11 @@ export default {
   overflow: auto;
 }
 .form {
-  width: 80vh;
+  width: 100vh;
   margin: auto;
 }
 .form .inputBox {
-  width: 25%;
+  width: 35%;
 }
 .form .shortItem {
   display: inline-block;
@@ -238,6 +250,7 @@ export default {
 
 ::v-deep .el-textarea__inner {
   height: 250px;
+  width:40vw;
 }
 </style>
 

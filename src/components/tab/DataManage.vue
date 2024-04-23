@@ -1,24 +1,12 @@
 <template>
   <div class="main">
     <div class="left_tree">
-      <div class="tree-top">
-        <h2>
-          病种、数据集选择<el-popover placement="top" trigger="hover">
-            <div>叶子节点为数据集，非叶子节点为病种</div>
-            <el-icon
-              class="el-icon-warning-outline"
-              slot="reference"
-              style="font-size: 15px; margin-left: 20px"
-            ></el-icon>
-          </el-popover>
-        </h2>
+      <div class="tipInfo">
+        <h3>可选数据</h3>
+        <span class="statistic"> 一级病种: {{ diseaseNum }} 个 </span>
+        <span class="statistic"> 数据表: {{ datasetNum }} 个 </span>
       </div>
-      <!-- <el-button
-        type="success"
-        class="add_button"
-        @click="dialogDiseaseVisible2 = true"
-        >添加病种</el-button
-      > -->
+
       <el-dialog title="提示" :visible.sync="dialogDiseaseVisible2" width="30%">
         <span>
           请输入新病种名称：<el-input
@@ -48,7 +36,7 @@
           <span
             :style="{
               fontWeight: node.level === 1 ? 'bold' : 'normal',
-              fontSize: node.level === 1 ? '20px' : 'inherit',
+              fontSize: node.level === 1 ? '16px' : 'inherit',
             }"
             >{{ node.label }}</span
           >
@@ -485,9 +473,9 @@
       <!--------------------------------- 数据集预览头部 ----------------------------------------------->
       <div class="describe_content">
         <div></div>
-        <h2 style="text-align: center">
+        <h3 style="text-align: center">
           <i class="el-icon-s-data"></i>数据集预览
-        </h2>
+        </h3>
         <div></div>
         <div>
           <i class="el-icon-folder"></i>数据集名称:
@@ -507,38 +495,27 @@
         </div>
         <div>
           <i class="el-icon-date"></i>特征个数:
-          <!-- <span >{{ showDataForm.classPath }}</span> -->
+          <span >{{ showDataForm.columnCount }}</span>
         </div>
         <div>
           <i class="el-icon-coin"></i>样本条数:
-          <span>{{ showDataForm.dataLength }}</span>
+          <span>{{ showDataForm.rowCount }}</span>
         </div>
       </div>
       <!-- 点击左树之前显示的提示内容 -->
       <div>
         <div v-if="!selectedDataset">
-          <div
-            class="container"
-            style="
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              justify-content: center;
-              width: 100%;
-              height: 100%;
-              font-size: 24px;
-              background-color: #f2f2f2;
-            "
-          >
+          <div class="table-container-before">
             <div class="blinking-text" style="margin-top: 20px">
               请点击左边树节点选择数据集
             </div>
-            <img src="@/assets/暂无数据_(1).png" class="imgStyle" />
+            <br />
+            <img src="@/assets/暂无数据.png" class="imgStyle" />
           </div>
         </div>
         <!----------- 显示表数据 -------------->
         <div v-else>
-          <div class="table-container">
+          <div class="table-container-after">
             <!---------------------------------- 骨架屏 --------------------------------->
             <el-skeleton
               v-if="!dataLoaded"
@@ -629,7 +606,6 @@ export default {
     headerCellStyle() {
       return {
         color: "black",
-        width: "100%", // 使其填满父元素的宽度
       };
     },
   },
@@ -645,8 +621,11 @@ export default {
       // 获取虚拟树形结构数据
       // treeData: JSON.parse(JSON.stringify(treeData)),
       treeData: [],
-      topLevelNodeCount: 0, // 一级节点计数器
-      allChildNodeCount: 0, // 所有子节点计数器
+      treeData1: [],
+      treeData2: [],
+      treeData3: [],
+      diseaseNum: 0,
+      datasetNum: 0,
       tableData: [],
       selectedDataset: null,
       fullData: "",
@@ -662,7 +641,8 @@ export default {
         createUser: "",
         createTime: "",
         classPath: "",
-        dataLength: "",
+        columnCount: "",
+        rowCount:"",
       },
       addDataForm: {
         dataName: "",
@@ -779,17 +759,11 @@ export default {
       });
     }, 200);
     this.getCatgory();
-    // this.getTableDescribe("1005", "copd");
-    // this.getTableData("1005", "copd");
     this.init();
   },
 
   methods: {
-    init() {
-      console.log("treeData", this.treeData);
-      this.topLevelNodeCount = this.treeData.length; // 获取一级节点的数量
-      console.log(" this.topLevelNodeCount", this.topLevelNodeCount);
-    },
+    init() {},
     compelete() {
       // 判断多标签合理性
       let labelCount = 0;
@@ -976,11 +950,10 @@ export default {
         }
       });
     },
+
     getCatgory() {
       getCategory("/api/category").then((response) => {
         this.treeData = response.data;
-
-        console.log("treeData111", this.treeData);
       });
     },
     uploadFile() {
@@ -1006,15 +979,17 @@ export default {
       });
     },
     getTableDescribe(id, label) {
-      this.showDataForm.tableName = label;
       getTableDes("/api/tableDescribe", id)
         .then((response) => {
-          console.log("res", response);
-          this.showDataForm.createUser = response.data.createUser;
-          this.showDataForm.createTime = response.data.createTime;
-          this.showDataForm.classPath = response.data.classPath;
-          // this.tableData = [];
-          console.log("this.showDataForm11111", this.showDataForm);
+          // 将 JSON 字符串解析为对象
+          var res = JSON.parse(response.data);
+          console.log("res", res);
+          this.showDataForm.tableName = res.tableName;
+          this.showDataForm.createUser = res.createUser;
+          this.showDataForm.createTime = res.createTime;
+          this.showDataForm.classPath = res.classPath;
+          this.showDataForm.columnCount = res.columnCount;
+          this.showDataForm.rowCount = res.rowCount;
         })
         .catch((error) => {
           console.log("错误", error);
@@ -1027,7 +1002,6 @@ export default {
           this.tableData = response.data;
           this.showDataForm.dataLength = response.data.length;
           this.dataLoaded = true;
-          console.log("this.tableData[0]", this.tableData[0]);
         })
         .catch((error) => {
           console.log(error);
@@ -1043,7 +1017,6 @@ export default {
         this.getTableData(data.id, data.label);
         //显示表数据
         this.selectedDataset = true;
-        console.log("this.showDataForm2222", this.showDataForm);
       }
     },
 
@@ -1463,16 +1436,19 @@ export default {
   overflow-y: hidden; /* 隐藏垂直滚动条 */
   overflow-x: hidden;
 }
-.tree-top {
-  background-color: rgba(146, 145, 145, 0.3);
-  width: 100%;
-  border: 1px solid #fff;
-  border-radius: 10px;
+.tipInfo {
+  background-color: rgba(124, 124, 124, 0.1);
+  height: 50px;
+  text-align: center;
+}
+
+.tipInfo .statistic {
+  font-size: 13px;
+  color: #585858;
 }
 .left_tree {
   height: auto;
   display: inline-block;
-  border-radius: 3px;
   border: 1px solid #fff;
   border-radius: 10px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1); /* 修正阴影的颜色和透明度 */
@@ -1513,28 +1489,31 @@ export default {
   background: rgba(255, 255, 255, 0.1);
   padding: 0 10px 10px 0;
   font-size: 20px;
-  font-weight: bold;
 }
 .describe_content {
   display: grid;
   grid-template-rows: auto auto auto;
   grid-template-columns: 1fr 1fr 1fr;
   width: 100%;
-  color: #000000;
-  border-radius: 6px;
-  border: 1px solid #fff;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-  background-color: rgba(146, 145, 145, 0.3);
-  display: sticky;
-  top: 0;
+  height: 15vh;
+  color: #585858;
+  background-color: rgba(124, 124, 124, 0.1);
 }
 .describe_content i {
-  margin:0 5px;
+  margin: 0 5px;
 }
 .describe_content span {
-  margin-right: 25px;
-  color: rgb(40, 39, 39);
-  font-weight: 100;
+  margin-right: 13px;
+}
+
+.table-container-before {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-size: 24px;
 }
 
 .add_button {
@@ -1617,10 +1596,10 @@ export default {
   background-color: #dcf3fc !important;
 }
 .imgStyle {
-  width:50%;
-  border-radius: 15px;
+  width: 25%;
+  margin-left: 50px;
 }
-.table-container {
+.table-container-after {
   width: 100%;
   overflow-y: auto;
   overflow-x: auto;
@@ -1634,12 +1613,13 @@ export default {
 }
 
 .blinking-text {
+  color: #585858;
   animation: blink-animation 1s infinite alternate; /* 定义闪烁动画 */
 }
 
 @keyframes blink-animation {
   from {
-    opacity: 1; /* 起始状态为不透明 */
+    opacity: 0.9; /* 起始状态为不透明 */
   }
   to {
     opacity: 0.3; /* 终止状态为完全透明 */
