@@ -676,10 +676,10 @@ export default {
           this.disease = "";
         }
       }
-      console.log("this.disease: ", this.disease);
-      console.log("this.dataset: ", this.dataset);
-      console.log("this.taskname: ", this.taskname);
-      console.log("this.leader: ", this.leader);
+      // console.log("this.disease: ", this.disease);
+      // console.log("this.dataset: ", this.dataset);
+      // console.log("this.taskname: ", this.taskname);
+      // console.log("this.leader: ", this.leader);
     },
 
     handleSwitchChange(modelName, value) {

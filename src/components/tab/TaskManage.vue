@@ -57,7 +57,7 @@
       <!--==========================     头部按钮     ==============================================================-->
       <div id="top_buttons">
         <div id="task_leader">
-          <el-select v-model="leader" placeholder="请选择任务负责人">
+          <el-select v-model="leader" placeholder="请搜索任务名称">
             <el-option
               v-for="item in taskLeaderList"
               :key="item"
@@ -66,7 +66,7 @@
             >
             </el-option>
           </el-select>
-          <el-select v-model="leader" placeholder="请搜索任务名称">
+          <el-select v-model="leader" placeholder="请选择任务负责人" filterable>
             <el-option
               v-for="item in taskLeaderList"
               :key="item"
@@ -148,6 +148,7 @@
             </el-popconfirm>
           </div>
         </el-card>
+        
       </div>
 
       <el-dialog
@@ -240,6 +241,7 @@ import { treeData } from "@/components/tab/treeData.js";
 // import { taskList } from "@/components/tab/constTaskList.js";
 
 export default {
+  name: "TaskManage",
   components: {
     TaskCheck,
   },
@@ -439,6 +441,9 @@ export default {
 
 .right {
   width: 100%;
+} 
+.right .el-select{
+  margin-right: 20px;
 }
 
 .custom-tree-node {

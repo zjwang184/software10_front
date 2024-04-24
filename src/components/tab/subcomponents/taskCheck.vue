@@ -19,23 +19,25 @@
       <div></div>
       <div class="taskInfoBox taskname">
         <el-icon class="el-icon-edit-outline el-icon"></el-icon>
-        <sp>任务名称：</sp>
+        <span>任务名称：</span>
         <span>{{ this.taskData.taskname }}</span>
       </div>
       <div class="taskInfoBox principal">
-        <el-icon class="el-icon-user el-icon"></el-icon><sp>任务负责人：</sp>
+        <el-icon class="el-icon-user el-icon"></el-icon
+        ><span>任务负责人：</span>
         <span>{{ this.taskData.leader }}</span>
       </div>
       <div class="taskInfoBox participants">
         <el-icon class="el-icon-user-solid el-icon"></el-icon
-        ><spa>参与人：</spa>
+        ><span>参与人：</span>
         <span>{{ this.taskData.participant }}</span>
       </div>
       <div class="taskInfoBox comment">
-        <el-icon class="el-icon-edit el-icon"></el-icon><spa>任务备注：</spa>
+        <el-icon class="el-icon-edit el-icon"></el-icon><span>任务备注：</span>
       </div>
       <div class="taskInfoBox disease">
-        <el-icon class="el-icon-price-tag el-icon"></el-icon><sp>研究病种：</sp>
+        <el-icon class="el-icon-price-tag el-icon"></el-icon
+        ><span>研究病种：</span>
         <span>{{ this.taskData.disease }}</span>
       </div>
       <div class="taskInfoBox dataset el-icon">
@@ -47,8 +49,7 @@
         <span>{{ this.taskData.modelname }}</span>
       </div>
       <div class="taskInfoBox use_features">
-        <el-icon class="el-icon-date el-icon"></el-icon
-        ><span>创建时间：</span>
+        <el-icon class="el-icon-date el-icon"></el-icon><span>创建时间：</span>
         <span>{{ this.taskData.createtime }}</span>
       </div>
       <div class="taskInfoBox use_features">
@@ -70,7 +71,8 @@
       <div></div>
 
       <div class="taskInfoBox">
-        <el-icon class="el-icon-s-data el-icon"></el-icon><span>精确率acc：</span>
+        <el-icon class="el-icon-s-data el-icon"></el-icon
+        ><span>精确率acc：</span>
         <span>{{ transTOPercent(this.taskData.accuracy) }}</span>
       </div>
       <div class="taskInfoBox">
@@ -84,11 +86,13 @@
         <span>{{ transTOPercent(this.taskData.recall) }}</span>
       </div>
       <div class="taskInfoBox">
-        <el-icon class="el-icon-s-grid el-icon"></el-icon><span>f1-score：</span>
+        <el-icon class="el-icon-s-grid el-icon"></el-icon
+        ><span>f1-score：</span>
         <span>{{ transTOPercent(this.taskData.f1) }}</span>
       </div>
       <div class="taskInfoBox">
-        <el-icon class="el-icon-s-promotion el-icon"></el-icon><span>任务结果可视化：</span>
+        <el-icon class="el-icon-s-promotion el-icon"></el-icon
+        ><span>任务结果可视化：</span>
       </div>
       <div></div>
       <div></div>
@@ -96,6 +100,7 @@
 
       <!-------------------------- loss曲线图和reward曲线图 ----------------------------->
       <div
+        ref="graphBox"
         class="graphBox"
         v-if="this.taskData.totalrewards && this.taskData.totallosses"
       >
@@ -105,10 +110,16 @@
         <div>
           <LossCurve :lossData="lossData" />
         </div>
+        <!-- <el-button
+          icon="el-icon-download"
+          @click="downloadIMG()"
+          style="cursor: pointer; padding-bottom: 400px"
+          type="text"
+        ></el-button> -->
       </div>
 
       <!--------------------------- 特征饼图和混淆矩阵 ------------------------------------>
-      <div class="graphBox">
+      <div class="graphBox" ref="graphBox">
         <featuresPie
           :data="transToPie(this.taskData.avgshapvalue)"
         ></featuresPie>
@@ -154,7 +165,7 @@ export default {
     },
   },
 
-  created() {
+  mounted() {
     this.init();
   },
   data() {
@@ -168,8 +179,7 @@ export default {
   methods: {
     init() {
       // 从路由参数中获取 result 数据
-      this.result = this.$route.query.result;
-      this.taskData = this.result;
+      this.taskData = this.$route.query.result;
       console.log("this.taskData", this.taskData);
       this.init_reward_and_loss();
     },
@@ -271,6 +281,32 @@ export default {
       // 保存PDF文件
       pdf.save(`${this.taskData.taskname}.pdf`);
     },
+
+    downloadIMG() {
+      console.log("111111");
+      // 获取要下载的元素的 DOM 节点
+      const graphBox = this.$refs.graphBox;
+      console.log("graphBox", graphBox);
+
+      // 使用 html2canvas 将 DOM 节点转换为 canvas
+      html2canvas(graphBox).then((canvas) => {
+        // 创建一个新的 Image 对象
+        const img = new Image();
+
+        // 将 canvas 的数据赋值给 Image 对象
+        img.src = canvas.toDataURL();
+
+        // 创建一个下载链接
+        const link = document.createElement("a");
+        link.href = img.src;
+
+        // 设置下载链接的属性
+        link.download = "graph.png";
+
+        // 触发点击下载
+        link.click();
+      });
+    },
   },
 };
 </script>
@@ -318,14 +354,14 @@ export default {
   margin-right: 30px;
   margin-bottom: 20px;
 }
-.taskInfoBox{
-  font-size:20px;
-  margin-top:8px;
+.taskInfoBox {
+  font-size: 20px;
+  margin-top: 8px;
 }
 
 .graphBox {
   display: flex; /* 使用 flex 布局 */
-  width: 90%; /* 设置宽度 */
+  width: 97%; /* 设置宽度 */
   height: 400px; /* 设置高度 */
   padding: 20px; /* 设置内边距 */
   background-color: #ffffff; /* 设置背景颜色为白色 */
@@ -333,7 +369,7 @@ export default {
   border: 1px solid #ccc; /* 设置边框 */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 设置阴影效果 */
   margin-bottom: 30px;
-  margin-left: 60px;
+  margin-left: 10px;
   margin-top: 10px;
 }
 

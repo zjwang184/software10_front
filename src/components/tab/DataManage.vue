@@ -1,103 +1,243 @@
 <template>
   <div class="main">
     <div class="left_tree">
-      <div class="tipInfo">
-        <h3>可选数据</h3>
-        <span class="statistic"> 一级病种: {{ diseaseNum }} 个 </span>
-        <span class="statistic"> 数据表: {{ datasetNum }} 个 </span>
+      <div class="tree-top">
+        <div class="tipInfo">
+          <h3>可选数据</h3>
+          <span class="statistic"> 一级病种: {{ diseaseNum }} 个 </span>
+          <span class="statistic"> 数据表: {{ datasetNum }} 个 </span>
+        </div>
+        <hr class="hr-dashed" />
+        <el-input placeholder="输入关键字进行过滤" v-model="filterText">
+        </el-input>
       </div>
 
-      <el-dialog title="提示" :visible.sync="dialogDiseaseVisible2" width="30%">
-        <span>
-          请输入新病种名称：<el-input
-            placeholder="请输入内容"
-            v-model="diseaseName"
-            class="nameInput"
-          ></el-input>
-        </span>
-        <span slot="footer" class="dialog-footer">
-          <el-button @click="cleanInput()">取 消</el-button>
-          <el-button type="primary" @click="addDisease()">确 定</el-button>
-        </span>
-      </el-dialog>
-      <el-tree
-        ref="tree"
-        :data="treeData"
-        :show-checkbox="false"
-        node-key="id"
-        default-expand-all
-        :expand-on-click-node="false"
-        :check-on-click-node="true"
-        :highlight-current="true"
-        @node-click="changeData"
-        @check-change="handleCheckChange"
-      >
-        <span class="custom-tree-node" slot-scope="{ node, data }">
-          <span
-            :style="{
-              fontWeight: node.level === 1 ? 'bold' : 'normal',
-              fontSize: node.level === 1 ? '16px' : 'inherit',
-            }"
-            >{{ node.label }}</span
-          >
-          <!-- <span>{{ node.label }}</span> -->
-          <span>
-            <!--公共数据集confirm-->
-            <el-popconfirm
-              v-if="data.isCommon"
-              confirm-button-text="新病种"
-              cancel-button-text="数据集"
-              title="请选择添加的文件"
-              cancel-button-type="primary"
-              @confirm="dialogDiseaseVisible = true"
-              @cancel="dialogFormVisible = true"
-            >
-              <el-button
-                v-if="!data.isLeafs"
-                icon="el-icon-folder-add"
-                size="mini"
-                type="text"
-                slot="reference"
-                @click="markNode(data)"
+      <div class="treeArea">
+        <!-- =========================================私有数据集树 --------------------------->
+        <el-tree
+          ref="tree1"
+          :data="treeData1"
+          :show-checkbox="false"
+          node-key="id"
+          :default-expanded-keys="['1']"
+          :expand-on-click-node="false"
+          :highlight-current="true"
+          @node-click="changeData"
+          :filter-node-method="filterNode"
+        >
+          <span class="custom-tree-node" slot-scope="{ node, data }">
+            <span class="left_span">
+              <i
+                class="el-icon-document tree_icon"
+                v-if="data.isLeafs == 1 && data.uid != loginUserID"
+              ></i>
+              <i
+                class="el-icon-document tree_icon"
+                v-if="data.isLeafs == 1 && data.uid == loginUserID"
+                style="color: rgb(40, 207, 18)"
+              ></i>
+              <span
+                v-if="data.catLevel == 1"
+                style="font-weight: bold; font-size: 16px; color: #252525"
+                >{{ node.label }}</span
               >
-              </el-button>
-            </el-popconfirm>
-            <!--非公共数据集confirm-->
-            <el-popconfirm
-              v-else
-              confirm-button-text="新病种"
-              cancel-button-text="数据集"
-              title="请选择添加的文件"
-              cancel-button-type="primary"
-              @confirm="dialogDiseaseVisible = true"
-              @cancel="openAddDataForm(data.path)"
-            >
-              <el-button
-                v-if="!data.isLeafs"
-                icon="el-icon-folder-add"
-                size="mini"
-                type="text"
-                slot="reference"
-                @click="markNode(data)"
+              <span
+                v-else
+                :class="{
+                  nodeLabel: node.label.length <= 12,
+                  'scrolling-nodeLabel': node.label.length > 12,
+                }"
+                >{{ node.label }}
+                <span v-if="data.isLeafs == 1 && data.uid == loginUserID">
+                  （我）</span
+                >
+              </span>
+            </span>
+            <span>
+              <el-popconfirm
+                confirm-button-text="上传数据集"
+                cancel-button-text="纳排数据集"
+                title="请选择添加数据集方式"
+                cancel-button-type="primary"
+                @confirm="importData"
+                @cancel="openAddDataForm(data.label)"
               >
-              </el-button>
-            </el-popconfirm>
-            <el-button
-              icon="el-icon-delete"
-              size="mini"
-              type="text"
-              @click="() => remove(node, data)"
-            >
-            </el-button>
+                <el-button
+                  v-if="
+                    data.catLevel != 1 && data.status != 2 && data.isLeafs == 0
+                  "
+                  icon="el-icon-circle-plus-outline"
+                  size="mini"
+                  type="text"
+                  slot="reference"
+                  @click="markNode(data)"
+                >
+                </el-button>
+              </el-popconfirm>
+
+              <el-popconfirm
+                title="删除后无法恢复"
+                icon="el-icon-warning"
+                icon-color="red"
+                confirm-button-text="确认"
+                cancel-button-text="取消"
+                @confirm="() => remove(node, data)"
+              >
+                <el-button
+                  v-if="
+                    (data.isLeafs == 1 && data.status == 0) ||
+                    (data.uid == loginUserID && data.status != 2)
+                  "
+                  icon="el-icon-delete"
+                  size="mini"
+                  type="text"
+                  slot="reference"
+                >
+                </el-button>
+              </el-popconfirm>
+            </span>
           </span>
-        </span>
-      </el-tree>
-      <el-button
-        type="success"
-        class="add_button"
-        @click="dialogDiseaseVisible2 = true"
-        >添加病种</el-button
-      >
+        </el-tree>
+
+        <!-- =========================================共享数据集树 -->
+        <el-tree
+          ref="tree2"
+          :data="treeData2"
+          :show-checkbox="false"
+          node-key="id"
+          :default-expanded-keys="['1']"
+          :expand-on-click-node="false"
+          :highlight-current="true"
+          @node-click="changeData"
+          :filter-node-method="filterNode"
+        >
+          <span class="custom-tree-node" slot-scope="{ node, data }">
+            <span class="left_span">
+              <i
+                class="el-icon-document tree_icon"
+                v-if="data.isLeafs == 1 && data.uid != loginUserID"
+              ></i>
+              <i
+                class="el-icon-document tree_icon"
+                v-if="data.isLeafs == 1 && data.uid == loginUserID"
+                style="color: rgb(40, 207, 18)"
+              ></i>
+              <span
+                v-if="data.catLevel == 1"
+                style="font-weight: bold; font-size: 16px; color: #252525"
+                >{{ node.label }}</span
+              >
+              <span
+                v-else
+                :class="{
+                  nodeLabel: node.label.length <= 12,
+                  'scrolling-nodeLabel': node.label.length > 12,
+                }"
+                >{{ node.label }}
+                <span v-if="data.isLeafs == 1 && data.uid == loginUserID">
+                  （我）</span
+                >
+              </span>
+            </span>
+
+            <span>
+              <el-popconfirm
+                confirm-button-text="上传数据集"
+                cancel-button-text="纳排数据集"
+                title="请选择添加数据集方式"
+                cancel-button-type="primary"
+                @confirm="importData"
+                @cancel="openAddDataForm(data.label)"
+              >
+                <el-button
+                  v-if="
+                    data.catLevel != 1 && data.status != 2 && data.isLeafs == 0
+                  "
+                  icon="el-icon-circle-plus-outline"
+                  size="mini"
+                  type="text"
+                  slot="reference"
+                  @click="markNode(data)"
+                >
+                </el-button>
+              </el-popconfirm>
+
+              <el-popconfirm
+                title="删除后无法恢复"
+                icon="el-icon-warning"
+                icon-color="red"
+                confirm-button-text="确认"
+                cancel-button-text="取消"
+                @confirm="() => remove(node, data)"
+              >
+                <el-button
+                  v-if="
+                    (data.isLeafs == 1 && data.status == 0) ||
+                    (data.uid == loginUserID && data.status != 2)
+                  "
+                  icon="el-icon-delete"
+                  size="mini"
+                  type="text"
+                  slot="reference"
+                >
+                </el-button>
+              </el-popconfirm>
+            </span>
+          </span>
+        </el-tree>
+
+        <!-- =========================================公共数据集树 -->
+        <el-tree
+          ref="tree3"
+          :data="treeData3"
+          :show-checkbox="false"
+          node-key="id"
+          :default-expanded-keys="['1']"
+          :expand-on-click-node="false"
+          :highlight-current="true"
+          @node-click="changeData"
+          :filter-node-method="filterNode"
+        >
+          <span class="custom-tree-node" slot-scope="{ node, data }">
+            <span class="left_span">
+              <i
+                class="el-icon-document tree_icon"
+                v-if="data.isLeafs == 1"
+              ></i>
+              <span
+                v-if="data.catLevel == 1"
+                style="font-weight: bold; font-size: 16px; color: #252525"
+                >{{ node.label }}</span
+              >
+              <span
+                v-else
+                :class="{
+                  nodeLabel: node.label.length <= 12,
+                  'scrolling-nodeLabel': node.label.length > 12,
+                }"
+                >{{ node.label }}</span
+              >
+            </span>
+
+            <!-- <span>
+              <el-popconfirm confirm-button-text="上传数据集" cancel-button-text="纳排数据集" title="请选择添加数据集方式"
+                cancel-button-type="primary" @confirm="importData" @cancel="openAddDataForm(data.label)">
+                <el-button v-if="data.catLevel == 3 && data.status != 2 && data.isLeafs == 0" icon="el-icon-circle-plus-outline" size="mini"
+                  type="text" slot="reference" @click="markNode(data)">
+                </el-button>
+              </el-popconfirm>
+
+              <el-popconfirm title="删除后无法恢复" icon="el-icon-warning" icon-color="red" confirm-button-text="确认"
+                cancel-button-text="取消" @confirm="() => remove(node, data)">
+                <el-button v-if="(data.isLeafs == 1 && data.status == 0) ||
+                (data.uid == loginUserID && data.status != 2)
+                " icon="el-icon-delete" size="mini" type="text" slot="reference">
+                </el-button>
+              </el-popconfirm>
+            </span> -->
+          </span>
+        </el-tree>
+      </div>
       <el-dialog title="提示" :visible.sync="dialogDiseaseVisible" width="30%">
         <span>
           请输入新病种名称（a）：<el-input
@@ -398,19 +538,11 @@
           ></el-input>
         </el-form-item>
         <el-form-item label="涉及疾病" prop="dataDisease">
-          <el-select
+          <el-input
             v-model="dialogForm.dataDisease"
-            filterable
-            placeholder="请选择或搜索"
-          >
-            <el-option
-              v-for="item in disOptions"
-              :key="item.name"
-              :label="item.name"
-              :value="item.name"
-            >
-            </el-option>
-          </el-select>
+            :disabled="true"
+            style="width: 150px"
+          ></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -422,47 +554,27 @@
           >取消</el-button
         >
         <el-button @click="resetForm('dialogFormRef')">重置</el-button>
-        <el-button type="primary" @click="uploadFile">下一步</el-button>
+        <el-button type="primary" @click="uploadFile">确定</el-button>
       </div>
 
+      <!-- 解析表后字段分类弹窗 -->
       <el-dialog
         v-loading="loading2"
         :element-loading-text="loadText2"
         append-to-body
-        title="请选择特征类型"
+        title="请选择多个疾病标签字段"
         :visible.sync="featuresVision"
       >
-        <el-form class="featureLabel" label-width="auto">
-          <el-form-item
+        <!-- <el-form class="featureLabel" label-width="auto"> -->
+        <el-checkbox-group v-model="labelList">
+          <el-checkbox
+            style="width: 250px"
+            border
             v-for="(name, index) in Object.keys(featuresMap)"
             :key="index"
             :label="name"
-          >
-            <el-select
-              v-model="featuresMap[name]"
-              placeholder="请选择特征类型"
-              @change="changeLabel(name, featuresMap[name])"
-            >
-              <el-option
-                label="诊断"
-                value="diagnosis"
-                key="diagnosis"
-              ></el-option>
-              <el-option label="检查" value="examine" key="examine"></el-option>
-              <el-option
-                label="病理"
-                value="pathology"
-                key="pathology"
-              ></el-option>
-              <el-option
-                label="生命特征"
-                value="vital_signs"
-                key="vital_signs"
-              ></el-option>
-              <el-option label="标签" value="label" key="label"></el-option>
-            </el-select>
-          </el-form-item>
-        </el-form>
+          ></el-checkbox>
+        </el-checkbox-group>
         <div slot="footer" class="dialog-footer">
           <el-button type="primary" @click="compelete">完成上传</el-button>
         </div>
@@ -495,7 +607,7 @@
         </div>
         <div>
           <i class="el-icon-date"></i>特征个数:
-          <span >{{ showDataForm.columnCount }}</span>
+          <span>{{ showDataForm.columnCount }}</span>
         </div>
         <div>
           <i class="el-icon-coin"></i>样本条数:
@@ -614,6 +726,31 @@ export default {
     "dialogForm.tableName"() {
       this.checkTableName();
     },
+    "addDataForm.dataName"() {
+      this.checkAddTaleName();
+    },
+    // diseaseName() {
+    //   this.checkDiseasename();
+    // },
+    selectedFields(newValue) {
+      // 如果一键全选框被取消选中，且 selectedFeatures 的长度大于 0，则将其置为 false
+      this.selectAll = newValue.length === this.fields.length;
+    },
+    length(val) {
+      this.$refs.listWrap.style.height = "720px";
+      // // 超过10行数据，就按照最大40*10 400px高度的列表就行
+      // if (val >= 10) {
+      //   this.$refs.listWrap.style.height = '800px';
+      // } else {
+      // // 不足10行数据，这边 加57是因为表头的高度，具体情况
+      //   this.$refs.listWrap.style.height = this.itemHeight * val + 80 + 'px'
+      // }
+    },
+    filterText(val) {
+      this.$refs.tree1?.filter(val);
+      this.$refs.tree2?.filter(val);
+      this.$refs.tree3?.filter(val);
+    },
   },
 
   data() {
@@ -624,9 +761,10 @@ export default {
       treeData1: [],
       treeData2: [],
       treeData3: [],
+      labelList: [],
       diseaseNum: 0,
       datasetNum: 0,
-      tableData: [],
+      filterText: "",
       selectedDataset: null,
       fullData: "",
       showTooltip: false,
@@ -642,7 +780,7 @@ export default {
         createTime: "",
         classPath: "",
         columnCount: "",
-        rowCount:"",
+        rowCount: "",
       },
       addDataForm: {
         dataName: "",
@@ -759,11 +897,13 @@ export default {
       });
     }, 200);
     this.getCatgory();
-    this.init();
   },
 
   methods: {
-    init() {},
+    filterNode(value, data) {
+      if (!value) return true;
+      return data.label.indexOf(value) !== -1;
+    },
     compelete() {
       // 判断多标签合理性
       let labelCount = 0;
@@ -900,18 +1040,25 @@ export default {
       console.log(this.addDataForm.characterList);
       this.characterId = "";
     },
-
     // 数据表上传函数
     upRequest(data) {
       console.log("开始上传文件");
       const payload = new FormData();
+
       payload.append("file", data.file);
       payload.append("newName", this.dialogForm.tableName);
       payload.append("disease", this.dialogForm.dataDisease);
       payload.append("user", sessionStorage.getItem("username"));
       payload.append("uid", sessionStorage.getItem("userid") - 0);
       payload.append("parentId", this.nodeData.id);
-      payload.append("parentType", this.nodeData.path);
+      payload.append("parentType", this.nodeData.label);
+      payload.append("status", this.nodeData.status);
+      payload.append(
+        "size",
+        this.$refs["uploadRef"].uploadFiles[0].size / 100000
+      );
+      payload.append("is_upload", "1");
+      payload.append("is_filter", "0");
       this.options = {
         method: "post",
         data: payload,
@@ -920,6 +1067,11 @@ export default {
           "Content-Type": "multipart/form-data",
         },
       };
+      // 多疾病下的上传文件需要打标签，用不同的接口
+      let paths = this.nodeData.label;
+      if (paths === "多疾病") {
+        this.options.url = "api/dataTable/parseAndUpload";
+      }
 
       this.$axios(this.options).then((res) => {
         // 返回表头信息
@@ -931,14 +1083,14 @@ export default {
             type: "success",
             message: "解析成功",
           });
-          console.log("返回数据为：");
-          console.log(res);
           let featureList = res.data;
-          // 把特征存为map的键
+          //把特征存为map的键
           for (const item of featureList) {
             this.$set(this.featuresMap, item, "diagnosis");
           }
-          // this.featuresVision = true;
+          if (paths === "多疾病") {
+            this.featuresVision = true;
+          }
           this.dialogFormVisible = false;
           this.getCatgory();
         } else {
@@ -952,8 +1104,19 @@ export default {
     },
 
     getCatgory() {
-      getCategory("/api/category").then((response) => {
-        this.treeData = response.data;
+      getCategory(`/api/category?uid=${this.loginUserID}`).then((response) => {
+        this.treeData1 = response.data.slice(0, 1);
+        this.treeData2 = response.data.slice(1, 2);
+        this.treeData3 = response.data.slice(2, 3);
+        console.log("this.treeData1", this.treeData1);
+        console.log("this.treeData2", this.treeData2);
+        console.log("this.treeData3", this.treeData3);
+        // 获取病种和数据集总数
+        this.diseaseNum = response.data[0].children.length;
+        // response.data[0].children.length + response.data[1].children.length;
+        getRequest("/api/getTableNumber").then((res) => {
+          if (res.code == 200) this.datasetNum = res.data;
+        });
       });
     },
     uploadFile() {
@@ -1007,6 +1170,7 @@ export default {
           console.log(error);
         });
     },
+
     changeData(data) {
       if (data.isLeafs == 1) {
         //数据获取前显示骨架屏
@@ -1273,6 +1437,8 @@ export default {
       this.creator = "";
     },
     importData() {
+      // 涉及疾病填入上一级节点名
+      this.dialogForm.dataDisease = this.nodeData.label;
       this.dialogFormVisible = true;
     },
 
@@ -1406,38 +1572,41 @@ export default {
 </script>
 
 <style scoped>
-#top_buttons > * {
-  display: inline-block;
-}
 .truncate-text {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
-#DiseaseFilter {
-  margin-right: 40px;
-}
-#creatorFilter {
-  margin-right: 20px;
-}
-#top_right_buttons {
-  float: right;
-  margin-right: 100px;
-}
 #table {
   margin-top: 10px;
 }
 
 .main {
   display: grid;
-  grid-template-columns: 15% 85%;
+  grid-template-columns: 17% 83%;
   height: 100%;
   overflow-y: hidden; /* 隐藏垂直滚动条 */
   overflow-x: hidden;
 }
+.left_tree {
+  height: 90vh;
+  display: inline-block;
+  border: 1px solid #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1); /* 修正阴影的颜色和透明度 */
+  background: rgba(255, 255, 255, 0.1);
+  overflow-y: hidden;
+}
+.tree-top {
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  height: 93px;
+  margin-bottom: 10px;
+}
 .tipInfo {
-  background-color: rgba(124, 124, 124, 0.1);
+  background-color: rgb(231, 228, 228);
   height: 50px;
   text-align: center;
 }
@@ -1446,14 +1615,14 @@ export default {
   font-size: 13px;
   color: #585858;
 }
-.left_tree {
-  height: auto;
-  display: inline-block;
-  border: 1px solid #fff;
-  border-radius: 10px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1); /* 修正阴影的颜色和透明度 */
-  background: rgba(255, 255, 255, 0.1);
-  overflow-y: scroll; /* 或者 auto */
+.hr-dashed {
+  border: 0;
+  border-top: 1px dashed #899bbb;
+}
+
+.treeArea {
+  height: calc(820px - 93px); /* 93px是头部信息和按钮的高度 */
+  overflow-y: scroll;
   scrollbar-width: none; /* 隐藏 Firefox 的滚动条 */
   -ms-overflow-style: none; /* 隐藏 IE/Edge 的滚动条 */
 }
@@ -1467,18 +1636,55 @@ export default {
 .featureLabel .el-form-item__label {
   color: #252525;
 }
+
 .custom-tree-node {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 14px;
+  font-size: 16px;
   padding-right: 8px;
+  overflow: hidden;
+}
+
+.custom-tree-node .left_span {
+  width: 12em;
+  overflow: hidden;
+}
+
+.nodeLabel,
+.scrolling-nodeLabel {
+  display: inline-block;
+  white-space: nowrap; /* 禁止文本换行 */
+  box-sizing: border-box; /* 边框和内填充的宽度也包含在width内 */
+}
+
+/* 文本滚动 */
+.scrolling-nodeLabel:hover {
+  position: relative;
+  overflow: hidden;
+  vertical-align: text-bottom;
+  animation: scrollText 3s linear infinite; /* 动画持续时间和循环方式 */
+}
+
+@keyframes scrollText {
+  0% {
+    transform: translateX(0px);
+  }
+  12% {
+    transform: translateX(0px);
+  }
+  75% {
+    transform: translateX(calc(-100% + 12em));
+  }
+  100% {
+    transform: translateX(calc(-100% + 12em));
+  }
 }
 .right_table {
   display: grid;
   grid-template-rows: auto auto;
-  height: auto;
+  height: 90vh;
   width: 98%;
   margin-left: 30px;
   overflow-y: hidden;
@@ -1609,7 +1815,7 @@ export default {
   .el-tree-node.is-current
   > .el-tree-node__content {
   color: #ffffff;
-  background: #62a2e7 !important;
+  background: rgba(30, 129, 178, 0.5) !important;
 }
 
 .blinking-text {
