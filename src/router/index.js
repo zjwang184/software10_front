@@ -5,6 +5,8 @@ import VueRouter from 'vue-router'
 import Login from '@/components/tab/user/Login.vue'
 import forget from '@/components/tab/user/forget.vue'
 import register from '@/components/tab/user/register.vue'
+import updatePassword from '@/components/tab/user/updatePassword.vue'
+import userCenter from '@/components/tab/user/userCenter.vue'
 
 import SideBar from '@/components/sideBar/index.vue'
 import dash from '@/views/dash/index.vue'
@@ -50,6 +52,22 @@ const routes = [
     name: "forget",
     component: forget,
   },
+  //个人中心
+  {
+    path: "/userCenter",
+    name: "userCenter",
+    component: userCenter,
+    meta: { roles: ['1', '0'] },
+  },
+  //修改密码
+  {
+    path: "/updatePassword",
+    name: "updatePassword",
+    component: updatePassword,
+    meta: { roles: ['1', '0'] },
+  },
+
+
   {
      path: "/sideBar",
     //path: "/SoftwareIntro",

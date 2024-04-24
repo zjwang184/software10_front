@@ -396,6 +396,7 @@ export default {
               this.loading = false;
               console.log(resp);
               if (resp.code == "200") {
+                
                 this.$message.success("注册成功！");
                 this.$router.replace("/");
               }

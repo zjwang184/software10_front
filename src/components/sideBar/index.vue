@@ -17,12 +17,15 @@
             >
           </span>
           <!--            <template slot="title">当前服务器：</template>-->
-          <el-menu-item index="2" style="float: right" @click="logout"
-            ><i class="el-icon-close"></i>退出登录</el-menu-item
-          >
-          <span index="3" style="float: right; color: #fff"
-            ><i class="el-icon-user"></i>欢迎您{{ LoginUserName }}</span
-          >
+          <el-dropdown style="float: right;margin-right: 30px">
+            <span  class="el-dropdown-link" style="float: right;color:#fff;font-size: 15px"><i class="el-icon-user"></i>欢迎你，{{LoginUserName}}</span><i style="color: #fff" class="el-icon-arrow-down el-icon--right"></i>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item @click.native="toUserCenter">个人信息</el-dropdown-item>
+              <el-dropdown-item @click.native="updatePass">修改密码</el-dropdown-item>
+              <el-dropdown-item @click.native="logout">退出登录</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+
         </el-menu>
       </el-header>
       <el-container>
@@ -167,6 +170,12 @@ export default {
       sessionStorage.clear();
       this.$router.replace("/");
     },
+    toUserCenter(){
+      this.$router.replace("/userCenter")
+    },
+    updatePass(){
+      this.$router.replace("/updatePassword")
+    }
   },
 };
 </script>

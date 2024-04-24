@@ -312,6 +312,8 @@ export default {
                   sessionStorage.setItem("username", resp.data.username);
                   sessionStorage.setItem("userid", resp.data.uid);
                   sessionStorage.setItem("userrole", resp.data.role);
+                  sessionStorage.setItem("token", resp.msg);
+
                   this.$router.push("/sideBar/SoftwareIntro");
                   this.$message.success("登录成功");
                 }

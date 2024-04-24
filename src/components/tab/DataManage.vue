@@ -862,6 +862,7 @@ export default {
         url: "/DataTable/upload",
         headers: {
           "Content-Type": "multipart/form-data",
+          Authorization: `${sessionStorage.getItem("token")}`
         },
       },
     };
@@ -1007,7 +1008,7 @@ export default {
       //     });
       //   }
       // });
-      this.getCategory(); // 更新目录结构
+      this.getCatgory(); // 更新目录结构
     },
     changeLabel(name, label) {
       console.log("name: ");
@@ -1065,6 +1066,7 @@ export default {
         url: "api/dataTable/upload",
         headers: {
           "Content-Type": "multipart/form-data",
+          Authorization: `${sessionStorage.getItem("token")}`
         },
       };
       // 多疾病下的上传文件需要打标签，用不同的接口
@@ -1104,6 +1106,7 @@ export default {
     },
 
     getCatgory() {
+      // console.log("uid", this.loginUserID)
       getCategory(`/api/category?uid=${this.loginUserID}`).then((response) => {
         this.treeData1 = response.data.slice(0, 1);
         this.treeData2 = response.data.slice(1, 2);
@@ -1300,6 +1303,7 @@ export default {
         url: "api/createTable",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `${sessionStorage.getItem("token")}`
         },
       };
       this.$axios(this.options).then((res) => {
