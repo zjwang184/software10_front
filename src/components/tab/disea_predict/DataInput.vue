@@ -149,7 +149,7 @@ export default {
       dictionary["taskname"] = this.predict_task_name;
       dictionary["modelname"] = this.predict_model_name;
       // 创建一个列表来存储 FormData 对象中的值
-      // const featuredata = [];
+      const featuredata = [];
       // for (const [key, value] of formData.entries()) {
       //   featuredata.push(value);
       // }
@@ -162,7 +162,6 @@ export default {
       //   featuredata[key] = value;
       // }
  
-         this.m_changeStep(3);
 
       // <------------------------将普通对象存储在 featuredata 键中------------------------------->
       dictionary["featuredata"] = featuredata;
@@ -200,6 +199,8 @@ export default {
           });
         });
       // postRequest("/ten/data/update_person2", formData)
+      
+      this.m_changeStep(3);
     },
     backStep() {
       this.m_changeStep(1);

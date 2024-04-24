@@ -66,7 +66,10 @@ export const getRequest = (url, params) => {
     return axios({
         method: 'get',
         url: `${base}${url}`,
-        data: params
+        data: params,
+        headers: {
+            Authorization: `${sessionStorage.getItem("token")}`
+          }
     })
 }
 
@@ -75,7 +78,10 @@ export const putRequest = (url, params) => {
     return axios({
         method: 'put',
         url: `${base}${url}`,
-        data: params
+        data: params,
+        headers: {
+            Authorization: `${sessionStorage.getItem("token")}`
+          }
     })
 }
 
@@ -84,6 +90,9 @@ export const deleteRequest = (url, params) => {
     return axios({
         method: 'delete',
         url: `${base}${url}`,
-        data: params
+        data: params,
+        headers: {
+            Authorization: `${sessionStorage.getItem("token")}`
+          }
     })
 }

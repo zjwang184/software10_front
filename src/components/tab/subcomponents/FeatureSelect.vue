@@ -16,23 +16,36 @@
 
       <div style="margin: 15px"></div>
 
-      <el-checkbox-group
-        v-model="labelFeatures"
-        @change="changeBox_label()"
-        class="checkbox-grid"
-      >
+      <el-checkbox-group v-model="labelFeatures" @change="changeBox_label()">
         <el-checkbox
           v-for="item in displayedLabel"
           :label="item.riskFactor"
           :key="item.riskFactor"
-          class="checkbox-item"
+          style="width: auto; margin: 10px; padding: 3px"
         >
-          <div class="checkbox-content">
-            <span>{{ item.riskFactor }}</span>
-            <el-progress
-              :percentage="(item.rate * 100).toFixed(2)"
-              :color="changeProgressColor(item.rate * 100)"
-            ></el-progress>
+          <div style="display: flex; flex-direction: column">
+            <el-popover
+              placement="top-end"
+              width="150"
+              :title="popovername"
+              trigger="hover"
+              :content="item.rate"
+              :open-delay="200"
+            >
+              <span slot="reference">{{ item.riskFactor }}</span>
+              <el-progress
+                :percentage="item.rate * 100"
+                :color="changeProgressColor(item.rate * 100)"
+              ></el-progress>
+            </el-popover>
+            <meter
+              :value="item.rate"
+              min="0"
+              max="1"
+              low="0.6"
+              hight="0.8"
+              optimum="0.9"
+            ></meter>
           </div>
         </el-checkbox>
       </el-checkbox-group>
@@ -59,26 +72,63 @@
       <el-checkbox-group
         v-model="computeFeatures"
         @change="changeBox_compute()"
-        class="checkbox-grid"
       >
-        <div
+        <el-checkbox
           v-for="item in displayedFeatures"
           :label="item.riskFactor"
           :key="item.riskFactor"
-          class="checkbox-item"
+          style="width: auto; margin: 10px; padding: 5px"
         >
-          <div class="checkbox-content">
-            <el-checkbox>
-              <span>{{ item.riskFactor }}</span>
-            </el-checkbox>
-            <div>
+          <div style="display: flex; flex-direction: column">
+            <el-popover
+              placement="top-end"
+              width="150"
+              :title="popovername"
+              trigger="hover"
+              :content="item.rate"
+              :open-delay="200"
+            >
+              <span slot="reference">{{ item.riskFactor }}</span>
               <el-progress
-              :percentage="(item.rate * 100).toFixed(2)"
-              :color="changeProgressColor(item.rate * 100)"
-            ></el-progress>
-            </div>
+                :percentage="item.rate * 100"
+                :color="changeProgressColor(item.rate * 100)"
+              ></el-progress>
+            </el-popover>
+            <meter
+              :value="item.rate"
+              min="0"
+              max="1"
+              low="0.6"
+              hight="0.8"
+              optimum="0.9"
+            ></meter>
           </div>
-        </div>
+          <!-- <div style="display: flex; flex-direction: column">
+              <span>{{ item.riskFactor }}</span>
+              <meter
+                value="20"
+                min="0"
+                max="100"
+                low="30"
+                hight="60"
+                optimum="90"
+              ></meter>
+            </div> -->
+          <!-- <el-popover
+              placement="top-end"
+              width="150"
+              :title="popovername"
+              trigger="hover"
+              :content="1 - item.rate"
+              :open-delay="200"
+            >
+              <span slot="reference">{{ item.riskFactor }}</span>
+              <el-progress
+                :percentage="item.rate * 100"
+                :color="changeProgressColor(item.rate * 100)"
+              ></el-progress>
+            </el-popover> -->
+        </el-checkbox>
       </el-checkbox-group>
 
       <el-pagination
@@ -444,8 +494,8 @@ export default {
     next() {
       if (this.labelFeatures.length < 1) {
         this.$message({
-          message: "请选择标签特征！",
-          type: "warning",
+          message: '请选择标签特征！',
+          type: 'warning'
         });
         return;
       }
@@ -520,7 +570,7 @@ export default {
 .main {
   display: inline-block;
 
-  padding-left: 30vh;
+  padding-left:30vh;
   height: auto;
   width: 100%;
 }
@@ -588,19 +638,5 @@ export default {
   box-shadow: 0 2px 12px 0 rgba(151, 150, 150, 0.4);
   /* background: rgba(255, 255, 255, 0.1); */
   padding: 10px;
-}
-
-.checkbox-grid {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.checkbox-item {
-  margin: 10px;
-}
-
-.checkbox-content {
-  display: flex;
-  flex-direction: column;
 }
 </style>

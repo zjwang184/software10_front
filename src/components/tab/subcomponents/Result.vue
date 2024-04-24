@@ -214,7 +214,7 @@
 
     <div class="buttonGroup">
       <el-button @click="backStep()" round>上一步</el-button>
-      <el-button type="success" @click="exportRes()" round>导出结果</el-button>
+      <!-- <el-button type="success" @click="exportRes()" round>导出结果</el-button> -->
       <el-button type="primary" @click="next()" round>保存任务</el-button>
     </div>
   </div>
@@ -833,7 +833,7 @@ export default {
     },
 
     async exportRes() {
-      this.exportExcel();
+      // this.exportExcel();
       const divsToExport = ["pdf_1", "pdf_2", "pdf_3", "pdf_4"];
       const pdf_positions = [
         { x: 5, y: 5 },

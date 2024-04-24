@@ -1,32 +1,139 @@
 <template>
   <div class="main">
     <div class="left_tree">
-      <div class="tipInfo">
-        <h3>病种、数据集选择</h3>
-        <span class="statistic"> 一级病种: {{ diseaseNum }} 个 </span>
-        <span class="statistic"> 数据表: {{ datasetNum }} 个 </span>
+      <div class="tree-top">
+        <div class="tipInfo">
+          <h3>病种、数据集选择</h3>
+          <span class="statistic"> 一级病种: {{ diseaseNum }} 个 </span>
+          <span class="statistic"> 数据表: {{ datasetNum }} 个 </span>
+        </div>
+        <hr class="hr-dashed" />
+        <el-input placeholder="输入关键字进行过滤" v-model="filterText">
+        </el-input>
       </div>
-      <el-tree
-        ref="tree"
-        :data="treeData"
-        :show-checkbox="false"
-        node-key="id"
-        default-expand-all
-        :expand-on-click-node="false"
-        :check-on-click-node="true"
-        :highlight-current="true"
-        @node-click="changeData"
-      >
-        <template slot="default" slot-scope="{ node }">
-          <span
-            :style="{
-              fontWeight: node.level === 1 ? 'bold' : 'normal',
-              fontSize: node.level === 1 ? '17px' : 'inherit',
-            }"
-            >{{ node.label }}</span
-          >
-        </template>
-      </el-tree>
+
+      <div class="treeArea">
+        <!-- =========================================私有数据集树 --------------------------->
+        <el-tree
+          ref="tree1"
+          :data="treeData1"
+          :show-checkbox="false"
+          node-key="id"
+          :default-expanded-keys="['1']"
+          :expand-on-click-node="false"
+          :highlight-current="true"
+          @node-click="changeData1"
+          :filter-node-method="filterNode"
+        >
+          <span class="custom-tree-node" slot-scope="{ node, data }">
+            <span class="left_span">
+              <i
+                class="el-icon-document tree_icon"
+                v-if="data.isLeafs == 1 && data.uid != loginUserID"
+              ></i>
+              <i
+                class="el-icon-document tree_icon"
+                v-if="data.isLeafs == 1 && data.uid == loginUserID"
+                style="color: rgb(40, 207, 18)"
+              ></i>
+              <span
+                v-if="data.catLevel == 1"
+                style="font-weight: bold; font-size: 16px; color: #252525"
+                >{{ node.label }}</span
+              >
+              <span
+                v-else
+                :class="{
+                  nodeLabel: node.label.length <= 12,
+                  'scrolling-nodeLabel': node.label.length > 12,
+                }"
+                >{{ node.label }}
+                <span v-if="data.isLeafs == 1 && data.uid == loginUserID">
+                  （我）</span
+                >
+              </span>
+            </span>
+          </span>
+        </el-tree>
+
+        <!-- =========================================共享数据集树 -->
+        <el-tree
+          ref="tree2"
+          :data="treeData2"
+          :show-checkbox="false"
+          node-key="id"
+          :default-expanded-keys="['1']"
+          :expand-on-click-node="false"
+          :highlight-current="true"
+          @node-click="changeData2"
+          :filter-node-method="filterNode"
+        >
+          <span class="custom-tree-node" slot-scope="{ node, data }">
+            <span class="left_span">
+              <i
+                class="el-icon-document tree_icon"
+                v-if="data.isLeafs == 1 && data.uid != loginUserID"
+              ></i>
+              <i
+                class="el-icon-document tree_icon"
+                v-if="data.isLeafs == 1 && data.uid == loginUserID"
+                style="color: rgb(40, 207, 18)"
+              ></i>
+              <span
+                v-if="data.catLevel == 1"
+                style="font-weight: bold; font-size: 16px; color: #252525"
+                >{{ node.label }}</span
+              >
+              <span
+                v-else
+                :class="{
+                  nodeLabel: node.label.length <= 12,
+                  'scrolling-nodeLabel': node.label.length > 12,
+                }"
+                >{{ node.label }}
+                <span v-if="data.isLeafs == 1 && data.uid == loginUserID">
+                  （我）</span
+                >
+              </span>
+            </span>
+          </span>
+        </el-tree>
+
+        <!-- =========================================公共数据集树 -->
+        <el-tree
+          ref="tree3"
+          :data="treeData3"
+          :show-checkbox="false"
+          node-key="id"
+          :default-expanded-keys="['1']"
+          :expand-on-click-node="false"
+          :highlight-current="true"
+          @node-click="changeData3"
+          :filter-node-method="filterNode"
+        >
+          <span class="custom-tree-node" slot-scope="{ node, data }">
+            <span class="left_span">
+              <i
+                class="el-icon-document tree_icon"
+                v-if="data.isLeafs == 1"
+              ></i>
+              <span
+                v-if="data.catLevel == 1"
+                style="font-weight: bold; font-size: 16px; color: #252525"
+                >{{ node.label }}</span
+              >
+              <span
+                v-else
+                :class="{
+                  nodeLabel: node.label.length <= 12,
+                  'scrolling-nodeLabel': node.label.length > 12,
+                }"
+                >{{ node.label }}</span
+              >
+            </span>
+          </span>
+        </el-tree>
+      </div>
     </div>
 
     <div class="right">
@@ -348,9 +455,9 @@ export default {
     totalTasks() {
       return this.taskList.filter((item) => this.displayedCard(item)).length;
     },
-    filteredTaskListByModel() {
-      return this.taskList.filter((item) => item.modelname);
-    },
+    // filteredTaskListByModel() {
+    //   return this.taskList.filter((item) => item.modelname);
+    // },
     isModelListContainsDQN() {
       return this.modelList.includes("dqn");
     },
@@ -394,6 +501,24 @@ export default {
     },
   },
 
+  watch: {
+    length(val) {
+      this.$refs.listWrap.style.height = "720px";
+      // // 超过10行数据，就按照最大40*10 400px高度的列表就行
+      // if (val >= 10) {
+      //   this.$refs.listWrap.style.height = '800px';
+      // } else {
+      // // 不足10行数据，这边 加57是因为表头的高度，具体情况
+      //   this.$refs.listWrap.style.height = this.itemHeight * val + 80 + 'px'
+      // }
+    },
+    filterText(val) {
+      this.$refs.tree1?.filter(val);
+      this.$refs.tree2?.filter(val);
+      this.$refs.tree3?.filter(val);
+    },
+  },
+
   data() {
     return {
       isAllChecked: false, // 全选按钮的状态
@@ -412,6 +537,7 @@ export default {
       dataset: "",
       // taskList: JSON.parse(JSON.stringify(taskList)),
       taskList: [],
+      filterText: "",
       DQN_selected: false,
       DDPG_selected: false,
       PPO_selected: false,
@@ -457,10 +583,15 @@ export default {
       this.SVM_selected = this.isModelListContainsSVM;
       this.RF_selected = this.isModelListContainsRF;
 
-      // this.getCatgory();
+      this.getCatgory();
       this.getTaskList();
 
       console.log("当前模块名👉", this.moduleName);
+    },
+
+    filterNode(value, data) {
+      if (!value) return true;
+      return data.label.indexOf(value) !== -1;
     },
 
     getTaskList() {
@@ -477,22 +608,6 @@ export default {
         });
     },
 
-    // getTasknames() {
-    //   // 遍历 this.taskList 对象的属性
-    //   for (var key in this.taskList) {
-    //     // 检查属性是否是对象自身的属性，而不是继承的属性
-    //     if (this.taskList.hasOwnProperty(key)) {
-    //       // 获取当前属性对应的对象
-    //       var task = this.taskList[key];
-    //       // 检查对象是否具有 taskname 属性
-    //       if (task.hasOwnProperty("taskname")) {
-    //         // 将 taskname 属性的值推送到 tasknames 数组中的 value 属性中
-    //         this.tasknames.push({ value: task.taskname });
-    //       }
-    //     }
-    //   }
-    //   console.log("this.tasknames", this.tasknames);
-    // },
     getTasknames() {
       // 用于记录已经出现过的任务名称
       var uniqueTasknames = {};
@@ -539,10 +654,19 @@ export default {
     },
 
     getCatgory() {
-      getCategory("/api/category").then((response) => {
-        console.log("getCatgory", response);
-        this.treeData = response.data;
-        console.log("222222");
+      getCategory(`/api/category?uid=${this.loginUserID}`).then((response) => {
+        this.treeData1 = response.data.slice(0, 1);
+        this.treeData2 = response.data.slice(1, 2);
+        this.treeData3 = response.data.slice(2, 3);
+        console.log("this.treeData1", this.treeData1);
+        console.log("this.treeData2", this.treeData2);
+        console.log("this.treeData3", this.treeData3);
+        // 获取病种和数据集总数
+        this.diseaseNum = response.data[0].children.length;
+        // response.data[0].children.length + response.data[1].children.length;
+        getRequest("/api/getTableNumber").then((res) => {
+          if (res.code == 200) this.datasetNum = res.data;
+        });
       });
     },
 
@@ -656,17 +780,16 @@ export default {
     //   console.log("datasetList: ",this.datasetList);
     // },
 
-    changeData(node) {
-      console.log("node: ", node);
+    changeData(treeRef, node) {
       if (this.lastClickedNode && this.lastClickedNode === node) {
         // 如果当前节点已经被高亮，则取消高亮
-        this.$refs.tree.setCurrentKey(null);
+        this.$refs[treeRef].setCurrentKey(null);
         this.lastClickedNode = null;
         this.disease = "";
         this.dataset = "";
       } else {
         // 高亮当前节点
-        this.$refs.tree.setCurrentKey(node.id);
+        this.$refs[treeRef].setCurrentKey(node.id);
         this.lastClickedNode = node;
         if (node.isLeafs == 0) {
           this.disease = node.label;
@@ -676,12 +799,18 @@ export default {
           this.disease = "";
         }
       }
-      // console.log("this.disease: ", this.disease);
-      // console.log("this.dataset: ", this.dataset);
-      // console.log("this.taskname: ", this.taskname);
-      // console.log("this.leader: ", this.leader);
+    },
+    changeData1(node) {
+      this.changeData("tree1", node);
     },
 
+    changeData2(node) {
+      this.changeData("tree2", node);
+    },
+
+    changeData3(node) {
+      this.changeData("tree3", node);
+    },
     handleSwitchChange(modelName, value) {
       if (value) {
         // 如果开关打开，则向modelList数组中添加模型名称

@@ -4,14 +4,20 @@ export function getRequest(url, paramObj) {
   return request({
     method: "get",
     url,
-    params: paramObj
+    params: paramObj,
+    headers: {
+      Authorization: `${sessionStorage.getItem("token")}`
+    }
   });
 }
 
 export function getRequestWithRestful(url) {
   return request({
     method: "get",
-    url
+    url,
+    headers: {
+      Authorization: `${sessionStorage.getItem("token")}`
+    }
   });
 }
 
@@ -19,6 +25,9 @@ export function postRequest(url, data) {
   return request({
     method: "post",
     url,
-    data
+    data,
+    headers: {
+      Authorization: `${sessionStorage.getItem("token")}`
+    }
   })
 }

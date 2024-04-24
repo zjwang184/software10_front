@@ -36,18 +36,23 @@
             <el-icon
               class="el-icon-s-grid"
               style="font-size: 15px; margin-right: 5px"
-            ></el-icon>专病集个数:个
+            ></el-icon
+            >专病集个数:个
           </div>
           <div class="tasksNumber">
             <el-icon
               class="el-icon-s-order"
               style="font-size: 15px; margin-right: 5px"
-            ></el-icon>任务总数:个</div>
+            ></el-icon
+            >任务总数:个
+          </div>
           <div class="featuresNumber">
             <el-icon
               class="el-icon-s-data"
               style="font-size: 15px; margin-right: 5px"
-            ></el-icon>样本总量:个</div>
+            ></el-icon
+            >样本总量:个
+          </div>
           <!-- <div class="predictDiseaseAccess"></div> -->
         </div>
       </el-card>
@@ -75,7 +80,7 @@
             </el-date-picker>
           </div>
 
-          <div id="chartBox" style="height: 400px; width: 30vw;margin:0 auto">
+          <div id="chartBox" style="height: 400px; width: 30vw; margin: 0 auto">
             <!-- <LineChartVue v-if="sevendays.length > 0" :legend="chartLegend" :statistic="chartData" :x="sevendays">
             </LineChartVue> -->
             <LineChartVue> </LineChartVue>
@@ -86,7 +91,7 @@
           <div slot="header" class="clearfix">
             <span class="lineStyle">▍</span><span>疾病占比</span>
           </div>
-          <div id="chartBox" style="height: 400px; width: 30vw;margin:0 auto">
+          <div id="chartBox" style="height: 400px; width: 30vw; margin: 0 auto">
             <Pie> </Pie>
           </div>
         </el-card>
@@ -99,7 +104,7 @@
           <div slot="header" class="clearfix">
             <span class="lineStyle">▍</span><span>知识融入频次</span>
           </div>
-          <div id="chartBox" style="height: 400px; width: 30vw;margin:0 auto">
+          <div id="chartBox" style="height: 400px; width: 30vw; margin: 0 auto">
             <Sprit> </Sprit>
           </div>
         </el-card>
@@ -109,7 +114,7 @@
             <span class="lineStyle">▍</span><span>模型使用占比</span>
           </div>
           <div id="chartBox">
-            <Bar style="height: 400px; width: 80%;margin:0 auto"> </Bar>
+            <Bar style="height: 400px; width: 80%; margin: 0 auto"> </Bar>
           </div>
         </el-card>
       </el-card>
@@ -417,7 +422,7 @@ export default {
   padding: 10px;
   border: 1px solid #fff;
   border-radius: 10px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.2);
   background: rgba(255, 255, 255, 0.1);
   margin: 10px;
 }
@@ -472,52 +477,32 @@ export default {
   padding: 10px;
   border: 1px solid #fff;
   border-radius: 10px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1); /* 修正阴影的颜色和透明度 */
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.2); /* 修正阴影的颜色和透明度 */
   background: rgba(255, 255, 255, 0.1);
 }
 
-.midStatistic {
-  width: 100%;
-}
-
-.mid_statistic_card {
-  margin-top: 10px;
-  margin-bottom: 10px;
-  width: 100%;
-  height: 100%;
-}
-
-.mid_statistic_card .el-card {
-  display: inline-block;
-  width: 40vw;
-  height: 100%;
-  margin: 0.5% 1.3% 0.5% 1.3%;
-  border: 1px solid #fff;
-  border-radius: 10px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1); 
-  background: rgba(255, 255, 255, 0.1);
-}
-
+.midStatistic,
 .bottomStatistic {
   width: 100%;
 }
 
+.mid_statistic_card,
 .bottom_statistic_card {
   margin-top: 10px;
-  /* margin-left: 10px; */
   margin-bottom: 10px;
   width: 100%;
   height: 100%;
 }
 
+.mid_statistic_card .el-card,
 .bottom_statistic_card .el-card {
   display: inline-block;
-  width: 40vw;
+  width: 47%;
   height: 100%;
   margin: 0.5% 1.3% 0.5% 1.3%;
   border: 1px solid #fff;
   border-radius: 10px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1); /* 修正阴影的颜色和透明度 */
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.2);
   background: rgba(255, 255, 255, 0.1);
 }
 </style>

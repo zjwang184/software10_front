@@ -5,34 +5,140 @@
     element-loading-text="正在加载中"
     element-loading-spinner="el-icon-loading"
   >
-    <div class="left_tree">
-      <div class="tipInfo">
-        <h3>可选数据</h3>
-        <span class="statistic"> 一级病种: {{ diseaseNum }} 个 </span>
-        <span class="statistic"> 数据表: {{ datasetNum }} 个 </span>
+  <div class="left_tree">
+      <div class="tree-top">
+        <div class="tipInfo">
+          <h3>可选数据</h3>
+          <span class="statistic"> 一级病种: {{ diseaseNum }} 个 </span>
+          <span class="statistic"> 数据表: {{ datasetNum }} 个 </span>
+        </div>
+        <hr class="hr-dashed" />
+        <el-input placeholder="输入关键字进行过滤" v-model="filterText">
+        </el-input>
       </div>
-      <el-tree
-        ref="tree"
-        :data="treeData"
-        :show-checkbox="false"
-        node-key="id"
-        default-expand-all
-        :expand-on-click-node="false"
-        :check-on-click-node="true"
-        :highlight-current="true"
-        @node-click="changeData"
-        @check-change="handleCheckChange"
-      >
-        <span class="custom-tree-node" slot-scope="{ node }">
-          <span
-            :style="{
-              fontWeight: node.level === 1 ? 'bold' : 'normal',
-              fontSize: node.level === 1 ? '16px' : 'inherit',
-            }"
-            >{{ node.label }}</span
-          >
-        </span>
-      </el-tree>
+
+      <div class="treeArea">
+        <!-- =========================================私有数据集树 --------------------------->
+        <el-tree
+          ref="tree1"
+          :data="treeData1"
+          :show-checkbox="false"
+          node-key="id"
+          :default-expanded-keys="['1']"
+          :expand-on-click-node="false"
+          :highlight-current="true"
+          @node-click="changeData"
+          :filter-node-method="filterNode"
+        >
+          <span class="custom-tree-node" slot-scope="{ node, data }">
+            <span class="left_span">
+              <i
+                class="el-icon-document tree_icon"
+                v-if="data.isLeafs == 1 && data.uid != loginUserID"
+              ></i>
+              <i
+                class="el-icon-document tree_icon"
+                v-if="data.isLeafs == 1 && data.uid == loginUserID"
+                style="color: rgb(40, 207, 18)"
+              ></i>
+              <span
+                v-if="data.catLevel == 1"
+                style="font-weight: bold; font-size: 16px; color: #252525"
+                >{{ node.label }}</span
+              >
+              <span
+                v-else
+                :class="{
+                  nodeLabel: node.label.length <= 12,
+                  'scrolling-nodeLabel': node.label.length > 12,
+                }"
+                >{{ node.label }}
+                <span v-if="data.isLeafs == 1 && data.uid == loginUserID">
+                  （我）</span
+                >
+              </span>
+            </span>
+          </span>
+        </el-tree>
+
+        <!-- =========================================共享数据集树 -->
+        <el-tree
+          ref="tree2"
+          :data="treeData2"
+          :show-checkbox="false"
+          node-key="id"
+          :default-expanded-keys="['1']"
+          :expand-on-click-node="false"
+          :highlight-current="true"
+          @node-click="changeData"
+          :filter-node-method="filterNode"
+        >
+          <span class="custom-tree-node" slot-scope="{ node, data }">
+            <span class="left_span">
+              <i
+                class="el-icon-document tree_icon"
+                v-if="data.isLeafs == 1 && data.uid != loginUserID"
+              ></i>
+              <i
+                class="el-icon-document tree_icon"
+                v-if="data.isLeafs == 1 && data.uid == loginUserID"
+                style="color: rgb(40, 207, 18)"
+              ></i>
+              <span
+                v-if="data.catLevel == 1"
+                style="font-weight: bold; font-size: 16px; color: #252525"
+                >{{ node.label }}</span
+              >
+              <span
+                v-else
+                :class="{
+                  nodeLabel: node.label.length <= 12,
+                  'scrolling-nodeLabel': node.label.length > 12,
+                }"
+                >{{ node.label }}
+                <span v-if="data.isLeafs == 1 && data.uid == loginUserID">
+                  （我）</span
+                >
+              </span>
+            </span>
+          </span>
+        </el-tree>
+
+        <!-- =========================================公共数据集树 -->
+        <el-tree
+          ref="tree3"
+          :data="treeData3"
+          :show-checkbox="false"
+          node-key="id"
+          :default-expanded-keys="['1']"
+          :expand-on-click-node="false"
+          :highlight-current="true"
+          @node-click="changeData"
+          :filter-node-method="filterNode"
+        >
+          <span class="custom-tree-node" slot-scope="{ node, data }">
+            <span class="left_span">
+              <i
+                class="el-icon-document tree_icon"
+                v-if="data.isLeafs == 1"
+              ></i>
+              <span
+                v-if="data.catLevel == 1"
+                style="font-weight: bold; font-size: 16px; color: #252525"
+                >{{ node.label }}</span
+              >
+              <span
+                v-else
+                :class="{
+                  nodeLabel: node.label.length <= 12,
+                  'scrolling-nodeLabel': node.label.length > 12,
+                }"
+                >{{ node.label }}</span
+              >
+            </span>
+          </span>
+        </el-tree>
+      </div>
     </div>
 
     <div class="right_table">
@@ -154,10 +260,17 @@ export default {
         color: "black", // 设置表头文字颜色为白色
       };
     },
+
+    loginUserID() {
+      return sessionStorage.getItem("userid");
+    },
   },
 
   data() {
     return {
+      treeData1: [],
+      treeData2: [],
+      treeData3: [],
       getData_loading: true,
       next_loading: false,
       selectedDataset: false,
@@ -169,6 +282,7 @@ export default {
       pageSize: 4,
       currentPage: 1,
       dataTotal: 0,
+      filterText:"",
 
       dataTableVision: false,
       patientTable: [],
@@ -185,7 +299,6 @@ export default {
       showList: [],
 
       tableData: [],
-      treeData: [],
       // treeData: JSON.parse(JSON.stringify(treeData)),
     };
   },
@@ -230,6 +343,23 @@ export default {
     }
     this.getData_loading = false;
   },
+  watch: {
+    length(val) {
+      this.$refs.listWrap.style.height = "720px";
+      // // 超过10行数据，就按照最大40*10 400px高度的列表就行
+      // if (val >= 10) {
+      //   this.$refs.listWrap.style.height = '800px';
+      // } else {
+      // // 不足10行数据，这边 加57是因为表头的高度，具体情况
+      //   this.$refs.listWrap.style.height = this.itemHeight * val + 80 + 'px'
+      // }
+    },
+    filterText(val) {
+      this.$refs.tree1?.filter(val);
+      this.$refs.tree2?.filter(val);
+      this.$refs.tree3?.filter(val);
+    },
+  },
 
   methods: {
     init() {
@@ -247,10 +377,25 @@ export default {
       }
       this.dataTotal = this.list.length;
     },
+    filterNode(value, data) {
+      if (!value) return true;
+      return data.label.indexOf(value) !== -1;
+    },
 
     getCatgory() {
-      getCategory("/api/category").then((response) => {
-        this.treeData = response.data;
+      getCategory(`/api/category?uid=${this.loginUserID}`).then((response) => {
+        this.treeData1 = response.data.slice(0, 1);
+        this.treeData2 = response.data.slice(1, 2);
+        this.treeData3 = response.data.slice(2, 3);
+        console.log("this.treeData1", this.treeData1);
+        console.log("this.treeData2", this.treeData2);
+        console.log("this.treeData3", this.treeData3);
+        // 获取病种和数据集总数
+        this.diseaseNum = response.data[0].children.length;
+        // response.data[0].children.length + response.data[1].children.length;
+        getRequest("/api/getTableNumber").then((res) => {
+          if (res.code == 200) this.datasetNum = res.data;
+        });
       });
     },
     getTableDescribe(id, label) {
@@ -433,15 +578,61 @@ export default {
   font-size: 13px;
   color: #585858;
 }
+.hr-dashed {
+  border: 0;
+  border-top: 1px dashed #899bbb;
+}
+
+.treeArea {
+  height: calc(820px - 93px); /* 93px是头部信息和按钮的高度 */
+  overflow-y: scroll;
+  scrollbar-width: none; /* 隐藏 Firefox 的滚动条 */
+  -ms-overflow-style: none; /* 隐藏 IE/Edge 的滚动条 */
+}
 .custom-tree-node {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 14px;
+  font-size: 16px;
   padding-right: 8px;
+  overflow: hidden;
 }
 
+.custom-tree-node .left_span {
+  width: 12em;
+  overflow: hidden;
+}
+
+.nodeLabel,
+.scrolling-nodeLabel {
+  display: inline-block;
+  white-space: nowrap; /* 禁止文本换行 */
+  box-sizing: border-box; /* 边框和内填充的宽度也包含在width内 */
+}
+
+/* 文本滚动 */
+.scrolling-nodeLabel:hover {
+  position: relative;
+  overflow: hidden;
+  vertical-align: text-bottom;
+  animation: scrollText 3s linear infinite; /* 动画持续时间和循环方式 */
+}
+
+@keyframes scrollText {
+  0% {
+    transform: translateX(0px);
+  }
+  12% {
+    transform: translateX(0px);
+  }
+  75% {
+    transform: translateX(calc(-100% + 12em));
+  }
+  100% {
+    transform: translateX(calc(-100% + 12em));
+  }
+}
 .right_table {
   display: grid;
   grid-template-rows: auto auto;

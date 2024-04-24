@@ -1,154 +1,265 @@
 <template>
   <div class="main">
     <div class="left_tree">
-      <div class="tipInfo">
-        <h3>病种、数据集选择</h3>
-        <span class="statistic"> 一级病种: {{ diseaseNum }} 个 </span>
-        <span class="statistic"> 数据表: {{ datasetNum }} 个 </span>
+      <div class="tree-top">
+        <div class="tipInfo">
+          <h3>病种、数据集选择</h3>
+          <span class="statistic"> 一级病种: {{ diseaseNum }} 个 </span>
+          <span class="statistic"> 数据表: {{ datasetNum }} 个 </span>
+        </div>
+        <hr class="hr-dashed" />
+        <el-input placeholder="输入关键字进行过滤" v-model="filterText">
+        </el-input>
       </div>
-      <el-tree
-        ref="tree"
-        :data="treeData"
-        :show-checkbox="false"
-        node-key="id"
-        default-expand-all
-        :expand-on-click-node="false"
-        :check-on-click-node="true"
-        :highlight-current="true"
-        @node-click="changeData"
-      >
-        <template slot="default" slot-scope="{ node }">
-          <span
-            :style="{
-              fontWeight: node.level === 1 ? 'bold' : 'normal',
-              fontSize: node.level === 1 ? '17px' : 'inherit',
-            }"
-            >{{ node.label }}</span
-          >
-        </template>
-        <!-- <span class="custom-tree-node" slot-scope="{ node, data }">
-          <span>{{ node.label }}</span>
-          <span>
-            <el-button
-              icon="el-icon-delete"
-              size="mini"
-              type="text"
-              @click="() => remove(node, data)"
-            >
-            </el-button>
+
+      <div class="treeArea">
+        <!-- =========================================私有数据集树 --------------------------->
+        <el-tree
+          ref="tree1"
+          :data="treeData1"
+          :show-checkbox="false"
+          node-key="id"
+          :default-expanded-keys="['1']"
+          :expand-on-click-node="false"
+          :highlight-current="true"
+          @node-click="changeData1"
+          :filter-node-method="filterNode"
+        >
+          <span class="custom-tree-node" slot-scope="{ node, data }">
+            <span class="left_span">
+              <i
+                class="el-icon-document tree_icon"
+                v-if="data.isLeafs == 1 && data.uid != loginUserID"
+              ></i>
+              <i
+                class="el-icon-document tree_icon"
+                v-if="data.isLeafs == 1 && data.uid == loginUserID"
+                style="color: rgb(40, 207, 18)"
+              ></i>
+              <span
+                v-if="data.catLevel == 1"
+                style="font-weight: bold; font-size: 16px; color: #252525"
+                >{{ node.label }}</span
+              >
+              <span
+                v-else
+                :class="{
+                  nodeLabel: node.label.length <= 12,
+                  'scrolling-nodeLabel': node.label.length > 12,
+                }"
+                >{{ node.label }}
+                <span v-if="data.isLeafs == 1 && data.uid == loginUserID">
+                  （我）</span
+                >
+              </span>
+            </span>
           </span>
-        </span> -->
-      </el-tree>
-      <el-dialog title="提示" :visible.sync="dialogDiseaseVisible" width="30%">
-        <span>
-          请输入新病种名称：<el-input
-            placeholder="请输入内容"
-            v-model="diseaseName"
-            class="nameInput"
-          ></el-input>
-        </span>
-        <span slot="footer" class="dialog-footer">
-          <el-button @click="cleanInput()">取 消</el-button>
-          <el-button type="primary" @click="() => append()">确 定</el-button>
-        </span>
-      </el-dialog>
+        </el-tree>
+
+        <!-- =========================================共享数据集树 -->
+        <el-tree
+          ref="tree2"
+          :data="treeData2"
+          :show-checkbox="false"
+          node-key="id"
+          :default-expanded-keys="['1']"
+          :expand-on-click-node="false"
+          :highlight-current="true"
+          @node-click="changeData2"
+          :filter-node-method="filterNode"
+        >
+          <span class="custom-tree-node" slot-scope="{ node, data }">
+            <span class="left_span">
+              <i
+                class="el-icon-document tree_icon"
+                v-if="data.isLeafs == 1 && data.uid != loginUserID"
+              ></i>
+              <i
+                class="el-icon-document tree_icon"
+                v-if="data.isLeafs == 1 && data.uid == loginUserID"
+                style="color: rgb(40, 207, 18)"
+              ></i>
+              <span
+                v-if="data.catLevel == 1"
+                style="font-weight: bold; font-size: 16px; color: #252525"
+                >{{ node.label }}</span
+              >
+              <span
+                v-else
+                :class="{
+                  nodeLabel: node.label.length <= 12,
+                  'scrolling-nodeLabel': node.label.length > 12,
+                }"
+                >{{ node.label }}
+                <span v-if="data.isLeafs == 1 && data.uid == loginUserID">
+                  （我）</span
+                >
+              </span>
+            </span>
+          </span>
+        </el-tree>
+
+        <!-- =========================================公共数据集树 -->
+        <el-tree
+          ref="tree3"
+          :data="treeData3"
+          :show-checkbox="false"
+          node-key="id"
+          :default-expanded-keys="['1']"
+          :expand-on-click-node="false"
+          :highlight-current="true"
+          @node-click="changeData3"
+          :filter-node-method="filterNode"
+        >
+          <span class="custom-tree-node" slot-scope="{ node, data }">
+            <span class="left_span">
+              <i
+                class="el-icon-document tree_icon"
+                v-if="data.isLeafs == 1"
+              ></i>
+              <span
+                v-if="data.catLevel == 1"
+                style="font-weight: bold; font-size: 16px; color: #252525"
+                >{{ node.label }}</span
+              >
+              <span
+                v-else
+                :class="{
+                  nodeLabel: node.label.length <= 12,
+                  'scrolling-nodeLabel': node.label.length > 12,
+                }"
+                >{{ node.label }}</span
+              >
+            </span>
+          </span>
+        </el-tree>
+      </div>
     </div>
     <div class="right">
-      <!--==========================     头部按钮     ==============================================================-->
-      <div id="top_buttons">
-        <div id="task_leader">
-          <el-select v-model="leader" placeholder="请搜索任务名称">
-            <el-option
-              v-for="item in taskLeaderList"
-              :key="item"
-              :label="item"
-              :value="item"
-            >
-            </el-option>
-          </el-select>
-          <el-select v-model="leader" placeholder="请选择任务负责人" filterable>
-            <el-option
-              v-for="item in taskLeaderList"
-              :key="item"
-              :label="item"
-              :value="item"
-            >
-            </el-option>
-          </el-select>
-          <el-select v-model="leader" placeholder="请选择所用模型">
-            <el-option
-              v-for="item in taskLeaderList"
-              :key="item"
-              :label="item"
-              :value="item"
-            >
-            </el-option>
-          </el-select>
-          <el-select v-model="leader" placeholder="请选择创建时间">
-            <el-option
-              v-for="item in taskLeaderList"
-              :key="item"
-              :label="item"
-              :value="item"
-            >
-            </el-option>
-          </el-select>
+      <!--==========================     头部搜索框     ==============================================================-->
+      <div class="search-input">
+        <div>
+          本页面可进行历史任务的查看和删除，您可根据任务名称、负责人、所用算法、疾病名称、数据集等条件筛选任务，筛选结果由创建时间由远及近排列
         </div>
-        <el-button @click="clearFilter">清除</el-button>
-        <el-popover placement="right" style="margin-left: 20px" trigger="hover">
-          <div>跳转到模型训练进行新建任务</div>
-          <el-button
-            type="success"
-            @click="navigateToModelTraining"
-            slot="reference"
-            >新建任务</el-button
-          >
-        </el-popover>
+        <div>
+          <span id="search-taskname">
+            <i class="el-icon-edit-outline"></i> 任务名称：
+            <el-autocomplete
+              v-model="taskname"
+              placeholder="请输入任务名称进行搜索"
+              clearable
+              :style="{ width: auto }"
+              :fetch-suggestions="searchTasknames"
+              @select="handleSelect"
+            ></el-autocomplete>
+          </span>
+          <span id="search-leader">
+            <i class="el-icon-user"></i> 任务负责人：
+            <el-autocomplete
+              v-model="leader"
+              placeholder="请输入任务负责人进行搜索"
+              clearable
+              :style="{ width: auto}"
+              :fetch-suggestions="searchLeaders"
+              @select="handleSelect"
+            ></el-autocomplete>
+          </span>
+          <span id="search-modelname">
+            <i class="el-icon-price-tag"></i> 所用算法：
+            <el-autocomplete
+              v-model="modelname"
+              placeholder="请输入所用算法进行搜索"
+              clearable
+              :style="{ width: auto }"
+              :fetch-suggestions="searchmodelnames"
+              @select="handleSelect"
+            ></el-autocomplete>
+          </span>
+          <el-button @click="clearFilter">清除</el-button>
+          <el-popover placement="bottom" trigger="hover">
+            <div>跳转到模型训练进行新建任务</div>
+            <el-button
+              type="success"
+              @click="navigateToModelTraining"
+              slot="reference"
+              >新建任务</el-button
+            >
+          </el-popover>
+        </div>
+
+        <!-- <span id="search-modelname">
+            <i class="el-icon-date"></i> 创建时间：
+            <el-date-picker
+              style="display: inline-block; width: 300px"
+              v-model="createtime"
+              type="date"
+              placeholder="选择日期"
+            >
+            </el-date-picker>
+          </span> -->
+        <div>
+          筛选结果：
+          <span style="color: red">{{ filteredTaskList.length }} </span>
+          个任务
+
+          
+        </div>
       </div>
 
       <!--===============================    卡片组     ==============================================================-->
       <div class="cardGroup">
         <el-card
           class="taskCard"
-          v-for="item in taskList"
+          v-for="item in filteredTaskList"
           :key="item.id"
           shadow="always"
-          v-show="
-            !(disease || leader) ||
-            (disease == item.disease && !leader) ||
-            (leader == item.leader && !disease) ||
-            (disease == item.disease && leader == item.leader)
-          "
         >
           <div class="cardInfo">
-            <div><span class="ttl">任务名称：</span>{{ item.taskname }}</div>
-            <div><span class="ttl">任务负责人：</span>{{ item.leader }}</div>
-            <div><span class="ttl">所属疾病：</span>{{ item.disease }}</div>
-            <div><span class="ttl">使用模型：</span>{{ item.modelname }}</div>
-            <div><span class="ttl">数据表：</span>{{ item.dataset }}</div>
+            <div>
+              <span class="ttl">任务名称：</span>
+              <span v-html="highlightMatch(item.taskname, taskname)"></span>
+            </div>
+            <div>
+              <span class="ttl">任务负责人：</span>
+              <span v-html="highlightMatch(item.leader, leader)"></span>
+            </div>
+            <div>
+              <span class="ttl">所属疾病：</span>
+              <span v-html="highlightMatch(item.disease, disease)"></span>
+            </div>
+            <div>
+              <span class="ttl">所用算法：</span>
+              <span v-html="highlightMatch(item.modelname, modelname)"></span>
+            </div>
+            <div>
+              <span class="ttl">数据表：</span
+              ><span v-html="highlightMatch(item.dataset, dataset)"></span>
+            </div>
             <div><span class="ttl">创建时间：</span>{{ item.createtime }}</div>
-          </div>
-          <div class="editButton">
-            <el-button
-              size="mini"
-              type="primary"
-              @click="handleCheck(item)"
-              style="margin-right: 20px"
-              >查看</el-button
-            >
-            <el-popconfirm
-              title="删除后无法恢复"
-              icon="el-icon-warning"
-              icon-color="red"
-              @confirm="handleDelete(item)"
-            >
-              <el-button slot="reference" size="mini" type="danger"
-                >删除</el-button
+            <div>
+              <span class="ttl"
+                >所属类别：<span>{{ item.classpath }}</span></span
               >
-            </el-popconfirm>
+            </div>
           </div>
+          <span class="buttonGroup">
+            <el-popover placement="top" trigger="hover">
+              <div>点击查看任务详情</div>
+              <el-button
+                slot="reference"
+                type="primary"
+                @click="handleCheck(item)"
+                round
+                >查看</el-button
+              >
+            </el-popover>
+            <span style="margin: 10px"></span>
+
+            <el-button type="danger" @click="handleDelete(item)" round
+              >删除</el-button
+            >
+          </span>
         </el-card>
-        
       </div>
 
       <el-dialog
@@ -234,10 +345,9 @@
 <script>
 import { getRequest, deleteRequest } from "@/utils/api";
 import { state } from "@antv/g2plot/lib/adaptor/common";
-import { mapGetters, mapMutations, mapState, mapActions } from "vuex";
 import { getCategory } from "@/api/category";
 import TaskCheck from "./subcomponents/TaskCheck";
-import { treeData } from "@/components/tab/treeData.js";
+// import { treeData } from "@/components/tab/treeData.js";
 // import { taskList } from "@/components/tab/constTaskList.js";
 
 export default {
@@ -246,17 +356,35 @@ export default {
     TaskCheck,
   },
   computed: {
-    ...mapState(["taskList", , "treeData"]),
-    ...mapGetters(["taskLeaderList", "taskDiseaseList"]),
-    filteredTaskListByModel() {
-      return this.taskList.filter((item) => item.modelname);
+    totalTasks() {
+      return this.taskList.filter((item) => this.displayedCard(item)).length;
+    },
+    filteredTaskList() {
+      // 进行筛选
+      let filteredList = this.taskList.filter((task) => {
+        let diseaseMatch = this.disease === "" || task.disease === this.disease;
+        let modelMatch =
+          this.modelname === "" || this.modelname === task.modelname;
+        let datasetMatch = this.dataset === "" || task.dataset === this.dataset;
+        let leaderMatch =
+          this.leader === "" || new RegExp(this.leader, "i").test(task.leader);
+        let taskMatch =
+          this.taskname === "" ||
+          new RegExp(this.taskname, "i").test(task.taskname);
+        return (
+          diseaseMatch && modelMatch && datasetMatch && leaderMatch && taskMatch
+        );
+      });
+
+      // 进行排序
+      return filteredList.sort((a, b) => {
+        return new Date(b.createtime) - new Date(a.createtime);
+      });
     },
   },
-  mounted() {
-    // this.getCatgory();
-  },
+
   created() {
-    this.getTaskList();
+    this.init();
 
     // this.getTreeData();
   },
@@ -264,20 +392,53 @@ export default {
     return {
       moduluName: "TaskManage",
       treeData: [],
+      treeData1: [],
+      treeData2: [],
+      treeData3: [],
+      taskList: [],
+      modelname: "",
       disease: "",
+      dataset: "",
       leader: "",
+      taskname: "",
+      diseaseNum: "",
+      datasetNum: "",
+      filterText: "",
       resultDialogShow: false,
       result: {},
 
       dialogDiseaseVisible: false,
       diseaseName: "",
-      treeData: JSON.parse(JSON.stringify(treeData)),
+      // treeData: JSON.parse(JSON.stringify(treeData)),
       // taskList: JSON.parse(JSON.stringify(taskList)),
     };
   },
 
+  watch: {
+    length(val) {
+      this.$refs.listWrap.style.height = "720px";
+      // // 超过10行数据，就按照最大40*10 400px高度的列表就行
+      // if (val >= 10) {
+      //   this.$refs.listWrap.style.height = '800px';
+      // } else {
+      // // 不足10行数据，这边 加57是因为表头的高度，具体情况
+      //   this.$refs.listWrap.style.height = this.itemHeight * val + 80 + 'px'
+      // }
+    },
+    filterText(val) {
+      this.$refs.tree1?.filter(val);
+      this.$refs.tree2?.filter(val);
+      this.$refs.tree3?.filter(val);
+    },
+  },
+
   methods: {
-    ...mapActions(["getTaskList", , "getTreeData"]),
+    init() {
+      console.log("进入到历史任务查看界面");
+      this.getCatgory();
+      this.getTaskList();
+    },
+    // ...mapActions(["getTaskList", , "getTreeData"]),
     // ...mapMutations(["SetTaskList"]),
     // getTreeData()
     // {
@@ -291,6 +452,11 @@ export default {
     //     }
     //   });
     // },
+
+    filterNode(value, data) {
+      if (!value) return true;
+      return data.label.indexOf(value) !== -1;
+    },
 
     navigateToModelTraining() {
       // 使用 $router.push() 方法导航到目标路由路径
@@ -343,8 +509,10 @@ export default {
     },
 
     handleDelete(row) {
+      console.log("row", row);
+      console.log("token:", sessionStorage.getItem("token"));
       // 发送删除请求到服务器
-      deleteRequest(`Task/${row.id}`, row)
+      getRequest(`Task/delete/${row.id}`, row)
         .then((res) => {
           console.log("res:", res);
           if (res.code === 200) {
@@ -367,31 +535,68 @@ export default {
     },
 
     getCatgory() {
-      getCategory("/api/category").then((response) => {
-        console.log(this.treeData);
-        this.treeData = response.data;
+      getCategory(`/api/category?uid=${this.loginUserID}`).then((response) => {
+        this.treeData1 = response.data.slice(0, 1);
+        this.treeData2 = response.data.slice(1, 2);
+        this.treeData3 = response.data.slice(2, 3);
+        console.log("this.treeData1", this.treeData1);
+        console.log("this.treeData2", this.treeData2);
+        console.log("this.treeData3", this.treeData3);
+        // 获取病种和数据集总数
+        this.diseaseNum = response.data[0].children.length;
+        // response.data[0].children.length + response.data[1].children.length;
+        getRequest("/api/getTableNumber").then((res) => {
+          if (res.code == 200) this.datasetNum = res.data;
+        });
       });
     },
 
-    clearFilter() {
-      this.disease = "";
-      this.leader = "";
+    getTaskList() {
+      getRequest("/Task/all")
+        .then((res) => {
+          this.taskList = res.data;
+          this.getTasknames();
+          this.getLeaders();
+          this.getmodelnames();
+          console.log("this.taskList", this.taskList);
+        })
+        .catch((err) => {
+          console.log("任务列表获取错误，请联系管理员。");
+          console.log(err);
+        });
+    },
+    getUniqueValues(propertyName) {
+      // 用于记录已经出现过的属性值
+      var uniqueValues = {};
+      // 遍历 this.taskList 对象的属性
+      for (var key in this.taskList) {
+        // 检查属性是否是对象自身的属性，而不是继承的属性
+        if (this.taskList.hasOwnProperty(key)) {
+          // 获取当前属性对应的对象
+          var task = this.taskList[key];
+          // 检查对象是否具有指定属性
+          if (task.hasOwnProperty(propertyName)) {
+            // 将属性值添加到临时对象中进行记录
+            uniqueValues[task[propertyName]] = true;
+          }
+        }
+      }
+      // 将记录的属性值转为数组形式
+      return Object.keys(uniqueValues).map(function (value) {
+        return { value: value };
+      });
     },
 
-    // changeData(node) {
-    //   this.disease = node.label;
-    // },
-    changeData(node) {
-      console.log("node: ", node);
+    changeData(treeRef, node) {
       if (this.lastClickedNode && this.lastClickedNode === node) {
         // 如果当前节点已经被高亮，则取消高亮
-        this.$refs.tree.setCurrentKey(null);
+        this.$refs[treeRef].setCurrentKey(null);
         this.lastClickedNode = null;
         this.disease = "";
         this.dataset = "";
       } else {
         // 高亮当前节点
-        this.$refs.tree.setCurrentKey(node.id);
+        this.$refs[treeRef].setCurrentKey(node.id);
         this.lastClickedNode = node;
         if (node.isLeafs == 0) {
           this.disease = node.label;
@@ -401,10 +606,76 @@ export default {
           this.disease = "";
         }
       }
-      console.log("this.disease: ", this.disease);
-      console.log("this.dataset: ", this.dataset);
-      console.log("this.taskname: ", this.taskname);
-      console.log("this.leader: ", this.leader);
+    },
+    changeData1(node) {
+      this.changeData("tree1", node);
+    },
+
+    changeData2(node) {
+      this.changeData("tree2", node);
+    },
+
+    changeData3(node) {
+      this.changeData("tree3", node);
+    },
+
+    getTasknames() {
+      this.tasknames = this.getUniqueValues("taskname");
+    },
+
+    getLeaders() {
+      this.leaders = this.getUniqueValues("leader");
+    },
+
+    getmodelnames() {
+      this.modelnames = this.getUniqueValues("modelname");
+    },
+
+    clearFilter() {
+      this.disease = "";
+      this.leader = "";
+      this.taskname = "";
+      this.modelname = "";
+      this.$refs.tree1.setCurrentKey(null);
+      this.$refs.tree2.setCurrentKey(null);
+      this.$refs.tree3.setCurrentKey(null);
+    },
+
+    searchData(queryString, data, cb) {
+      var results = queryString
+        ? data.filter(this.createFilter(queryString))
+        : data;
+      // 调用 callback 返回建议列表的数据
+      cb(results);
+    },
+    createFilter(queryString) {
+      return (data) => {
+        return (
+          data.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+        );
+      };
+    },
+    searchTasknames(queryString, cb) {
+      this.searchData(queryString, this.tasknames, cb);
+    },
+    searchLeaders(queryString, cb) {
+      this.searchData(queryString, this.leaders, cb);
+    },
+    searchmodelnames(queryString, cb) {
+      this.searchData(queryString, this.modelnames, cb);
+    },
+
+    highlightMatch(text, query) {
+      if (!query) return text; // 如果查询字符串为空，则返回原始文本
+      const regex = new RegExp(query, "gi");
+      return text.replace(
+        regex,
+        (match) => `<span style="color:red;">${match}</span>`
+      );
+    },
+    handleSelect(item) {
+      // 处理选中联想项的逻辑
+      console.log("选中的任务项:", item);
     },
   },
 };
@@ -441,8 +712,8 @@ export default {
 
 .right {
   width: 100%;
-} 
-.right .el-select{
+}
+.right .el-select {
   margin-right: 20px;
 }
 
@@ -451,14 +722,65 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 14px;
+  font-size: 16px;
   padding-right: 8px;
+  overflow: hidden;
 }
 
-#top_buttons {
+.custom-tree-node .left_span {
+  width: 12em;
+  overflow: hidden;
+}
+
+.nodeLabel,
+.scrolling-nodeLabel {
+  display: inline-block;
+  white-space: nowrap; /* 禁止文本换行 */
+  box-sizing: border-box; /* 边框和内填充的宽度也包含在width内 */
+}
+
+/* 文本滚动 */
+.scrolling-nodeLabel:hover {
+  position: relative;
+  overflow: hidden;
+  vertical-align: text-bottom;
+  animation: scrollText 3s linear infinite; /* 动画持续时间和循环方式 */
+}
+
+@keyframes scrollText {
+  0% {
+    transform: translateX(0px);
+  }
+  12% {
+    transform: translateX(0px);
+  }
+  75% {
+    transform: translateX(calc(-100% + 12em));
+  }
+  100% {
+    transform: translateX(calc(-100% + 12em));
+  }
+}
+
+.search-input {
   margin-left: 3%;
   margin-bottom: 20px;
 }
+
+.search-input div:first-child {
+  background-color: rgba(99, 97, 97, 0.1);
+  margin-bottom: 10px;
+  padding: 10px;
+  height: 40px;
+  text-align: center;
+}
+
+.search-input div:nth-child(2) span,
+.search-input div:nth-child(2) .el-button{
+  margin-right:20px;
+  margin-bottom: 10px;
+}
+
 
 #top_buttons > * {
   display: inline-block;
@@ -466,9 +788,7 @@ export default {
 #task_disease {
   margin-right: 40px;
 }
-#task_leader {
-  margin-right: 20px;
-}
+
 #table {
   margin-top: 10px;
 }
@@ -498,15 +818,15 @@ export default {
 .cardInfo > div:nth-child(6) /* 第六个子元素（创建时间） */ {
   grid-column: 1 / span 2; /* 这两个元素跨越两列 */
 }
+.buttonGroup {
+  display: flex;
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中 */
+}
 
 .ttl {
   font-weight: 600;
   color: #071135;
-}
-
-.editButton {
-  margin-left: 30%;
-  margin-top: 5%;
 }
 
 .icon {
