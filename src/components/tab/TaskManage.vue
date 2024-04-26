@@ -159,7 +159,7 @@
               v-model="leader"
               placeholder="请输入任务负责人进行搜索"
               clearable
-              :style="{ width: auto}"
+              :style="{ width: auto }"
               :fetch-suggestions="searchLeaders"
               @select="handleSelect"
             ></el-autocomplete>
@@ -201,8 +201,6 @@
           筛选结果：
           <span style="color: red">{{ filteredTaskList.length }} </span>
           个任务
-
-          
         </div>
       </div>
 
@@ -236,11 +234,6 @@
               ><span v-html="highlightMatch(item.dataset, dataset)"></span>
             </div>
             <div><span class="ttl">创建时间：</span>{{ item.createtime }}</div>
-            <div>
-              <span class="ttl"
-                >所属类别：<span>{{ item.classpath }}</span></span
-              >
-            </div>
           </div>
           <span class="buttonGroup">
             <el-popover placement="top" trigger="hover">
@@ -435,6 +428,11 @@ export default {
   methods: {
     init() {
       console.log("进入到历史任务查看界面");
+      this.$notify({
+        title: "提示",
+        message: "您可在此页面查看和删除历史任务",
+        type: "success",
+      });
       this.getCatgory();
       this.getTaskList();
     },
@@ -692,6 +690,7 @@ export default {
   background-color: rgba(124, 124, 124, 0.1);
   height: 50px;
   text-align: center;
+  border-radius: 5px;
 }
 
 .tipInfo .statistic {
@@ -700,10 +699,9 @@ export default {
 }
 .left_tree {
   display: inline-block;
-  border-radius: 3px;
+  border-radius: 5px;
   border: 1px solid #fff;
-  border-radius: 10px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.4); /* 修正阴影的颜色和透明度 */
+  box-shadow: 0 0 12px 2px rgba(0, 0, 0, 0.3); /* 修正阴影的颜色和透明度 */
   background: rgba(255, 255, 255, 0.1);
   overflow-y: scroll; /* 或者 auto */
   scrollbar-width: none; /* 隐藏 Firefox 的滚动条 */
@@ -776,11 +774,10 @@ export default {
 }
 
 .search-input div:nth-child(2) span,
-.search-input div:nth-child(2) .el-button{
-  margin-right:20px;
+.search-input div:nth-child(2) .el-button {
+  margin-right: 20px;
   margin-bottom: 10px;
 }
-
 
 #top_buttons > * {
   display: inline-block;

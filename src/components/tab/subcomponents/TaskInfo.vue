@@ -1,5 +1,12 @@
 <template>
   <div id="mainBox">
+    <div class="info">
+      <span style="font-size: 18px; font-weight: bold"> 模型训练： </span>
+      <br />
+      <span style="margin-left: 2rem"
+        >在进行疾病预测任务之前您需要训练模型,通过训练好的模型对个人进行疾病风险预测</span
+      >
+    </div>
     <el-form
       ref="taskInfoForm"
       :model="taskInfoForm"
@@ -205,12 +212,21 @@ export default {
 
 <style scoped>
 #mainBox {
-  margin-left: 10%;
+  margin: 0 auto;
   overflow: auto;
 }
+.info {
+  height: 4rem;
+  background-color: rgba(139, 187, 233, 0.2);
+  line-height: 2rem;
+  text-align: left;
+  margin-bottom: 20px;
+  margin-left: 20%;
+  width: 48vw;
+}
 .form {
-  width: 100vh;
-  margin: auto;
+  width: 60vw;
+  margin-left: 20%;
 }
 .form .inputBox {
   width: 35%;
@@ -250,7 +266,7 @@ export default {
 
 ::v-deep .el-textarea__inner {
   height: 250px;
-  width:40vw;
+  width: 48vw;
 }
 </style>
 

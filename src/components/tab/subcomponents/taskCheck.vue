@@ -99,6 +99,7 @@
       <div></div>
 
       <!-------------------------- loss曲线图和reward曲线图 ----------------------------->
+
       <div
         ref="graphBox"
         class="graphBox"
@@ -107,6 +108,7 @@
         <div>
           <RewardCurve :rewardData="rewardData" />
         </div>
+
         <div>
           <LossCurve :lossData="lossData" />
         </div>
@@ -200,8 +202,8 @@ export default {
       while ((loss_match = regex.exec(this.taskData.totallosses)) !== null) {
         this.lossData.push([loss_match[1], parseFloat(loss_match[2])]);
       }
-      // console.log("this.rewardData", this.rewardData);
-      // console.log("this.lossData", this.lossData);
+      console.log("this.rewardData", this.rewardData);
+      console.log("this.lossData", this.lossData);
     },
     transTONumber(confusion) {
       return parseInt(confusion);

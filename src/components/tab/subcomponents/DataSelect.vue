@@ -5,7 +5,7 @@
     element-loading-text="正在加载中"
     element-loading-spinner="el-icon-loading"
   >
-  <div class="left_tree">
+    <div class="left_tree">
       <div class="tree-top">
         <div class="tipInfo">
           <h3>可选数据</h3>
@@ -282,7 +282,7 @@ export default {
       pageSize: 4,
       currentPage: 1,
       dataTotal: 0,
-      filterText:"",
+      filterText: "",
 
       dataTableVision: false,
       patientTable: [],
@@ -502,8 +502,8 @@ export default {
         this.m_changeStep(3);
         this.$notify({
           title: "数据选择成功",
-          message:"请选择特征进行下一步",
-          type:"success",
+          message: "请选择特征进行下一步",
+          type: "success",
         });
         console.log(
           "data_select—end this.targetFeatures:",
@@ -559,10 +559,9 @@ export default {
 
 .left_tree {
   display: inline-block;
-  border-radius: 3px;
   border: 1px solid #fff;
   border-radius: 10px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1); /* 修正阴影的颜色和透明度 */
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
   background: rgba(255, 255, 255, 0.1);
   overflow-y: scroll; /* 或者 auto */
   scrollbar-width: none; /* 隐藏 Firefox 的滚动条 */

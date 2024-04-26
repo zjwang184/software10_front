@@ -1,7 +1,8 @@
 <template>
   <div class="main">
+    <div class="info">特征条下方进度条为特征完备率</div>
     <!-------------------------------------------------------- 标签特征 ------------------------------------------------------>
-    <div style="margin-bottom: 50px">
+    <div class="label-feature" style="margin: 20px 0">
       <div>
         <span class="lineStyle">▍</span
         ><span class="featureTitle">标签特征：</span>
@@ -16,196 +17,154 @@
 
       <div style="margin: 15px"></div>
 
-      <el-checkbox-group v-model="labelFeatures" @change="changeBox_label()">
-        <el-checkbox
+      <el-checkbox-group
+        v-model="labelFeatures"
+        @change="changeBox_label()"
+        style="display: flex; flex-wrap: wrap"
+      >
+        <div
           v-for="item in displayedLabel"
-          :label="item.riskFactor"
           :key="item.riskFactor"
-          style="width: auto; margin: 10px; padding: 3px"
+          style="flex-basis: 20%; padding: 5px; box-sizing: border-box"
         >
-          <div style="display: flex; flex-direction: column">
-            <el-popover
-              placement="top-end"
-              width="150"
-              :title="popovername"
-              trigger="hover"
-              :content="item.rate"
-              :open-delay="200"
+          <el-checkbox :label="item.riskFactor" style="width: 100%">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+              "
             >
-              <span slot="reference">{{ item.riskFactor }}</span>
-              <el-progress
-                :percentage="item.rate * 100"
-                :color="changeProgressColor(item.rate * 100)"
-              ></el-progress>
-            </el-popover>
-            <meter
-              :value="item.rate"
-              min="0"
-              max="1"
-              low="0.6"
-              hight="0.8"
-              optimum="0.9"
-            ></meter>
-          </div>
-        </el-checkbox>
+              <span>{{ item.riskFactor }}</span>
+            </div>
+          </el-checkbox>
+          <el-progress
+            :percentage="Math.round(item.rate * 100)"
+            :color="changeProgressColor(item.rate * 100)"
+            style="margin-top: 5px"
+          ></el-progress>
+        </div>
       </el-checkbox-group>
     </div>
 
     <el-divider></el-divider>
+    <div style="margin: 20px 0">
+      <!---------------------------------------------------------- 参与运算特征 -------------------------------------------------->
 
-    <!---------------------------------------------------------- 参与运算特征 -------------------------------------------------->
-    <div style="margin-bottom: 30px">
       <div>
         <span class="lineStyle">▍</span
         ><span class="featureTitle">参与运算的特征：</span>
-        <el-checkbox
-          v-model="checkAll_compute"
-          @change="handleCheckAll_compute"
-          style="width: auto"
-        >
-          全选
-        </el-checkbox>
-      </div>
 
-      <div style="margin: 15px"></div>
-
-      <el-checkbox-group
-        v-model="computeFeatures"
-        @change="changeBox_compute()"
-      >
-        <el-checkbox
-          v-for="item in displayedFeatures"
-          :label="item.riskFactor"
-          :key="item.riskFactor"
-          style="width: auto; margin: 10px; padding: 5px"
-        >
-          <div style="display: flex; flex-direction: column">
-            <el-popover
-              placement="top-end"
-              width="150"
-              :title="popovername"
-              trigger="hover"
-              :content="item.rate"
-              :open-delay="200"
-            >
-              <span slot="reference">{{ item.riskFactor }}</span>
-              <el-progress
-                :percentage="item.rate * 100"
-                :color="changeProgressColor(item.rate * 100)"
-              ></el-progress>
-            </el-popover>
-            <meter
-              :value="item.rate"
-              min="0"
-              max="1"
-              low="0.6"
-              hight="0.8"
-              optimum="0.9"
-            ></meter>
-          </div>
-          <!-- <div style="display: flex; flex-direction: column">
-              <span>{{ item.riskFactor }}</span>
-              <meter
-                value="20"
-                min="0"
-                max="100"
-                low="30"
-                hight="60"
-                optimum="90"
-              ></meter>
-            </div> -->
-          <!-- <el-popover
-              placement="top-end"
-              width="150"
-              :title="popovername"
-              trigger="hover"
-              :content="1 - item.rate"
-              :open-delay="200"
-            >
-              <span slot="reference">{{ item.riskFactor }}</span>
-              <el-progress
-                :percentage="item.rate * 100"
-                :color="changeProgressColor(item.rate * 100)"
-              ></el-progress>
-            </el-popover> -->
-        </el-checkbox>
-      </el-checkbox-group>
-
-      <el-pagination
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page="currentPage"
-        :page-sizes="pageSizes"
-        :page-size="pageSize"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="totalFeatures"
-        style="margin-top: 10px"
-      >
-      </el-pagination>
-    </div>
-
-    <el-divider></el-divider>
-
-    <!---------------------------------------------------------- 特征重要性拖动滑块 -------------------------------------------------->
-    <div v-loading="compute_loading">
-      <div style="margin-bottom: 50px">
-        <div calss="top">
-          <span class="lineStyle">▍</span
-          ><span class="featureTitle"
-            >请根据特征重要性拖动滑块设置奖励程度</span
+        <div style="display: inline-block">
+          <el-checkbox
+            v-model="checkAll_compute"
+            @change="handleCheckAll_compute"
+            style="width: auto"
           >
-          <!-- <el-popover placement="right" trigger="hover">
-              <div>
-                手动设置奖励程度大小
-              
+            全选
+          </el-checkbox>
+
+          <el-input
+            v-model="searchQuery"
+            placeholder="搜索特征"
+            style="width: 200px; margin-left: 30px"
+          ></el-input>
+        </div>
+
+        <el-checkbox-group
+          v-model="computeFeatures"
+          @change="changeBox_compute()"
+          style="display: flex; flex-wrap: wrap"
+        >
+          <div
+            v-for="item in filteredFeatures"
+            :key="item.riskFactor"
+            style="flex-basis: 20%; padding: 5px; box-sizing: border-box"
+          >
+            <el-checkbox :label="item.riskFactor" style="width: 100%">
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                "
+              >
+                <span v-html="highlight(item.riskFactor)"></span>
               </div>
-              <el-icon slot="reference" class="el-icon-warning-outline"></el-icon>
-            </el-popover> -->
+            </el-checkbox>
+            <el-progress
+              :percentage="Math.round(item.rate * 100)"
+              :color="changeProgressColor(item.rate * 100)"
+              style="margin-top: 5px"
+            ></el-progress>
+          </div>
+        </el-checkbox-group>
 
-          <!------- 下拉框得到默认值 ----------------->
-          <el-icon slot="reference" class="el-icon-warning-outline"></el-icon>
-          选择一个算法初步计算各特征的特征重要性：
-          <el-select
-            v-model="value"
-            style="margin: 20px"
-            default-first-option
-            @change="runDefaultReward(value)"
-            :disabled="isDisabled"
-          >
-            <!-- <div>
+        <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="currentPage"
+          :page-sizes="pageSizes"
+          :page-size="pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="totalFeatures"
+          style="margin-top: 10px"
+        >
+        </el-pagination>
+      </div>
+      <el-divider></el-divider>
+
+      <!---------------------------------------------------------- 特征重要性拖动滑块 -------------------------------------------------->
+      <div v-loading="compute_loading" class="reward-degree">
+        <div style="margin-bottom: 50px">
+          <div calss="top">
+            <span class="lineStyle">▍</span
+            ><span class="featureTitle"
+              >请根据特征重要性拖动滑块设置奖励程度</span
+            >
+
+            <!------- 下拉框得到默认值 ----------------->
+            <el-icon class="el-icon-warning-outline"></el-icon>
+            选择一个算法初步计算各特征的特征重要性：
+            <el-select
+              v-model="value"
+              style="margin: 20px"
+              default-first-option
+              @change="runDefaultReward(value)"
+              :disabled="isDisabled"
+            >
+              <!-- <div>
                 手动设置奖励程度大小              
               </div> -->
 
-            <el-option
-              v-for="item in options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            >
-            </el-option>
-          </el-select>
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
+          </div>
         </div>
+
+        <el-row v-for="(item, index) in allFeatures" :key="index">
+          <el-col :span="20" v-if="computeFeatures.includes(item.riskFactor)">
+            <span class="demonstration">{{ item.riskFactor }}</span>
+            <span>&nbsp; &nbsp; &nbsp;{{ item.doctorRate }}%</span>
+            <el-slider
+              v-model="allFeatures[index].doctorRate"
+              style="width: 120%"
+            ></el-slider>
+          </el-col>
+        </el-row>
       </div>
 
-      <el-row v-for="(item, index) in allFeatures" :key="index">
-        <el-col :span="20" v-if="computeFeatures.includes(item.riskFactor)">
-          <span class="demonstration">{{ item.riskFactor }}</span>
-          <span>&nbsp; &nbsp; &nbsp;{{ item.doctorRate }}%</span>
-          <el-slider
-            v-model="allFeatures[index].doctorRate"
-            :format-tooltip="formatTooltip"
-            style="width: 100%"
-          ></el-slider>
-        </el-col>
-
-        <!-- <el-col :span="4"> &nbsp; &nbsp; &nbsp;{{ item.rate }}%</el-col> -->
-      </el-row>
-    </div>
-
-    <div class="buttonGroup">
-      <el-button @click="backStep()" round>上一步</el-button>
-      <!-- <el-button @click="printALLFeatures()">测试</el-button> -->
-      <el-button type="primary" @click="next()" round>下一步</el-button>
+      <div class="buttonGroup">
+        <el-button @click="backStep()" round>上一步</el-button>
+        <!-- <el-button @click="printALLFeatures()">测试</el-button> -->
+        <el-button type="primary" @click="next()" round>下一步</el-button>
+      </div>
     </div>
   </div>
 </template>
@@ -240,8 +199,29 @@ export default {
     totalFeatures() {
       return this.allFeatures.length;
     },
-    //填充率
-    fillingRate() {},
+
+    filteredFeatures() {
+      if (!this.searchQuery) {
+        return this.displayedFeatures;
+      }
+      const searchLower = this.searchQuery.toLowerCase();
+      const filtered = this.displayedFeatures.filter((item) =>
+        item.riskFactor.toLowerCase().includes(searchLower)
+      );
+      // 先按是否匹配排序，再按原有逻辑排序
+      const sorted = filtered.sort((a, b) => {
+        const matchA = a.riskFactor.toLowerCase().includes(searchLower) ? 0 : 1;
+        const matchB = b.riskFactor.toLowerCase().includes(searchLower) ? 0 : 1;
+        if (matchA === matchB) {
+          return (
+            a.riskFactor.toLowerCase().indexOf(searchLower) -
+            b.riskFactor.toLowerCase().indexOf(searchLower)
+          );
+        }
+        return matchA - matchB;
+      });
+      return sorted;
+    },
   },
   data() {
     return {
@@ -302,6 +282,7 @@ export default {
           label: "随机森林",
         },
       ],
+      searchQuery: "",
     };
   },
 
@@ -326,50 +307,6 @@ export default {
       this.changeBox_compute();
       this.changeBox_label();
       this.knownFeatures = this.m_known_features;
-      console.log("!!!!!!!!!", this.targetFeatures);
-      console.log("!!!!!!!!!", this.allFeatures);
-      // this.handleCheckAll_label();
-      // this.handleCheckAll_compute();
-      // this.changeBox_1();
-      // this.changeBox_2();
-
-      // getRequest("/tTableManager/tablemanager", {
-      //   tableName: this.m_dataset,
-      // }).then((res) => {
-      //   res.forEach((item) => {
-      //     if (item) {
-      //       if (item.is_demography == 1) {
-      //         this.allFeatures.push(item.field_name);
-      //         this.peopleFeatures.push(item.field_name);
-      //       } else if (item.is_physiological == 1) {
-      //         this.allFeatures.push(item.field_name);
-      //         this.physiologicalFeatures.push(item.field_name);
-      //       } else if (item.is_sociology == 1) {
-      //         this.allFeatures.push(item.field_name);
-      //         this.socialFeatures.push(item.field_name);
-      //       } else if (item.is_label == 1) {
-      //         console.log(this.moduleName);
-      //         上面判断是否是标签列
-      //         if (this.moduleName === "modelTraining") {
-      //           this.targetFeatures.push(item.field_name);
-      //         }
-      //       }
-      //     }
-      //   });
-      //   同步vuex里的数据
-      //   this.targetFeatures = this.m_target_feature;
-      //   this.allFeatures = this.m_all_features;
-      //   console.log("123456", this.allFeatures);
-      //   this.computeFeatures = this.m_use_features;
-      //   this.knownFeatures = this.m_known_features;
-      //   this.changeBox_1();
-      //   this.changeBox_2();
-      //   if (this.moduleName !== "modelTraining") {
-      //     this.targetFeatures = this.m_target_feature;
-      //     this.changeBox_target();
-      //     console.log("123", this.targetFeatures);
-      //   }
-      // });
     },
 
     handleCheckAll_compute(checked) {
@@ -391,7 +328,17 @@ export default {
         this.labelFeatures = [];
       }
     },
-
+    highlight(text) {
+      if (this.searchQuery) {
+        const regex = new RegExp(this.searchQuery, "gi");
+        return text.replace(
+          regex,
+          `<span style="color: red;">${this.searchQuery}</span>`
+        );
+      } else {
+        return text;
+      }
+    },
     changeBox_compute() {
       if (
         this.computeFeatures.length === this.allFeatures.length &&
@@ -458,7 +405,7 @@ export default {
 
       (this.compute_loading = true),
         postRequest("/runtime_bus/submitBus", {
-          // "model": model,
+          // model: model,
 
           tableName: this.m_dataset,
           features: this.computeFeatures,
@@ -494,8 +441,8 @@ export default {
     next() {
       if (this.labelFeatures.length < 1) {
         this.$message({
-          message: '请选择标签特征！',
-          type: 'warning'
+          message: "请选择标签特征！",
+          type: "warning",
         });
         return;
       }
@@ -568,15 +515,24 @@ export default {
 
 <style scoped>
 .main {
-  display: inline-block;
-
-  padding-left:30vh;
   height: auto;
+  width: 80%;
+  margin: 0 auto;
+}
+
+.main .info {
+  height: 2rem;
+  background-color: rgb(143, 144, 144, 0.3);
+  line-height: 2rem;
+  text-align: center;
+}
+
+.main .reward-degree {
   width: 100%;
 }
 
 .featureTitle {
-  font-size: 30px;
+  font-size: 25px;
   margin-right: 30px;
   margin-bottom: 20px;
 }
@@ -584,15 +540,7 @@ export default {
 .featureSubTitle {
   margin-top: 10px;
   margin-bottom: 10px;
-  font-size: 18px;
-}
-
-.left_tree {
-  display: inline-block;
-  border-radius: 3px;
-  border-left: 1px solid #e6e6e6;
-  border-right: 1px solid #e6e6e6;
-  border-top: 1px solid #e6e6e6;
+  font-size: 16px;
 }
 
 /* 使用popover以后省略号就没用了 */
