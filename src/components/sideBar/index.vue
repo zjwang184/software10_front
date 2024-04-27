@@ -79,7 +79,7 @@
                 <el-menu-item index="/sideBar/AdminDataManage" 
                   >数据管理</el-menu-item
                 >
-                <el-menu-item index="/sideBar/exceptionFeature" disabled
+                <el-menu-item index="/sideBar/exceptionFeature" 
                   >知识管理</el-menu-item
                 >
                 <el-menu-item index="/sideBar/Inform" 

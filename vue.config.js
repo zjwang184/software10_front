@@ -6,6 +6,9 @@ module.exports = defineConfig({
   devServer: {
     host: "",
     open: true,
+    // client:{
+    //   overlay:false
+    // },
     // 代理配置
     proxy: {
       "/echarts": {

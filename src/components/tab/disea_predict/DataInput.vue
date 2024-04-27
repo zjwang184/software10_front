@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-loading="loading">
     <div style="margin-left: 15%">
       <span class="lineStyle" style="display: inline-block">▍</span
       ><span class="featureTitle" style="display: inline-block"
@@ -60,6 +60,7 @@ export default {
 
   data() {
     return {
+      loading: false,
       predict_features: [],
       predict_task_name: "",
       predict_model_name: "",
@@ -122,7 +123,7 @@ export default {
       this.$refs[formName].resetFields();
     },
 
-    submit() {
+    async submit() {
       // 检查是否有空值
       const emptyFields = this.predict_features.filter(
         (item) => !this.personForm[item]
@@ -136,6 +137,8 @@ export default {
         // this.m_changeStep(3);
       }
       // alert("提交成功");
+
+      this.loading=true;
       let formData = new FormData();
 
       // formData.append("personForm", JSON.stringify(this.personForm))
@@ -199,7 +202,7 @@ export default {
           });
         });
       // postRequest("/ten/data/update_person2", formData)
-      
+      this.loading=false;
       this.m_changeStep(3);
     },
     backStep() {

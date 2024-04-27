@@ -268,6 +268,9 @@ export default {
 
   data() {
     return {
+      datasetNum:0,
+      diseaseNum: 0,
+
       treeData1: [],
       treeData2: [],
       treeData3: [],
@@ -427,11 +430,25 @@ export default {
           console.log(error);
         });
     },
+    getParentLabel(parentId){
+      console.log()
+      // 获取数据的上一级结点作为研究疾病
+      getRequest("/api/sysManage/selectCategoryEntityById", {
+              id: parentId
+        }).then((response) => {
+          this.disease = response.data.label;
+        })
+        .catch((error) => {
+          console.log(error, "getLabelBypid");
+        });
+    },
     changeData(data) {
       if (data.isLeafs == 1) {
         //数据获取前显示骨架屏
         this.dataLoaded = false;
         //获取描述信息
+        console.log("shuju data", data);
+        this.getParentLabel(data.parentId);
         this.getTableDescribe(data.id, data.label);
         //获取数据信息
         this.getTableData(data.id, data.label);

@@ -55,10 +55,10 @@ server.interceptors.response.use(
     // 响应错误处理
     if (error.code === 'ECONNABORTED') {
         // 请求超时
-        console.log('请求超时');
+        console.log('请求超时', error);
         
     }
-    return Promise.reject('请求超时')
+    return Promise.reject('请求超时3', error)
   }
 )
 
