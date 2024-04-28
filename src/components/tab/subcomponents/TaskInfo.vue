@@ -1,9 +1,9 @@
 <template>
   <div id="mainBox">
     <div class="info">
-      <span style="font-size: 18px; font-weight: bold"> 模型训练： </span>
+      <span> 模型训练： </span>
       <br />
-      <span style="margin-left: 2rem"
+      <span
         >在进行疾病预测任务之前您需要训练模型,通过训练好的模型对个人进行疾病风险预测</span
       >
     </div>
@@ -223,6 +223,16 @@ export default {
   margin-bottom: 20px;
   margin-left: 20%;
   width: 48vw;
+}
+
+.info span:first-child {
+  font-size: 18px;
+  font-weight: bold;
+  margin-left: 5px;
+}
+
+.info span:nth-child(3) {
+  margin-left: 2rem;
 }
 .form {
   width: 60vw;
