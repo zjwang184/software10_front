@@ -147,36 +147,31 @@
             </el-select>
           </div>
         </div>
-
-        <!-- <el-row v-for="(item, index) in allFeatures" :key="index">
-          <el-col :span="20" v-if="computeFeatures.includes(item.riskFactor)">
-            <span class="demonstration">{{ item.riskFactor }}</span>
-            <span>&nbsp; &nbsp; &nbsp;{{ item.doctorRate }}%</span>
-            <el-slider
-              v-model="allFeatures[index].doctorRate"
-              style="width: 120%"
-            ></el-slider>
-          </el-col>
-        </el-row> -->
-        <!-- 使用transition-group包裹动态列表 -->
-        <transition-group name="slide" tag="div">
-          <el-row
-            v-for="item in sortedAllFeatures"
-            :key="item.riskFactor"
-            class="slide-item"
-          >
-            <el-col :span="20" v-if="computeFeatures.includes(item.riskFactor)">
-              <span class="demonstration">{{ item.riskFactor }}</span>
-              <span>&nbsp; &nbsp; &nbsp;{{ item.doctorRate }}%</span>
-              <el-slider
-                v-model="item.doctorRate"
-                @input="sortFeatures"
-                style="width: 120%"
-                :format-tooltip="formatTooltip"
-              ></el-slider>
-            </el-col>
-          </el-row>
-        </transition-group>
+        <div style="height: 600px; overflow-y: auto; width: 100%">
+          <!-- 使用transition-group包裹动态列表 -->
+          <transition-group name="slide" tag="div">
+            <el-row
+              v-for="item in allFeatures"
+              :key="item.riskFactor"
+              class="slide-item"
+            >
+              <el-col
+                :span="20"
+                v-if="computeFeatures.includes(item.riskFactor)"
+              >
+                <span class="demonstration">{{ item.riskFactor }}</span>
+                <span>&nbsp; &nbsp; &nbsp;{{ item.doctorRate }}%</span>
+                <el-slider
+                  v-model="item.doctorRate"
+                  @change="sortFeatures"
+                  style="width: 115%; margin-left: 10px"
+                  :format-tooltip="formatTooltip"
+                  show-input
+                ></el-slider>
+              </el-col>
+            </el-row>
+          </transition-group>
+        </div>
       </div>
 
       <div class="buttonGroup">
@@ -191,6 +186,8 @@
 <script>
 import { getRequest, postRequest } from "@/api/user.js";
 import vuex_mixin from "@/components/mixins/vuex_mixin";
+import { log } from "@antv/g2plot/lib/utils";
+
 // import { treeData } from "@/components/tab/treeData.js";
 
 export default {
@@ -203,11 +200,6 @@ export default {
   },
   mixins: [vuex_mixin],
   computed: {
-    sortedAllFeatures() {
-      return this.allFeatures
-        .slice()
-        .sort((a, b) => b.doctorRate - a.doctorRate);
-    },
     // 计算属性，根据当前页和每页数量筛选出显示的特性
     displayedFeatures() {
       const startIndex = (this.currentPage - 1) * this.pageSize;
@@ -246,61 +238,29 @@ export default {
       });
       return sorted;
     },
-    sortedAllFeatures() {
-      return this.allFeatures
-        .slice()
-        .sort((a, b) => b.doctorRate - a.doctorRate);
-    },
   },
   data() {
     return {
       // 所有特征计算重要性
       compute_loading: false,
-
       // 获取虚拟树形结构数据
       // treeData: JSON.parse(JSON.stringify(treeData)),
-      isChange: false,
       treeData: [],
       allFeatures: [],
-      peopleFeatures: [],
-      physiologicalFeatures: [],
-      socialFeatures: [],
-      checked_label: false,
-      checkAll: false,
       checkAll_compute: false,
-      checkAll_2: false,
       checkAll_label: false,
       computeFeatures: [],
       knownFeatures: [],
       targetFeatures: [],
-
       labelFeatures: [],
       defaultReward: [],
-
-      //树形控件
-      treeProps: {
-        label: "label",
-        children: "children",
-      },
-      selectedNodeTags: [], // 用于存储选中节点的标签数据
-
       tableData: [], // 存储表格数据
-
-      popovername: "完备率:",
-
+      value: "",
       //分页数据
       pageSize: 10,
       pageSizes: [10, 20, 30, 40, 50],
       currentPage: 1,
-
-      formData: {
-        id: "",
-        doctorRate: "",
-      },
-      formDatalist: [],
-
       isDisabled: true,
-      value: "",
       options: [
         {
           value: "XGB",
@@ -336,10 +296,6 @@ export default {
       this.changeBox_compute();
       this.changeBox_label();
       this.knownFeatures = this.m_known_features;
-    },
-    sortFeatures() {
-      // 无需在此处直接操作DOM，Vue会自动处理过渡效果
-      this.allFeatures.sort((a, b) => b.doctorRate - a.doctorRate);
     },
 
     handleCheckAll_compute(checked) {
@@ -386,17 +342,6 @@ export default {
         this.isDisabled = false;
       } else {
         this.isDisabled = true;
-      }
-    },
-
-    changeBox_2() {
-      if (
-        this.knownFeatures.length === this.allFeatures.length &&
-        this.knownFeatures.length != 0
-      ) {
-        this.checkAll_2 = true;
-      } else {
-        this.checkAll_2 = false;
       }
     },
 
@@ -468,6 +413,7 @@ export default {
             );
           }
           this.compute_loading = false;
+          this.sortFeatures();
         });
     },
 
@@ -509,14 +455,6 @@ export default {
 
     defaultSet() {},
 
-    handleNodeClick(data, node) {
-      // 添加选中节点的标签数据
-      if (data.label) {
-        // 模拟添加标签，可以根据实际情况设置标签数据
-        this.selectedNodeTags.push({ name: data.label, type: "success" });
-      }
-    },
-
     // 进度条
     changeProgressColor(rate) {
       if (rate < 30) {
@@ -541,6 +479,11 @@ export default {
 
     formatTooltip(val) {
       return val + "%   数值越大代表特征越重要";
+    },
+
+    sortFeatures() {
+      // 重新排序逻辑
+      this.allFeatures.sort((a, b) => b.doctorRate - a.doctorRate);
     },
   },
 };
