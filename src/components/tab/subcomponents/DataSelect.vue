@@ -268,20 +268,19 @@ export default {
 
   data() {
     return {
-      datasetNum:0,
+      datasetNum: 0,
       diseaseNum: 0,
 
       treeData1: [],
       treeData2: [],
       treeData3: [],
-      getData_loading: true,
       next_loading: false,
       selectedDataset: false,
       dataLoaded: false, //骨架屏加载
       chosenData: "",
       disease: "",
       dataset: "",
-      nodeid: "",
+      nodeId: "",
       pageSize: 4,
       currentPage: 1,
       dataTotal: 0,
@@ -338,13 +337,6 @@ export default {
     }, 200);
 
     this.getCatgory();
-    if (this.m_nodeid != "") {
-      console.log("dataselect nodeid", this.m_nodeid);
-      this.getTableDescribe(this.m_nodeid, this.m_dataset);
-      this.getTableData(this.m_nodeid, this.m_dataset);
-    } else {
-    }
-    this.getData_loading = false;
   },
   watch: {
     length(val) {
@@ -366,6 +358,16 @@ export default {
 
   methods: {
     init() {
+      this.chosenData = this.m_dataset;
+      this.disease = this.m_disease;
+      this.nodeId = this.m_nodeId;
+      if (this.m_nodeId != "") {
+        this.getTableDescribe(this.m_nodeId, this.m_dataset);
+        //显示表数据
+        this.selectedDataset = true;
+        this.dataLoaded = false;
+        this.getTableData(this.m_nodeId, this.m_dataset);
+      }
       for (const item of this.m_dataList) {
         if (item.disease === this.m_disease) {
           this.list.push(item);
@@ -424,18 +426,20 @@ export default {
           // 获取表数据
           this.tableData = response.data;
           this.showDataForm.dataLength = response.data.length;
+          this.selectedDataset = true;
           this.dataLoaded = true;
         })
         .catch((error) => {
           console.log(error);
         });
     },
-    getParentLabel(parentId){
-      console.log()
+    getParentLabel(parentId) {
+      console.log();
       // 获取数据的上一级结点作为研究疾病
       getRequest("/api/sysManage/selectCategoryEntityById", {
-              id: parentId
-        }).then((response) => {
+        id: parentId,
+      })
+        .then((response) => {
           this.disease = response.data.label;
         })
         .catch((error) => {
@@ -454,16 +458,10 @@ export default {
         this.getTableData(data.id, data.label);
         //显示表数据
         this.selectedDataset = true;
+        this.nodeId = data.id;
       }
     },
 
-    handleCheckChange(data, checked) {
-      this.getData_loading = true;
-      if (checked) {
-        this.$refs.tree.setCheckedKeys([data.id]);
-      }
-      this.getData_loading = false;
-    },
     async next(name) {
       if (!name) {
         this.$message({
@@ -480,15 +478,15 @@ export default {
       this.m_changeTaskInfo({
         dataset: this.chosenData,
         disease: this.disease,
-        nodeid: this.nodeid,
+        nodeId: this.nodeId,
       });
       console.log(
         "chosenData:",
         this.chosenData,
         " disease:",
         this.disease,
-        " nodeid:",
-        this.nodeid
+        " nodeId:",
+        this.nodeId
       );
 
       try {
@@ -533,6 +531,14 @@ export default {
     },
 
     backStep() {
+      this.m_changeTaskInfo({
+        dataset: "",
+        disease: "",
+        nodeId: "",
+      });
+      console.log("this.m_dataset", this.m_dataset);
+      console.log("this.m_disease", this.m_disease);
+      console.log("this.m_nodeId", this.m_nodeId);
       this.m_changeStep(this.m_step - 1);
     },
   },

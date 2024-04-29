@@ -210,9 +210,9 @@
       <div class="cardGroup">
         <!-- 任务卡片循环，现在基于分页后的数据 -->
         <el-card
-          v-for="item in pagedTasks"
+          v-for="item in displayedTasks"
           :key="item.id"
-          class="taskCard"
+          class="taskCard taskCard-item"
           shadow="always"
         >
           <div class="cardInfo">
@@ -265,7 +265,7 @@
         :page-sizes="[20, 40, 60, 80]"
         :page-size="pageSize"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="taskList.length"
+        :total="filteredTaskList.length"
       />
     </div>
   </div>
@@ -286,15 +286,6 @@ export default {
     TaskCheck,
   },
   computed: {
-    totalTasks() {
-      return this.taskList.filter((item) => this.displayedCard(item)).length;
-    },
-    // 根据当前页码和每页数量计算显示的任务列表
-    pagedTasks() {
-      const startIndex = (this.currentPage - 1) * this.pageSize;
-      const endIndex = startIndex + this.pageSize;
-      return this.taskList.slice(startIndex, endIndex);
-    },
     filteredTaskList() {
       // 进行筛选
       let filteredList = this.taskList.filter((task) => {
@@ -311,17 +302,46 @@ export default {
           diseaseMatch && modelMatch && datasetMatch && leaderMatch && taskMatch
         );
       });
-
       // 进行排序
       return filteredList.sort((a, b) => {
         return new Date(b.createtime) - new Date(a.createtime);
       });
     },
+    displayedTasks() {
+      // 筛选和排序逻辑合并一处
+      let filteredAndSortedList = this.taskList
+        .filter((task) => {
+          let diseaseMatch =
+            this.disease === "" || task.disease === this.disease;
+          let modelMatch =
+            this.modelname === "" || task.modelname === this.modelname;
+          let datasetMatch =
+            this.dataset === "" || task.dataset === this.dataset;
+          let leaderMatch =
+            this.leader === "" ||
+            new RegExp(this.leader, "i").test(task.leader);
+          let taskMatch =
+            this.taskname === "" ||
+            new RegExp(this.taskname, "i").test(task.taskname);
+          return (
+            diseaseMatch &&
+            modelMatch &&
+            datasetMatch &&
+            leaderMatch &&
+            taskMatch
+          );
+        })
+        .sort((a, b) => new Date(b.createtime) - new Date(a.createtime));
+
+      // 分页
+      const startIndex = (this.currentPage - 1) * this.pageSize;
+      const endIndex = startIndex + this.pageSize;
+      return filteredAndSortedList.slice(startIndex, endIndex);
+    },
   },
 
   created() {
     this.init();
-
     // this.getTreeData();
   },
   data() {
@@ -658,8 +678,8 @@ export default {
   box-shadow: 0 0 12px 2px rgba(0, 0, 0, 0.3); /* 修正阴影的颜色和透明度 */
   background: rgba(255, 255, 255, 0.1);
   overflow-y: scroll; /* 或者 auto */
-  scrollbar-width: none; /* 隐藏 Firefox 的滚动条 */
-  -ms-overflow-style: none; /* 隐藏 IE/Edge 的滚动条 */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .right {
@@ -730,7 +750,7 @@ export default {
 
 .search-input div:nth-child(2) span,
 .search-input div:nth-child(2) .el-button {
-  margin-right: 20px;
+  margin-right: 15px;
   margin-bottom: 10px;
 }
 
@@ -753,18 +773,21 @@ export default {
 .cardGroup {
   padding-top: 10px;
   width: 100%;
-  height: 910px;
   overflow: auto;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-gap: 20px;
   overflow-y: scroll; /* 或者 auto */
-  scrollbar-width: none; /* 隐藏 Firefox 的滚动条 */
-  -ms-overflow-style: none; /* 隐藏 IE/Edge 的滚动条 */
+  /* scrollbar-width: none; 
+  -ms-overflow-style: none; */
+}
+.cardGroup .card {
+  max-height: 400px; /* 新增这一行来限制卡片的高度 */
+  overflow-y: auto; /* 可选，为卡片内容添加滚动条如果内容超出300px */
 }
 
 .cardGroup::-webkit-scrollbar {
-  display: none; /* 隐藏 Chrome/Safari 的滚动条 */
+  display: none;
 }
 
 .cardGroup .el-pagination {
@@ -808,10 +831,10 @@ export default {
   margin-bottom: 10px;
   margin-left: 10px;
   width: 95%;
-  height: 200px;
-  overflow-y: scroll; /* 或者 auto */
-  scrollbar-width: none; /* 隐藏 Firefox 的滚动条 */
-  -ms-overflow-style: none; /* 隐藏 IE/Edge 的滚动条 */
+  height: auto;
+  overflow-y: scroll;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   position: relative;
   top: 0;
 }
@@ -833,5 +856,21 @@ export default {
   > .el-tree-node__content {
   color: #ffffff;
   background: #62a2e7 !important;
+}
+.taskCard-item {
+  opacity: 0;
+  transform: translateY(100%); /* 初始位置设为屏幕之外 */
+  animation: fadeInUp 1s ease forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>

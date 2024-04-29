@@ -10,8 +10,8 @@ export default {
     m_taskName() {
       return this.$store.state[this.moduleName].taskName;
     },
-    m_nodeid() {
-      return this.$store.state[this.moduleName].nodeid;
+    m_nodeId() {
+      return this.$store.state[this.moduleName].nodeId;
     },
     m_principal() {
       return this.$store.state[this.moduleName].principal;
@@ -73,13 +73,13 @@ export default {
     m_patient_form() {
       return this.$store.state[this.moduleName].patient_form;
     },
-    m_predict_task_name(){
+    m_predict_task_name() {
       return this.$store.state[this.moduleName].predict_task_name;
     },
-    m_predict_model_name(){
+    m_predict_model_name() {
       return this.$store.state[this.moduleName].predict_model_name;
     },
-    m_predValue(){
+    m_predValue() {
       return this.$store.state[this.moduleName].predValue;
     },
   },
@@ -87,7 +87,7 @@ export default {
     m_changeStep(newStep) {
       this.$store.commit(`${this.moduleName}/ChangeStep`, newStep);
     },
-    
+
     m_changeTaskInfo(newValue) {
       this.$store.commit(`${this.moduleName}/ChangeTaskInfo`, newValue);
     },

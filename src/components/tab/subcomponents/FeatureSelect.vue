@@ -26,6 +26,7 @@
           v-for="item in displayedLabel"
           :key="item.riskFactor"
           style="flex-basis: 20%; padding: 5px; box-sizing: border-box"
+          class="checkbox-item"
         >
           <el-checkbox :label="item.riskFactor" style="width: 100%">
             <div
@@ -63,22 +64,18 @@
             全选
           </el-checkbox>
 
-          <el-input
-            v-model="searchQuery"
-            placeholder="搜索特征"
-            style="width: 200px; margin-left: 30px"
-          ></el-input>
+          <el-input v-model="searchQuery" placeholder="搜索特征"></el-input>
         </div>
-
         <el-checkbox-group
           v-model="computeFeatures"
           @change="changeBox_compute()"
           style="display: flex; flex-wrap: wrap"
         >
           <div
-            v-for="item in filteredFeatures"
+            v-for="item in filteredComputeFeatures"
             :key="item.riskFactor"
             style="flex-basis: 20%; padding: 5px; box-sizing: border-box"
+            class="checkbox-item"
           >
             <el-checkbox :label="item.riskFactor" style="width: 100%">
               <div
@@ -88,7 +85,17 @@
                   align-items: center;
                 "
               >
-                <span v-html="highlight(item.riskFactor)"></span>
+                <el-tooltip
+                  class="item"
+                  effect="light"
+                  :content="item.riskFactor"
+                  placement="top-start"
+                >
+                  <span
+                    v-html="highlight(item.riskFactor)"
+                    class="text-clip"
+                  ></span>
+                </el-tooltip>
               </div>
             </el-checkbox>
             <el-progress
@@ -117,7 +124,7 @@
       <!---------------------------------------------------------- 特征重要性拖动滑块 -------------------------------------------------->
       <div v-loading="compute_loading" class="reward-degree">
         <div style="margin-bottom: 10px">
-          <div calss="top">
+          <div>
             <span class="lineStyle">▍</span
             ><span class="featureTitle"
               >请根据特征重要性拖动滑块设置奖励程度</span
@@ -133,10 +140,6 @@
               @change="runDefaultReward(value)"
               :disabled="isDisabled"
             >
-              <!-- <div>
-                手动设置奖励程度大小              
-              </div> -->
-
               <el-option
                 v-for="item in options"
                 :key="item.value"
@@ -216,7 +219,7 @@ export default {
       return this.allFeatures.length;
     },
 
-    filteredFeatures() {
+    filteredComputeFeatures() {
       if (!this.searchQuery) {
         return this.displayedFeatures;
       }
@@ -513,14 +516,15 @@ export default {
   margin-bottom: 20px;
 }
 
-/* 使用popover以后省略号就没用了 */
-.el-checkbox-group >>> .el-checkbox__label {
+.text-clip {
   margin-top: 5px;
-  line-height: 10px;
-  width: 80px;
+  width: 150px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+.text-clip:hover {
+  text-overflow: none;
 }
 
 .lineStyle {
@@ -539,8 +543,35 @@ export default {
   margin-left: 6%;
 }
 
-.slide-item {
+.el-input {
+  width: 100px;
+  margin-left: 30px;
+}
+
+::v-deep .el-input input:focus {
+  width: 200px;
   transition: all 0.5s ease;
+}
+
+.checkbox-item {
+  opacity: 0;
+  transform: translateY(100%);
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-item {
+  transition: all 1s ease;
   position: relative;
 }
 

@@ -4,7 +4,7 @@ export default {
     return {
       step: 1,
       taskName: "",
-      nodeid: "",
+      nodeId: "",
       principal: "",
       participants: "",
       disease: "",
@@ -142,7 +142,7 @@ export default {
       let defaultValue = {
         step: 1,
         taskName: "",
-        nodeid: "",
+        nodeId: "",
         principal: "",
         participants: "",
         disease: "",
@@ -222,7 +222,7 @@ export default {
       let defaultValue = {
         // step: 1,
         // taskName: "",
-        // nodeid: "",
+        // nodeId: "",
         // principal: "",
         // participants: "",
         // disease: "",
