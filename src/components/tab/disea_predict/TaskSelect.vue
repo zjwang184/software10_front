@@ -527,7 +527,10 @@ export default {
       // treeData: [],
       diseaseNum: "",
       datasetNum: "",
-      treeData: JSON.parse(JSON.stringify(treeData)),
+      // treeData: JSON.parse(JSON.stringify(treeData)),
+      treeData1: "",
+      treeData2: "",
+      treeData3: "",
       disease: "",
       leader: "",
       taskname: "",
@@ -962,7 +965,7 @@ export default {
 }
 
 .cardGroup {
-  padding-top:10px;
+  padding-top: 10px;
   width: 100%; /* 调整宽度 */
   height: auto;
   display: grid;
@@ -979,7 +982,7 @@ export default {
 
 .taskCard {
   margin-bottom: 10px;
-  margin-left:10px;
+  margin-left: 10px;
   width: 95%;
   overflow-y: scroll; /* 或者 auto */
   scrollbar-width: none; /* 隐藏 Firefox 的滚动条 */

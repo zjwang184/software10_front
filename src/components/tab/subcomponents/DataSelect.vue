@@ -24,7 +24,7 @@
           :data="treeData1"
           :show-checkbox="false"
           node-key="id"
-          :default-expanded-keys="['1']"
+          :default-expanded-keys="expandedKeys"
           :expand-on-click-node="false"
           :highlight-current="true"
           @node-click="changeData"
@@ -301,6 +301,7 @@ export default {
       showList: [],
 
       tableData: [],
+      expandedKeys: ["1"], // 初始化展开的节点key
       // treeData: JSON.parse(JSON.stringify(treeData)),
     };
   },
@@ -335,8 +336,6 @@ export default {
         return true;
       });
     }, 200);
-
-    this.getCatgory();
   },
   watch: {
     length(val) {
@@ -354,6 +353,9 @@ export default {
       this.$refs.tree2?.filter(val);
       this.$refs.tree3?.filter(val);
     },
+  },
+  mounted() {
+    this.getCatgory();
   },
 
   methods: {
@@ -395,6 +397,16 @@ export default {
         console.log("this.treeData1", this.treeData1);
         console.log("this.treeData2", this.treeData2);
         console.log("this.treeData3", this.treeData3);
+        if (this.nodeId) {
+          // 高亮tree1中的节点
+          this.highlightNodeById(this.nodeId, "tree1", this.treeData1);
+
+          // 高亮tree2中的节点
+          this.highlightNodeById(this.nodeId, "tree2", this.treeData2);
+
+          // 高亮tree3中的节点
+          this.highlightNodeById(this.nodeId, "tree3", this.treeData3);
+        }
         // 获取病种和数据集总数
         this.diseaseNum = response.data[0].children.length;
         // response.data[0].children.length + response.data[1].children.length;
@@ -451,7 +463,7 @@ export default {
         //数据获取前显示骨架屏
         this.dataLoaded = false;
         //获取描述信息
-        console.log("shuju data", data);
+        console.log("data", data);
         this.getParentLabel(data.parentId);
         this.getTableDescribe(data.id, data.label);
         //获取数据信息
@@ -527,6 +539,41 @@ export default {
         console.log("this.m_all_features:", this.m_all_features);
       } catch (error) {
         console.error(error); // 如果异步请求出错，打印错误信息
+      }
+    },
+
+    async highlightNodeById(nodeId, treeRef, treeData) {
+      // 深度优先遍历树数据
+      const findNodeAndHighlight = (nodeList) => {
+        for (const node of nodeList) {
+          this.$nextTick(() => {
+            if (node.id === nodeId) {
+              this.$refs[treeRef].setCurrentKey(node.id);
+              return true; // 匹配到节点
+            }
+          });
+
+          if (node.children) {
+            // 继续遍历子节点
+            if (findNodeAndHighlight(node.children)) {
+              return true; // 在子树中找到，结束本次循环
+            }
+          }
+        }
+        return false; // 当前层级未找到
+      };
+
+      // 在组件挂载或需要时调用此方法
+      findNodeAndHighlight(treeData);
+
+      // 在找到节点并高亮后，确保节点被展开
+      if (nodeId) {
+        // 使用 $nextTick 确保 DOM 更新后再操作
+        await this.$nextTick();
+        const node = this.$refs[treeRef].store.nodesMap[nodeId];
+        if (node && !this.expandedKeys.includes(nodeId)) {
+          this.expandedKeys = [...new Set([...this.expandedKeys, nodeId])]; // 避免重复添加
+        }
       }
     },
 
