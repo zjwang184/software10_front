@@ -282,7 +282,7 @@
       <div class="right_bottom">
         <div class="cardGroup">
           <el-card
-            class="taskCard"
+            class="taskCard taskCard-item"
             v-for="item in filteredTaskList"
             :key="item.id"
             shadow="always"
@@ -1052,5 +1052,21 @@ export default {
 
 .text-red {
   color: red;
+}
+.taskCard-item {
+  opacity: 0;
+  transform: translateY(100%); /* 初始位置设为屏幕之外 */
+  animation: fadeInUp 1s ease forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>

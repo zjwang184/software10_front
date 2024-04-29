@@ -354,12 +354,9 @@ export default {
       this.$refs.tree3?.filter(val);
     },
   },
-  mounted() {
-    this.getCatgory();
-  },
-
   methods: {
     init() {
+      this.getCategory();
       this.chosenData = this.m_dataset;
       this.disease = this.m_disease;
       this.nodeId = this.m_nodeId;
@@ -389,7 +386,7 @@ export default {
       return data.label.indexOf(value) !== -1;
     },
 
-    getCatgory() {
+    getCategory() {
       getCategory(`/api/category?uid=${this.loginUserID}`).then((response) => {
         this.treeData1 = response.data.slice(0, 1);
         this.treeData2 = response.data.slice(1, 2);

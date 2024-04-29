@@ -64,7 +64,11 @@
             全选
           </el-checkbox>
 
-          <el-input v-model="searchQuery" placeholder="搜索特征"></el-input>
+          <el-input
+            v-model="searchQuery"
+            placeholder="搜索特征"
+            class="search-feature"
+          ></el-input>
         </div>
         <el-checkbox-group
           v-model="computeFeatures"
@@ -148,6 +152,7 @@
               >
               </el-option>
             </el-select>
+            <el-button @click="clearFilter">清除</el-button>
           </div>
         </div>
         <div style="height: 600px; overflow-y: auto; width: 100%">
@@ -448,15 +453,17 @@ export default {
       // postRequest("", this.allFeatures).then((res) => {
       //   console.log(res);
       // });
-
-      // this.m_changeStep(this.m_step + 1);
+    },
+    clearFilter() {
+      for (let i = 0; i < this.allFeatures.length; i++) {
+        this.allFeatures[i]["doctorRate"] = 0;
+      }
+      console.log("this.allFeatures2", this.allFeatures);
     },
 
     backStep() {
       this.m_changeStep(this.m_step - 1);
     },
-
-    defaultSet() {},
 
     // 进度条
     changeProgressColor(rate) {
@@ -553,6 +560,9 @@ export default {
   transition: all 0.5s ease;
 }
 
+::v-deep .el-pagination input:focus {
+  width: 100px;
+}
 .checkbox-item {
   opacity: 0;
   transform: translateY(100%);
