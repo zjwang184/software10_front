@@ -283,7 +283,7 @@
         <div class="cardGroup">
           <el-card
             class="taskCard taskCard-item"
-            v-for="item in filteredTaskList"
+            v-for="item in displayedTasks"
             :key="item.id"
             shadow="always"
           >
@@ -343,50 +343,54 @@
             </span>
           </el-card>
         </div>
-        <!-- <el-pagination
+        <!-- 分页组件 -->
+        <el-pagination
           @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
+          @current-change="handlePageChange"
           :current-page="currentPage"
-          :page-sizes="pageSizes"
+          :page-sizes="[20, 40, 60, 80]"
           :page-size="pageSize"
           layout="total, sizes, prev, pager, next, jumper"
-          :total="totalTasks"
-          style="margin-top: 10px; margin-left: 30%"
-        >
-        </el-pagination> -->
+          :total="filteredTaskList.length"
+        />
+
         <el-dialog
           :visible.sync="resultDialogShow"
           v-if="resultDialogShow"
-          style="width: 90%; height: auto"
-          center
+          style="width: 90%; height: auto; margin: 0 auto"
         >
+          <div class="taskInfoBox taskname">
+            <el-icon class="el-icon-edit-outline el-icon"></el-icon>
+            <span>任务名称：</span>
+            <span>{{ result.taskname }}</span>
+          </div>
           <div class="taskInfoBox principal">
-            <span class="lineStyle">▍</span
-            ><span class="featureTitle">任务负责人：</span>
-            <span class="text">{{ result.leader }}</span>
+            <el-icon class="el-icon-user el-icon"></el-icon
+            ><span>任务负责人：</span>
+            <span>{{ result.leader }}</span>
           </div>
           <div
             class="taskInfoBox participants"
             v-if="result.participant !== null"
           >
-            <span class="lineStyle">▍</span
-            ><span class="featureTitle">参与人：</span>
-            <span class="text">{{ result.participant }}</span>
+            <el-icon class="el-icon-user-solid el-icon"></el-icon
+            ><span>参与人：</span>
+            <span>{{ result.participant }}</span>
           </div>
           <div class="taskInfoBox disease">
-            <span class="lineStyle">▍</span
-            ><span class="featureTitle">研究病种：</span>
-            <span class="text">{{ result.disease }}</span>
+            <el-icon class="el-icon-price-tag el-icon"></el-icon
+            ><span>研究病种：</span>
+            <span>{{ result.disease }}</span>
           </div>
           <div class="taskInfoBox dataset">
-            <span class="lineStyle">▍</span
-            ><span class="featureTitle">所用数据：</span>
-            <span class="text">{{ result.dataset }}</span>
+            <el-icon class="el-icon-coin el-icon"></el-icon
+            ><span>所用数据：</span>
+            <span>{{ result.dataset }}</span>
           </div>
           <div class="taskInfoBox algorithm">
-            <span class="lineStyle">▍</span
-            ><span class="featureTitle">所用算法：</span>
-            <span class="text">{{ result.modelname }}</span>
+            <el-icon class="el-icon-cpu el-icon"></el-icon
+            ><span>所用算法：</span>
+            <span>{{ result.modelname }}</span>
           </div>
           <!-- <div class="taskInfoBox algorithmValue">
             <span class="lineStyle">▍</span
@@ -401,29 +405,14 @@
             </div>
           </div> -->
           <div class="taskInfoBox target_features">
-            <span class="lineStyle">▍</span
-            ><span class="featureTitle">目标因素：</span>
-            <span class="text">{{ result.targetcolumn.toString() }}</span>
+            <el-icon class="el-icon-s-flag"></el-icon><span>目标因素：</span>
+            <span>{{ result.targetcolumn.toString() }}</span>
           </div>
           <div class="taskInfoBox use_features">
-            <span class="lineStyle">▍</span
-            ><span class="featureTitle">所用特征：</span>
-            <span class="text">{{ result.feature.toString() }}</span>
+            <el-icon class="el-icon-notebook-2 el-icon"></el-icon
+            ><span>所用特征：</span>
+            <span>{{ result.feature.toString() }}</span>
           </div>
-          <!-- <div class="taskInfoBox result">
-          <span class="lineStyle">▍</span
-          ><span class="featureTitle">挖掘结果：</span>
-          <div v-for="(item, index) in result.res" :key="index">
-            <span
-              >{{ result.targetcolumn[index] }} -> {{ item.toString() }}</span
-            >
-          </div>
-        </div> -->
-          <!-- <div class="taskInfoBox result">
-          <span class="lineStyle">▍</span
-          ><span class="featureTitle">专家知识匹配度：</span>
-          <span>{{ (result.ratio * 100).toFixed(2) }}%</span>
-        </div> -->
 
           <span slot="footer" class="dialog-footer">
             <el-button @click="resultDialogShow = false">关 闭</el-button>
@@ -493,11 +482,42 @@ export default {
           diseaseMatch && modelMatch && datasetMatch && leaderMatch && taskMatch
         );
       });
-
       // 进行排序
       return filteredList.sort((a, b) => {
         return new Date(b.createtime) - new Date(a.createtime);
       });
+    },
+    displayedTasks() {
+      // 筛选和排序逻辑合并一处
+      let filteredAndSortedList = this.taskList
+        .filter((task) => {
+          let diseaseMatch =
+            this.disease === "" || task.disease === this.disease;
+          let modelMatch =
+            this.modelList.length === 0 ||
+            this.modelList.includes(task.modelname);
+          let datasetMatch =
+            this.dataset === "" || task.dataset === this.dataset;
+          let leaderMatch =
+            this.leader === "" ||
+            new RegExp(this.leader, "i").test(task.leader);
+          let taskMatch =
+            this.taskname === "" ||
+            new RegExp(this.taskname, "i").test(task.taskname);
+          return (
+            diseaseMatch &&
+            modelMatch &&
+            datasetMatch &&
+            leaderMatch &&
+            taskMatch
+          );
+        })
+        .sort((a, b) => new Date(b.createtime) - new Date(a.createtime));
+
+      // 分页
+      const startIndex = (this.currentPage - 1) * this.pageSize;
+      const endIndex = startIndex + this.pageSize;
+      return filteredAndSortedList.slice(startIndex, endIndex);
     },
   },
 
@@ -552,9 +572,8 @@ export default {
       predict_model_name: "",
 
       //分页数据
-      pageSize: 20,
-      pageSizes: [20, 30, 40, 50],
-      currentPage: 1,
+      currentPage: 1, // 当前页码
+      pageSize: 20, // 默认每页显示的数量
     };
   },
 
@@ -570,12 +589,6 @@ export default {
         message: "请选择一个训练好的任务进行下一步操作",
         type: "success",
       });
-      //初始化
-      // const uniqueModels = new Set();
-      // for (const item of this.filteredTaskListByModel) {
-      //   uniqueModels.add(item.modelname);
-      // }
-      // this.modelList = Array.from(uniqueModels);
       this.predict_features = this.m_predict_features;
       this.predict_model_name = this.m_predict_model_name;
       this.predict_task_name = this.m_predict_task_name;
@@ -829,16 +842,15 @@ export default {
       }
     },
 
-    // 处理每页数量变化
-    // handleSizeChange(size) {
-    //   this.pageSize = size;
-    //   this.loadData();
-    // },
-    // 处理当前页变化
-    // handleCurrentChange(page) {
-    //   this.currentPage = page;
-    //   this.loadData();
-    // },
+    // 处理页码改变
+    handlePageChange(val) {
+      this.currentPage = val;
+    },
+    // 处理每页显示数量改变
+    handleSizeChange(size) {
+      this.pageSize = size;
+      this.currentPage = 1; // 页码重置为1，因为换了每页显示数量
+    },
 
     isMatch(query, text) {
       if (!query) return false; // 如果查询字符串为空，则不需要匹配
@@ -1040,8 +1052,11 @@ export default {
   text-align: center; /* 将文字居中 */
 }
 
-.text {
-  font-size: 30px;
+.taskInfoBox {
+  font-size: 20px;
+}
+.taskInfoBox .el-icon {
+  margin-right: 5px;
 }
 
 .ttl {

@@ -59,11 +59,6 @@
           placeholder="请填写任务备注......"
         ></el-input>
       </el-form-item>
-
-      <!-- <el-form-item>
-        <el-button @click="resetForm('taskInfoForm')" round>重置</el-button>
-        <el-button type="primary" @click="next()" round>下一步</el-button>
-      </el-form-item> -->
     </el-form>
     <div class="buttonGroup">
       <el-button @click="resetForm()" round>清除</el-button>
@@ -275,8 +270,12 @@ export default {
 }
 
 ::v-deep .el-textarea__inner {
-  height: 250px;
+  height: 200px;
   width: 48vw;
+}
+::v-deep .el-textarea__inner:focus {
+  height: 300px;
+  transition: all 0.5s ease;
 }
 </style>
 

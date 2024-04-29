@@ -148,7 +148,7 @@
               v-model="taskname"
               placeholder="请输入任务名称进行搜索"
               clearable
-              :style="{ width: auto }"
+              styly="width: auto"
               :fetch-suggestions="searchTasknames"
               @select="handleSelect"
             ></el-autocomplete>
@@ -159,7 +159,7 @@
               v-model="leader"
               placeholder="请输入任务负责人进行搜索"
               clearable
-              :style="{ width: auto }"
+              styly="width: auto"
               :fetch-suggestions="searchLeaders"
               @select="handleSelect"
             ></el-autocomplete>
@@ -170,7 +170,7 @@
               v-model="modelname"
               placeholder="请输入所用算法进行搜索"
               clearable
-              :style="{ width: auto }"
+              styly="width: auto"
               :fetch-suggestions="searchmodelnames"
               @select="handleSelect"
             ></el-autocomplete>
