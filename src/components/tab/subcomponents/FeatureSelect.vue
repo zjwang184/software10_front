@@ -50,7 +50,6 @@
     <el-divider></el-divider>
     <div style="margin: 20px 0">
       <!---------------------------------------------------------- 参与运算特征 -------------------------------------------------->
-
       <div>
         <span class="lineStyle">▍</span
         ><span class="featureTitle">参与运算的特征：</span>
@@ -112,11 +111,12 @@
         >
         </el-pagination>
       </div>
+
       <el-divider></el-divider>
 
       <!---------------------------------------------------------- 特征重要性拖动滑块 -------------------------------------------------->
       <div v-loading="compute_loading" class="reward-degree">
-        <div style="margin-bottom: 50px">
+        <div style="margin-bottom: 10px">
           <div calss="top">
             <span class="lineStyle">▍</span
             ><span class="featureTitle"
@@ -148,7 +148,7 @@
           </div>
         </div>
 
-        <el-row v-for="(item, index) in allFeatures" :key="index">
+        <!-- <el-row v-for="(item, index) in allFeatures" :key="index">
           <el-col :span="20" v-if="computeFeatures.includes(item.riskFactor)">
             <span class="demonstration">{{ item.riskFactor }}</span>
             <span>&nbsp; &nbsp; &nbsp;{{ item.doctorRate }}%</span>
@@ -157,7 +157,26 @@
               style="width: 120%"
             ></el-slider>
           </el-col>
-        </el-row>
+        </el-row> -->
+        <!-- 使用transition-group包裹动态列表 -->
+        <transition-group name="slide" tag="div">
+          <el-row
+            v-for="item in sortedAllFeatures"
+            :key="item.riskFactor"
+            class="slide-item"
+          >
+            <el-col :span="20" v-if="computeFeatures.includes(item.riskFactor)">
+              <span class="demonstration">{{ item.riskFactor }}</span>
+              <span>&nbsp; &nbsp; &nbsp;{{ item.doctorRate }}%</span>
+              <el-slider
+                v-model="item.doctorRate"
+                @input="sortFeatures"
+                style="width: 120%"
+                :format-tooltip="formatTooltip"
+              ></el-slider>
+            </el-col>
+          </el-row>
+        </transition-group>
       </div>
 
       <div class="buttonGroup">
@@ -184,6 +203,11 @@ export default {
   },
   mixins: [vuex_mixin],
   computed: {
+    sortedAllFeatures() {
+      return this.allFeatures
+        .slice()
+        .sort((a, b) => b.doctorRate - a.doctorRate);
+    },
     // 计算属性，根据当前页和每页数量筛选出显示的特性
     displayedFeatures() {
       const startIndex = (this.currentPage - 1) * this.pageSize;
@@ -221,6 +245,11 @@ export default {
         return matchA - matchB;
       });
       return sorted;
+    },
+    sortedAllFeatures() {
+      return this.allFeatures
+        .slice()
+        .sort((a, b) => b.doctorRate - a.doctorRate);
     },
   },
   data() {
@@ -307,6 +336,10 @@ export default {
       this.changeBox_compute();
       this.changeBox_label();
       this.knownFeatures = this.m_known_features;
+    },
+    sortFeatures() {
+      // 无需在此处直接操作DOM，Vue会自动处理过渡效果
+      this.allFeatures.sort((a, b) => b.doctorRate - a.doctorRate);
     },
 
     handleCheckAll_compute(checked) {
@@ -507,7 +540,7 @@ export default {
     },
 
     formatTooltip(val) {
-      return val / 100;
+      return val + "%   数值越大代表特征越重要";
     },
   },
 };
@@ -537,21 +570,15 @@ export default {
   margin-bottom: 20px;
 }
 
-.featureSubTitle {
-  margin-top: 10px;
-  margin-bottom: 10px;
-  font-size: 16px;
-}
-
 /* 使用popover以后省略号就没用了 */
-/* .el-checkbox-group >>> .el-checkbox__label {
+.el-checkbox-group >>> .el-checkbox__label {
   margin-top: 5px;
   line-height: 10px;
   width: 80px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-} */
+}
 
 .lineStyle {
   color: rgb(100, 172, 231);
@@ -560,31 +587,30 @@ export default {
 }
 
 .buttonGroup {
-  margin-top: 20px;
-  margin-bottom: 20px; /* 设置上一个 div 元素底部的距离 */
-  align-items: center;
-}
-
-.tag {
-  margin-right: 10px;
-  margin-top: 10px;
-  font-size: 16px; /* 设置标签的字体大小 */
-}
-
-.buttonGroup {
   position: fixed;
-  bottom: 10%; /* 距离页面底部 10px */
+  bottom: 10%;
   left: 50%;
   transform: translateX(-50%); /* 水平居中 */
   width: 200px;
   z-index: 9999; /* 置于最顶层 */
   margin-left: 6%;
 }
-.card-border {
-  border: 1px solid #fff;
-  border-radius: 10px;
-  box-shadow: 0 2px 12px 0 rgba(151, 150, 150, 0.4);
-  /* background: rgba(255, 255, 255, 0.1); */
-  padding: 10px;
+
+.slide-item {
+  transition: all 0.5s ease;
+  position: relative;
+}
+
+/* 进入和离开动画 */
+.slide-enter-active,
+.slide-leave-active {
+  transition: all 0.5s cubic-bezier(0.55, 0.085, 0.68, 0.53);
+}
+
+.slide-enter,
+.slide-leave-to {
+  /* 使用opacity和transform来模拟向上或向下滑动 */
+  opacity: 0;
+  transform: translateY(20px); /* 这里控制向上偏移的距离 */
 }
 </style>

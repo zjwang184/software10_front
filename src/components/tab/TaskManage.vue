@@ -175,16 +175,18 @@
               @select="handleSelect"
             ></el-autocomplete>
           </span>
-          <el-button @click="clearFilter">清除</el-button>
-          <el-popover placement="bottom" trigger="hover">
-            <div>跳转到模型训练进行新建任务</div>
-            <el-button
-              type="success"
-              @click="navigateToModelTraining"
-              slot="reference"
-              >新建任务</el-button
-            >
-          </el-popover>
+          <el-button @click="clearFilter">清除条件</el-button>
+          <div style="float: right">
+            <el-popover placement="bottom" trigger="hover">
+              <div>跳转到模型训练进行新建任务</div>
+              <el-button
+                type="success"
+                @click="navigateToModelTraining"
+                slot="reference"
+                >新建任务</el-button
+              >
+            </el-popover>
+          </div>
         </div>
 
         <!-- <span id="search-modelname">
@@ -197,7 +199,7 @@
             >
             </el-date-picker>
           </span> -->
-        <div>
+        <div style="margin-top: 10px">
           筛选结果：
           <span style="color: red">{{ filteredTaskList.length }} </span>
           个任务
@@ -206,10 +208,11 @@
 
       <!--===============================    卡片组     ==============================================================-->
       <div class="cardGroup">
+        <!-- 任务卡片循环，现在基于分页后的数据 -->
         <el-card
-          class="taskCard"
-          v-for="item in filteredTaskList"
+          v-for="item in pagedTasks"
           :key="item.id"
+          class="taskCard"
           shadow="always"
         >
           <div class="cardInfo">
@@ -254,86 +257,20 @@
           </span>
         </el-card>
       </div>
-
-      <el-dialog
-        :title="result.taskname"
-        :visible.sync="resultDialogShow"
-        v-if="resultDialogShow"
-        width="32%"
-        center
-      >
-        <div class="taskInfoBox principal">
-          <span class="lineStyle">▍</span
-          ><span class="featureTitle">任务负责人：</span>
-          <span>{{ result.leader }}</span>
-        </div>
-        <div
-          class="taskInfoBox participants"
-          v-if="result.participant !== null"
-        >
-          <span class="lineStyle">▍</span
-          ><span class="featureTitle">参与人：</span>
-          <span>{{ result.participant }}</span>
-        </div>
-        <div class="taskInfoBox disease">
-          <span class="lineStyle">▍</span
-          ><span class="featureTitle">研究病种：</span>
-          <span>{{ result.disease }}</span>
-        </div>
-        <div class="taskInfoBox dataset">
-          <span class="lineStyle">▍</span
-          ><span class="featureTitle">所用数据：</span>
-          <span>{{ result.dataset }}</span>
-        </div>
-        <div class="taskInfoBox algorithm">
-          <span class="lineStyle">▍</span
-          ><span class="featureTitle">所用算法：</span>
-          <span>{{ result.modelname }}</span>
-        </div>
-        <!-- <div class="taskInfoBox algorithmValue">
-          <span class="lineStyle">▍</span
-          ><span class="featureTitle">算法参数：</span>
-          <span v-if="result.para[0] == ''">本算法没有参数</span>
-          <div v-if="result.para[0] != ''">
-            <div v-for="(item, index) in result.para" :key="index">
-              <span
-                >{{ result.para[index] }}：{{ result.paraValue[index] }}</span
-              >
-            </div>
-          </div>
-        </div> -->
-        <div class="taskInfoBox target_features">
-          <span class="lineStyle">▍</span
-          ><span class="featureTitle">目标因素：</span>
-          <span>{{ result.targetcolumn.toString() }}</span>
-        </div>
-        <div class="taskInfoBox use_features">
-          <span class="lineStyle">▍</span
-          ><span class="featureTitle">所用特征：</span>
-          <span>{{ result.feature.toString() }}</span>
-        </div>
-        <!-- <div class="taskInfoBox result">
-          <span class="lineStyle">▍</span
-          ><span class="featureTitle">挖掘结果：</span>
-          <div v-for="(item, index) in result.res" :key="index">
-            <span
-              >{{ result.targetcolumn[index] }} -> {{ item.toString() }}</span
-            >
-          </div>
-        </div> -->
-        <!-- <div class="taskInfoBox result">
-          <span class="lineStyle">▍</span
-          ><span class="featureTitle">专家知识匹配度：</span>
-          <span>{{ (result.ratio * 100).toFixed(2) }}%</span>
-        </div> -->
-
-        <span slot="footer" class="dialog-footer">
-          <el-button @click="resultDialogShow = false">关 闭</el-button>
-        </span>
-      </el-dialog>
+      <!-- 分页组件 -->
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handlePageChange"
+        :current-page="currentPage"
+        :page-sizes="[20, 40, 60, 80]"
+        :page-size="pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="taskList.length"
+      />
     </div>
   </div>
 </template>
+
 
 <script>
 import { getRequest, deleteRequest } from "@/utils/api";
@@ -351,6 +288,12 @@ export default {
   computed: {
     totalTasks() {
       return this.taskList.filter((item) => this.displayedCard(item)).length;
+    },
+    // 根据当前页码和每页数量计算显示的任务列表
+    pagedTasks() {
+      const startIndex = (this.currentPage - 1) * this.pageSize;
+      const endIndex = startIndex + this.pageSize;
+      return this.taskList.slice(startIndex, endIndex);
     },
     filteredTaskList() {
       // 进行筛选
@@ -404,6 +347,8 @@ export default {
       diseaseName: "",
       // treeData: JSON.parse(JSON.stringify(treeData)),
       // taskList: JSON.parse(JSON.stringify(taskList)),
+      currentPage: 1, // 当前页码
+      pageSize: 20, // 默认每页显示的数量
     };
   },
 
@@ -584,6 +529,15 @@ export default {
         return { value: value };
       });
     },
+    // 处理页码改变
+    handlePageChange(val) {
+      this.currentPage = val;
+    },
+    // 处理每页显示数量改变
+    handleSizeChange(size) {
+      this.pageSize = size;
+      this.currentPage = 1; // 页码重置为1，因为换了每页显示数量
+    },
 
     changeData(treeRef, node) {
       if (this.lastClickedNode && this.lastClickedNode === node) {
@@ -682,9 +636,10 @@ export default {
 <style scoped>
 .main {
   display: grid;
-  grid-template-columns: 15% 85%;
-  scrollbar-width: none; /* 隐藏 Firefox 的滚动条 */
-  -ms-overflow-style: none; /* 隐藏 IE/Edge 的滚动条 */
+  grid-template-columns: 15% 82%;
+  height: 100%;
+  width: 90vw;
+  overflow-y: auto;
 }
 .tipInfo {
   background-color: rgba(124, 124, 124, 0.1);
@@ -698,7 +653,6 @@ export default {
   color: #585858;
 }
 .left_tree {
-  display: inline-block;
   border-radius: 5px;
   border: 1px solid #fff;
   box-shadow: 0 0 12px 2px rgba(0, 0, 0, 0.3); /* 修正阴影的颜色和透明度 */
@@ -709,7 +663,9 @@ export default {
 }
 
 .right {
-  width: 100%;
+  margin-left: 3%;
+  width: 95%;
+  height: auto;
 }
 .right .el-select {
   margin-right: 20px;
@@ -761,7 +717,6 @@ export default {
 }
 
 .search-input {
-  margin-left: 3%;
   margin-bottom: 20px;
 }
 
@@ -796,12 +751,25 @@ export default {
   font-weight: 800;
 }
 .cardGroup {
+  padding-top: 10px;
   width: 100%;
-  margin-left: 3%;
+  height: 910px;
+  overflow: auto;
   display: grid;
-  grid-template-columns: repeat(auto-fill, 400px);
-  grid-row-gap: 40px;
-  grid-column-gap: 60px;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 20px;
+  overflow-y: scroll; /* 或者 auto */
+  scrollbar-width: none; /* 隐藏 Firefox 的滚动条 */
+  -ms-overflow-style: none; /* 隐藏 IE/Edge 的滚动条 */
+}
+
+.cardGroup::-webkit-scrollbar {
+  display: none; /* 隐藏 Chrome/Safari 的滚动条 */
+}
+
+.cardGroup .el-pagination {
+  margin-top: 10px;
+  margin-left: 10px;
 }
 
 .cardInfo {
@@ -819,6 +787,13 @@ export default {
   display: flex;
   justify-content: center; /* 水平居中 */
   align-items: center; /* 垂直居中 */
+  margin-top: 10px;
+  margin-bottom: 0;
+}
+
+.el-pagination {
+  margin-top: 10px;
+  float: right;
 }
 
 .ttl {
@@ -830,10 +805,17 @@ export default {
   justify-self: end;
 }
 .taskCard {
+  margin-bottom: 10px;
+  margin-left: 10px;
+  width: 95%;
+  height: 200px;
+  overflow-y: scroll; /* 或者 auto */
+  scrollbar-width: none; /* 隐藏 Firefox 的滚动条 */
+  -ms-overflow-style: none; /* 隐藏 IE/Edge 的滚动条 */
   position: relative;
   top: 0;
-  cursor: pointer;
 }
+
 .taskCard:hover {
   top: -5px;
 }

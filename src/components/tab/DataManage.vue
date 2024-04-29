@@ -1590,7 +1590,7 @@ export default {
   display: grid;
   grid-template-columns: 17% 83%;
   height: 100%;
-  overflow-y: hidden; /* 隐藏垂直滚动条 */
+  overflow-y: hidden;
   overflow-x: hidden;
 }
 .left_tree {
@@ -1598,7 +1598,7 @@ export default {
   display: inline-block;
   border: 1px solid #fff;
   border-radius: 10px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1); /* 修正阴影的颜色和透明度 */
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
   background: rgba(255, 255, 255, 0.1);
   overflow-y: hidden;
 }
@@ -1659,8 +1659,8 @@ export default {
 .nodeLabel,
 .scrolling-nodeLabel {
   display: inline-block;
-  white-space: nowrap; /* 禁止文本换行 */
-  box-sizing: border-box; /* 边框和内填充的宽度也包含在width内 */
+  white-space: nowrap; 
+  box-sizing: border-box;
 }
 
 /* 文本滚动 */
@@ -1726,14 +1726,6 @@ export default {
   font-size: 24px;
 }
 
-.add_button {
-  position: fixed;
-  width: 10%;
-  margin-top: 10px;
-
-  z-index: 9999; /* 置于最顶层 */
-  bottom: 50px;
-}
 .nameInput {
   width: 70%;
 }
@@ -1829,10 +1821,10 @@ export default {
 
 @keyframes blink-animation {
   from {
-    opacity: 0.9; /* 起始状态为不透明 */
+    opacity: 0.9; 
   }
   to {
-    opacity: 0.3; /* 终止状态为完全透明 */
+    opacity: 0.3;
   }
 }
 </style>
