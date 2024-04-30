@@ -6,12 +6,18 @@
         <!-- <div>
           <h1 style="color: red; font-size: 40px" align="center">高风险</h1>
         </div> -->
-         <el-card >
-          <h2 v-if="predValue == 1" style="color: red" align="center">高风险</h2>
-          <h2 v-if="predValue == 0" style="color: rgb(0, 255, 76)" align="center">
+        <el-card>
+          <h2 v-if="predValue == 1" style="color: red" align="center">
+            高风险
+          </h2>
+          <h2
+            v-if="predValue == 0"
+            style="color: rgb(0, 255, 76)"
+            align="center"
+          >
             低风险
           </h2>
-        <!-- <div
+          <!-- <div
             v-for="(item, index) in cardItems"
             :key="index"
             class="text item"
@@ -53,23 +59,26 @@
     <div id="pdf_2">
       <div class="bottom">
         <div
-        style="
-          font-family: Arial, sans-serif;
-          font-size: 24px;
-          font-weight: bold;
-          text-align: center;
-          margin:20px
-        "
-      >
-        各特征对结果的影响
-      </div>
+          style="
+            font-family: Arial, sans-serif;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px;
+          "
+        >
+          各特征对结果的影响
+        </div>
         <div class="box">
-          <div >
-            <img :src="imgurl1" alt="Image" style="margin-left: 25%;"/>
-            <img :src="imgurl2" alt="Image" style="margin-left: 5%;"/>
-            <!-- <img src="http://10.16.97.233:8088/fig/shap2.png" alt="Image" style="margin-left: 25%;"/>
-            <img src="http://10.16.97.233:8088/fig/shap1.png" alt="Image" style="margin-left: 5%;"/> -->
+          <div>
+            <img :src="imgurl1" alt="Image" />
           </div>
+          <div>
+            <img :src="imgurl2" alt="Image" />
+          </div>
+          <!-- <img src="http://10.16.97.233:8088/fig/shap2.png" alt="Image" style="margin-left: 25%;"/>
+            <img src="http://10.16.97.233:8088/fig/shap1.png" alt="Image" style="margin-left: 5%;"/> -->
+
           <!-- <PlusAndMinusBarVue /> -->
         </div>
       </div>
@@ -89,7 +98,7 @@ import jsPDF from "jspdf";
 import XLSX from "xlsx";
 import PlusAndMinusBarVue from "../subcomponents/PlusAndMinusBar.vue";
 import html2canvas from "html2canvas";
-import { getRequest } from '@/api/user';
+import { getRequest } from "@/api/user";
 
 export default {
   name: "ResultDisplay",
@@ -105,11 +114,11 @@ export default {
   },
   data() {
     return {
-      predValue:"",
+      predValue: "",
       tableData: [],
-      imageUrl:"",
-      imgurl1:"",
-      imgurl2:"",
+      imageUrl: "",
+      imgurl1: "",
+      imgurl2: "",
 
       distribution: [
         {
@@ -253,7 +262,7 @@ export default {
     // } else {
     //   console.log("XLSX is available.");
     // };
-    
+
     // this.getKnowledge();
   },
   computed: {
@@ -262,23 +271,25 @@ export default {
     },
     headerCellStyle() {
       return {
-        color: 'black' 
+        color: "black",
       };
-    }
+    },
   },
   methods: {
     init() {
       this.tableData = this.m_patient_form;
+      delete this.tableData.featuredata;
+      delete this.tableData.modelname;
+      delete this.tableData.taskname;
       this.predValue = this.m_predValue;
       // this.getImageFromBackend();
-      this.imgurl1 = `http://10.16.97.233:8088/fig/${this.m_predict_task_name}_${this.m_predict_model_name}_shap2.png`
-      this.imgurl2 = `http://10.16.97.233:8088/fig/${this.m_predict_task_name}_${this.m_predict_model_name}_shap1.png`
-      console.log("imgurl:", this.imgurl1, this.imgurl2)
+      this.imgurl1 = `http://10.16.97.233:8088/fig/${this.m_predict_task_name}_${this.m_predict_model_name}_shap2.png`;
+      this.imgurl2 = `http://10.16.97.233:8088/fig/${this.m_predict_task_name}_${this.m_predict_model_name}_shap1.png`;
+      console.log("imgurl:", this.imgurl1, this.imgurl2);
       console.log("this.tableData   ", this.tableData);
       console.log("this.m_patient_form2222222   ", this.m_patient_form);
       console.log("this.predValue   ", this.predValue);
     },
-
 
     exportExcel() {
       /* 从表生成工作簿对象 */
@@ -395,6 +406,12 @@ export default {
   margin-left: 4%;
   padding: 20px;
   border: 2px solid black;
+}
+
+.box div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .custom-table tr {

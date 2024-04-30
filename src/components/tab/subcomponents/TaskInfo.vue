@@ -17,7 +17,7 @@
       <el-form-item prop="taskName" class="inputBox shortItem">
         <template slot="label">
           <span class="lineStyle">▍</span>
-          <span>任务名称</span
+          <span>任务（模型）名称</span
           ><el-popover placement="top" trigger="hover">
             <div>任务名称仅允许出现汉字、英文字母、数字及下划线</div>
             <el-icon
@@ -30,6 +30,7 @@
         <el-input
           v-model="taskInfoForm.taskName"
           placeholder="任务名称仅允许出现汉字、英文字母、数字及下划线"
+          @blur="checkTaskNameUnique"
         ></el-input>
       </el-form-item>
       <el-form-item prop="principal" class="inputBox shortItem">
@@ -95,6 +96,7 @@ export default {
         comment: "",
       },
       showWarning: false,
+      taskNameUnique: 0,
     };
   },
 
@@ -161,7 +163,25 @@ export default {
         }
       }
     },
-
+    checkTaskNameUnique() {
+      if (this.taskInfoForm.taskName.trim()) {
+        this.$axios
+          .get(`/Task/existstaskname?name=${this.taskInfoForm.taskName}`)
+          .then((res) => {
+            console.log("res", res);
+            this.taskNameUnique = res.data;
+            if (this.taskNameUnique === 1) {
+              this.$message.warning("任务名称已存在！");
+            } else {
+              this.$message.success("任务名称可用！");
+            }
+          })
+          .catch((err) => {
+            console.error(err);
+            this.$message.error("检查任务名称时出错！");
+          });
+      }
+    },
     resetForm() {
       this.taskInfoForm.taskName = "";
       this.taskInfoForm.participants = "";
@@ -189,6 +209,11 @@ export default {
           message: "请填写任务名称",
           type: "error",
         });
+        return;
+      }
+      if (this.taskNameUnique === 1) {
+        console.log("");
+        this.$message.warning("任务名称已存在！");
         return;
       }
 

@@ -139,14 +139,14 @@
       <!--==========================     头部搜索框     ==============================================================-->
       <div class="search-input">
         <div>
-          本页面可进行历史任务的查看和删除，您可根据任务名称、负责人、所用算法、疾病名称、数据集等条件筛选任务，筛选结果由创建时间由远及近排列
+          本页面可进行历史任务的查看和删除，您可根据任务（模型）名称、负责人、所用算法、疾病名称、数据集等条件筛选任务，筛选结果由创建时间由远及近排列
         </div>
         <div>
           <span id="search-taskname">
-            <i class="el-icon-edit-outline"></i> 任务名称：
+            <i class="el-icon-edit-outline"></i> 任务（模型）名称：
             <el-autocomplete
               v-model="taskname"
-              placeholder="请输入任务名称进行搜索"
+              placeholder="请输入任务（模型）名称进行搜索"
               clearable
               style="width: auto"
               :fetch-suggestions="searchTasknames"
@@ -217,7 +217,7 @@
         >
           <div class="cardInfo">
             <div>
-              <span class="ttl">任务名称：</span>
+              <span class="ttl">任务（模型）名称：</span>
               <span v-html="highlightMatch(item.taskname, taskname)"></span>
             </div>
             <div>
@@ -265,7 +265,7 @@
             </div>
             <div><span class="ttl">创建时间：</span>{{ item.createtime }}</div>
           </div>
-          <span class="buttonGroup">
+          <div class="buttonGroup">
             <el-popover placement="top" trigger="hover">
               <div>点击查看任务详情</div>
               <el-button
@@ -278,10 +278,18 @@
             </el-popover>
             <span style="margin: 10px"></span>
 
-            <el-button type="danger" @click="handleDelete(item)" round
-              >删除</el-button
+            <el-popconfirm
+              confirm-button-text="确认"
+              cancel-button-text="取消"
+              icon="el-icon-info"
+              icon-color="red"
+              title="确定删除该模型吗？"
+              @confirm="handleDelete(item)"
+              @cancel="onCancel"
             >
-          </span>
+              <el-button type="danger" round slot="reference">删除</el-button>
+            </el-popconfirm>
+          </div>
         </el-card>
       </div>
       <!-- 分页组件 -->
@@ -289,7 +297,7 @@
         @size-change="handleSizeChange"
         @current-change="handlePageChange"
         :current-page="currentPage"
-        :page-sizes="[20, 40, 60, 80]"
+        :page-sizes="[15, 30, 60, 120]"
         :page-size="pageSize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="filteredTaskList.length"
@@ -398,7 +406,7 @@ export default {
       // treeData: JSON.parse(JSON.stringify(treeData)),
       // taskList: JSON.parse(JSON.stringify(taskList)),
       currentPage: 1, // 当前页码
-      pageSize: 20, // 默认每页显示的数量
+      pageSize: 15, // 默认每页显示的数量
     };
   },
 
@@ -519,10 +527,12 @@ export default {
         })
         .catch((error) => {
           // 请求失败，提示用户
-          // this.$message.error("删除任务失败：" + error.message);
+          this.$message.error("删除任务失败：" + error.message);
         });
     },
-
+    onCancel() {
+      this.$message.info("已取消删除");
+    },
     getCatgory() {
       getCategory(`/api/category?uid=${this.loginUserID}`).then((response) => {
         this.treeData1 = response.data.slice(0, 1);
@@ -802,7 +812,7 @@ export default {
   width: 100%;
   overflow: auto;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   grid-gap: 20px;
   overflow-y: scroll; /* 或者 auto */
   /* scrollbar-width: none; 
@@ -862,8 +872,6 @@ export default {
   overflow-y: scroll;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  position: relative;
-  top: 0;
 }
 
 .taskCard:hover {

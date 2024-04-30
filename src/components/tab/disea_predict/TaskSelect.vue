@@ -140,7 +140,7 @@
       <div>
         <span class="lineStyle" style="display: inline-block">▍</span
         ><span class="featureTitle" style="display: inline-block"
-          >根据条件选择已训练好的任务</span
+          >根据条件选择已训练好的模型</span
         >
         <span style="display: inline-block"
           ><el-alert>
@@ -289,7 +289,7 @@
           >
             <div class="cardInfo">
               <div>
-                <span class="ttl">任务名称：</span>
+                <span class="ttl">任务（模型）名称：</span>
                 <span v-html="highlightMatch(item.taskname, taskname)"></span>
               </div>
               <div>
@@ -373,7 +373,7 @@
           @size-change="handleSizeChange"
           @current-change="handlePageChange"
           :current-page="currentPage"
-          :page-sizes="[20, 40, 60, 80]"
+          :page-sizes="[15, 30, 60, 120]"
           :page-size="pageSize"
           layout="total, sizes, prev, pager, next, jumper"
           :total="filteredTaskList.length"
@@ -386,7 +386,7 @@
         >
           <div class="taskInfoBox taskname">
             <el-icon class="el-icon-edit-outline el-icon"></el-icon>
-            <span>任务名称：</span>
+            <span>任务（模型）名称：</span>
             <span>{{ result.taskname }}</span>
           </div>
           <div class="taskInfoBox principal">
@@ -469,9 +469,6 @@ export default {
     totalTasks() {
       return this.taskList.filter((item) => this.displayedCard(item)).length;
     },
-    // filteredTaskListByModel() {
-    //   return this.taskList.filter((item) => item.modelname);
-    // },
     isModelListContainsDQN() {
       return this.modelList.includes("dqn");
     },
@@ -601,7 +598,7 @@ export default {
 
       //分页数据
       currentPage: 1, // 当前页码
-      pageSize: 20, // 默认每页显示的数量
+      pageSize: 15, // 默认每页显示的数量
     };
   },
 
@@ -892,10 +889,12 @@ export default {
           this.predict_features = res.data;
           this.predict_task_name = row.taskname;
           this.predict_model_name = row.modelname;
+          this.predict_dataset = row.dataset;
           this.m_changeTaskInfo({
             predict_features: this.predict_features,
             predict_task_name: this.predict_task_name,
             predict_model_name: this.predict_model_name,
+            predict_dataset: this.predict_dataset,
           });
           this.m_changeStep(2);
         }
@@ -1009,7 +1008,7 @@ export default {
   width: 100%; /* 调整宽度 */
   height: auto;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   grid-gap: 20px; /* 间距 */
   overflow-y: scroll; /* 或者 auto */
   scrollbar-width: none; /* 隐藏 Firefox 的滚动条 */

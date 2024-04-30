@@ -79,6 +79,9 @@ export default {
     m_predict_model_name() {
       return this.$store.state[this.moduleName].predict_model_name;
     },
+    m_predict_dataset() {
+      return this.$store.state[this.moduleName].predict_dataset;
+    },
     m_predValue() {
       return this.$store.state[this.moduleName].predValue;
     },

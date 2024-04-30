@@ -1,10 +1,10 @@
 <template>
-  <div >
+  <div>
     <el-container>
       <el-header>
         <div id="step">
           <el-steps :active="step" align-center>
-            <el-step title="选择任务" icon="el-icon-guide"></el-step>
+            <el-step title="模型选择" icon="el-icon-guide"></el-step>
             <el-step title="输入数据" icon="el-icon-edit"></el-step>
             <el-step title="结果" icon="el-icon-view"></el-step>
           </el-steps>
@@ -57,9 +57,7 @@ export default {
 </script>
 
 <style scoped>
-
 .mainBox {
-  height:100%;
+  height: 100%;
 }
-
 </style>
