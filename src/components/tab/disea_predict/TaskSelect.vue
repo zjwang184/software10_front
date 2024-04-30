@@ -316,12 +316,37 @@
                 }}</span>
               </div>
               <div>
-                <span class="ttl">创建时间：</span>{{ item.createtime }}
+                <span class="ttl">精确率：</span
+                ><span
+                  v-html="
+                    highlightMatch(
+                      parseFloat(item.accuracy).toFixed(2),
+                      accuracy
+                    )
+                  "
+                ></span>
               </div>
               <div>
-                <span class="ttl"
-                  >所属类别：<span>{{ item.classpath }}</span></span
-                >
+                <span class="ttl">准确率：</span
+                ><span
+                  v-html="
+                    highlightMatch(
+                      parseFloat(item.precision).toFixed(2),
+                      precision
+                    )
+                  "
+                ></span>
+              </div>
+              <div>
+                <span class="ttl">召回率：</span
+                ><span
+                  v-html="
+                    highlightMatch(parseFloat(item.recall).toFixed(2), recall)
+                  "
+                ></span>
+              </div>
+              <div>
+                <span class="ttl">创建时间：</span>{{ item.createtime }}
               </div>
             </div>
             <span class="buttonGroup">
@@ -554,6 +579,9 @@ export default {
       disease: "",
       leader: "",
       taskname: "",
+      accuracy: "",
+      precision: "",
+      recall: "",
       tasknames: [],
       leaders: [],
       modelList: [],
@@ -940,7 +968,7 @@ export default {
 }
 
 .right_bottom {
-  height: 800px;
+  height: auto;
   overflow-y: auto;
   width: 100%;
   scrollbar-width: none; /* 隐藏 Firefox 的滚动条 */
@@ -1010,21 +1038,21 @@ export default {
 .el-card {
   border: 1px solid #fff !important;
   border-radius: 10px !important;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.4) !important; /* 修正阴影的颜色和透明度 */
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.4) !important;
   background: rgba(255, 255, 255, 0.1) !important;
 }
 
 .cardInfo {
   display: grid;
-  grid-template-columns: 1fr 1fr; /* 定义两列，每列占用相等的空间 */
-  grid-template-rows: auto auto auto auto; /* 定义四行，高度根据内容自适应 */
-  gap: 10px; /* 定义网格行和列之间的间隙 */
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto auto auto;
+  gap: 10px;
   margin-left: 10%;
 }
 
-.cardInfo > div:nth-child(5), /* 第五个子元素（数据表） */
-.cardInfo > div:nth-child(6) /* 第六个子元素（创建时间） */ {
-  grid-column: 1 / span 2; /* 这两个元素跨越两列 */
+.cardInfo > div:nth-child(9),
+.cardInfo > div:nth-child(10) {
+  grid-column: 1 / span 2;
 }
 
 .algorithmSelect {

@@ -148,7 +148,7 @@
               v-model="taskname"
               placeholder="请输入任务名称进行搜索"
               clearable
-              styly="width: auto"
+              style="width: auto"
               :fetch-suggestions="searchTasknames"
               @select="handleSelect"
             ></el-autocomplete>
@@ -159,7 +159,7 @@
               v-model="leader"
               placeholder="请输入任务负责人进行搜索"
               clearable
-              styly="width: auto"
+              style="width: auto"
               :fetch-suggestions="searchLeaders"
               @select="handleSelect"
             ></el-autocomplete>
@@ -170,7 +170,7 @@
               v-model="modelname"
               placeholder="请输入所用算法进行搜索"
               clearable
-              styly="width: auto"
+              style="width: auto"
               :fetch-suggestions="searchmodelnames"
               @select="handleSelect"
             ></el-autocomplete>
@@ -235,6 +235,33 @@
             <div>
               <span class="ttl">数据表：</span
               ><span v-html="highlightMatch(item.dataset, dataset)"></span>
+            </div>
+            <div>
+              <span class="ttl">精确率：</span
+              ><span
+                v-html="
+                  highlightMatch(parseFloat(item.accuracy).toFixed(2), accuracy)
+                "
+              ></span>
+            </div>
+            <div>
+              <span class="ttl">准确率：</span
+              ><span
+                v-html="
+                  highlightMatch(
+                    parseFloat(item.precision).toFixed(2),
+                    precision
+                  )
+                "
+              ></span>
+            </div>
+            <div>
+              <span class="ttl">召回率：</span
+              ><span
+                v-html="
+                  highlightMatch(parseFloat(item.recall).toFixed(2), recall)
+                "
+              ></span>
             </div>
             <div><span class="ttl">创建时间：</span>{{ item.createtime }}</div>
           </div>
@@ -357,6 +384,9 @@ export default {
       dataset: "",
       leader: "",
       taskname: "",
+      accuracy: "",
+      precision: "",
+      recall: "",
       diseaseNum: "",
       datasetNum: "",
       filterText: "",
@@ -481,11 +511,7 @@ export default {
           if (res.code === 200) {
             // 删除成功，更新界面或者提示用户
             this.$message.success("删除成功");
-            // 在界面上移除被删除的任务（可选）
-            const index = this.tasks.indexOf(row);
-            if (index !== -1) {
-              this.tasks.splice(index, 1);
-            }
+            this.getTaskList();
           } else {
             // 删除失败，提示用户
             this.$message.error("删除任务失败");
@@ -493,7 +519,7 @@ export default {
         })
         .catch((error) => {
           // 请求失败，提示用户
-          this.$message.error("删除任务失败：" + error.message);
+          // this.$message.error("删除任务失败：" + error.message);
         });
     },
 
@@ -522,6 +548,7 @@ export default {
           this.getLeaders();
           this.getmodelnames();
           console.log("this.taskList", this.taskList);
+          console.log("displayedTasks", this.displayedTasks);
         })
         .catch((err) => {
           console.log("任务列表获取错误，请联系管理员。");
@@ -802,8 +829,8 @@ export default {
   gap: 10px; /* 定义网格行和列之间的间隙 */
 }
 
-.cardInfo > div:nth-child(5), /* 第五个子元素（数据表） */
-.cardInfo > div:nth-child(6) /* 第六个子元素（创建时间） */ {
+.cardInfo > div:nth-child(9),
+.cardInfo > div:nth-child(10) {
   grid-column: 1 / span 2; /* 这两个元素跨越两列 */
 }
 .buttonGroup {
