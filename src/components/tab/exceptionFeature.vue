@@ -425,7 +425,7 @@ export default {
   methods: {
     getList() {
       //获取病种
-      getRequest("/api/category2").then((response) => {
+      getRequest("/api/category").then((response) => {
         this.treeData = response.data;
         console.log(typeof this.treeData);
         console.log("this.treeData", this.treeData);

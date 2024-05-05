@@ -171,7 +171,7 @@
                 <span>&nbsp; &nbsp; &nbsp;{{ item.doctorRate }}%</span>
                 <el-slider
                   v-model="item.doctorRate"
-                  @change="sortFeatures"
+                  @change="sortFeatures();"
                   style="width: 115%; margin-left: 10px"
                   :format-tooltip="formatTooltip"
                   show-input
@@ -448,11 +448,13 @@ export default {
         use_labels: this.labelFeatures,
       });
 
-      this.m_changeStep(this.m_step + 1);
       // 发送后端请求
       // postRequest("", this.allFeatures).then((res) => {
       //   console.log(res);
       // });
+
+      this.m_changeStep(this.m_step + 1);
+      
     },
     clearFilter() {
       for (let i = 0; i < this.allFeatures.length; i++) {
@@ -495,6 +497,7 @@ export default {
       // 重新排序逻辑
       this.allFeatures.sort((a, b) => b.doctorRate - a.doctorRate);
     },
+    
   },
 };
 </script>

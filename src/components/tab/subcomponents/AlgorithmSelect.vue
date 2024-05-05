@@ -500,14 +500,16 @@ export default {
 
       console.log("==========");
       let models = [];
+      let algorithms = []
       for (var ind = 0; ind < this.editableTabs.length; ind++) {
         console.log(ind);
         let selected_model = {
           name: this.editableTabs[ind].name,
           forms: {}, //获取不到editableTabs的值，所以更改成{}
         };
-
+        
         if (this.editableTabs[ind].is_select) {
+          algorithms.push(this.editableTabs[ind].name);
           if (this.editableTabs[ind].name === "dqn") {
             selected_model.forms = this.DQN_form;
             this.m_DQN_update(this.DQN_form);
@@ -541,12 +543,15 @@ export default {
         }
         console.log("selected_model", selected_model.forms);
       }
+      this.m_changeTaskInfo({
+        algorithms: algorithms
+      })
 
       console.log("alg_models:", models);
       console.log("models:", this.m_models);
 
       // 使用 Promise.all 来等待所有的 POST 请求完成
-      Promise.all(models.map((model) => postRequest(url, [model])))
+      Promise.all(models.map((model) => postRequest(url, {modelname: [model], features: this.m_all_features})))
         .then((responses) => {
           responses.forEach((res, index) => {
             let name = models[index]["name"];

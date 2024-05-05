@@ -43,8 +43,8 @@ export default {
     m_target_features() {
       return this.$store.state[this.moduleName].target_features;
     },
-    m_algorithm() {
-      return this.$store.state[this.moduleName].algorithm;
+    m_algorithms() {
+      return this.$store.state[this.moduleName].algorithms;
     },
     m_SF_DRMB() {
       return this.$store.state[this.moduleName].SF_DRMB;

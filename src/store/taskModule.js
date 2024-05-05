@@ -14,7 +14,7 @@ export default {
       use_labels: [],
       known_features: [],
       target_features: [],
-      algorithm: "",
+      algorithms: [],
       SF_DRMB: {
         K_OR: 0.15,
         K_and_PC: 0.3,
@@ -152,7 +152,7 @@ export default {
         use_labels: [],
         known_features: [],
         target_features: [],
-        algorithm: "",
+        algorithms: [],
         SF_DRMB: {
           K_OR: 0.15,
           K_and_PC: 0.3,

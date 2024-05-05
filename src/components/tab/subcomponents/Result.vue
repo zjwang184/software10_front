@@ -42,7 +42,7 @@
         </div>
         <div class="taskInfoBox algorithm">
           <el-icon class="el-icon-cpu el-icon"></el-icon><span>所用算法：</span>
-          <span>{{ m_algorithm }}</span>
+          <span>{{ m_algorithms }}</span>
         </div>
         <div class="taskInfoBox use_features">
           <el-icon class="el-icon-notebook-2 el-icon"></el-icon
