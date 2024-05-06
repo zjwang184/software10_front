@@ -762,6 +762,7 @@ export default {
       treeData2: [],
       treeData3: [],
       labelList: [],
+      tableData: [],
       diseaseNum: 0,
       datasetNum: 0,
       filterText: "",
@@ -862,7 +863,7 @@ export default {
         url: "/DataTable/upload",
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `${sessionStorage.getItem("token")}`
+          Authorization: `${sessionStorage.getItem("token")}`,
         },
       },
     };
@@ -1066,7 +1067,7 @@ export default {
         url: "api/dataTable/upload",
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `${sessionStorage.getItem("token")}`
+          Authorization: `${sessionStorage.getItem("token")}`,
         },
       };
       // 多疾病下的上传文件需要打标签，用不同的接口
@@ -1303,7 +1304,7 @@ export default {
         url: "api/createTable",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `${sessionStorage.getItem("token")}`
+          Authorization: `${sessionStorage.getItem("token")}`,
         },
       };
       this.$axios(this.options).then((res) => {
@@ -1659,7 +1660,7 @@ export default {
 .nodeLabel,
 .scrolling-nodeLabel {
   display: inline-block;
-  white-space: nowrap; 
+  white-space: nowrap;
   box-sizing: border-box;
 }
 
@@ -1821,7 +1822,7 @@ export default {
 
 @keyframes blink-animation {
   from {
-    opacity: 0.9; 
+    opacity: 0.9;
   }
   to {
     opacity: 0.3;

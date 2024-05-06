@@ -33,8 +33,17 @@
         >
       </div>
 
-      <el-table :data="currentInformList" stripe style="width: 100%"  :header-cell-style="{ backgroundColor: '#e8e5e5', color: 'black', fontWeight: 'bold'}">
-        <el-table-column label="通告标题" width="300" align="center">
+      <el-table
+        :data="currentInformList"
+        stripe
+        style="width: auto"
+        :header-cell-style="{
+          backgroundColor: '#e8e5e5',
+          color: 'black',
+          fontWeight: 'bold',
+        }"
+      >
+        <el-table-column label="通告标题" align="center">
           <template slot-scope="scope">
             <div v-show="scope.row.editing">
               <el-input v-model="scope.row.title" size="small"></el-input>
@@ -44,19 +53,9 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column
-          label="发布人"
-          prop="username"
-          width="250"
-          align="center"
-        >
+        <el-table-column label="发布人" prop="username" align="center">
         </el-table-column>
-        <el-table-column
-          prop="updateTime"
-          label="最新发布时间"
-          width="300"
-          align="center"
-        >
+        <el-table-column prop="updateTime" label="最新发布时间" align="center">
         </el-table-column>
         <el-table-column label="通告内容" width="300" align="center">
           <template slot-scope="scope">
@@ -99,15 +98,15 @@
         </el-table-column>
       </el-table>
       <div class="pagination">
-      <el-pagination
-        @current-change="handleCurrentChange"
-        :current-page="this.currentPage"
-        :page-size="10"
-        layout="total, prev, pager, next, jumper"
-        :total="this.currentTotal"
-        style="margin-top: 2%; margin-left: 3%"
-      >
-      </el-pagination>
+        <el-pagination
+          @current-change="handleCurrentChange"
+          :current-page="this.currentPage"
+          :page-size="10"
+          layout="total, prev, pager, next, jumper"
+          :total="this.currentTotal"
+          style="margin-top: 2%; margin-left: 3%"
+        >
+        </el-pagination>
       </div>
     </el-card>
 
@@ -164,17 +163,15 @@ export default {
 
   created() {
     this.getInformTable(1);
-    this.getAllInform()
+    this.getAllInform();
   },
 
   methods: {
-      getAllInform(){
-          getRequest('notice/queryNotices').then((res)=>{
-
-            this.tableData = res;
-       
-          })
-      },
+    getAllInform() {
+      getRequest("notice/queryNotices").then((res) => {
+        this.tableData = res;
+      });
+    },
     convertToBeijingTime(isoString) {
       // 解析 ISO 字符串为 Date 对象
       const date = new Date(isoString);
@@ -226,7 +223,10 @@ export default {
       // 在这里实现保存数据到服务器的逻辑
       // 假设保存成功，更新userStatus显示
 
-      postRequest(`notice/updateNotice?curUid=${sessionStorage.getItem("userid") - 0}`, row).then((res) => {
+      postRequest(
+        `notice/updateNotice?curUid=${sessionStorage.getItem("userid") - 0}`,
+        row
+      ).then((res) => {
         if (res.code == 200) {
           this.$message.success("修改成功");
         } else {
@@ -250,10 +250,10 @@ export default {
             .includes(searchTitleLower);
           return titleMatches || contentMatches;
         });
-  
+
         // 将过滤结果赋值给 currentInformList
         this.currentInformList = filterData;
-         this.currentTotal = filterData.length;
+        this.currentTotal = filterData.length;
       }
     },
     handleInput() {
@@ -268,7 +268,10 @@ export default {
     },
 
     deleteInform(row) {
-      postRequest(`notice/delNotice?curUid=${sessionStorage.getItem("userid") - 0}`, row).then((res) => {
+      postRequest(
+        `notice/delNotice?curUid=${sessionStorage.getItem("userid") - 0}`,
+        row
+      ).then((res) => {
         if (res.code == 200) {
           this.$message.success("删除通告成功");
           this.getInformTable(1);
@@ -285,7 +288,10 @@ export default {
         uid: sessionStorage.getItem("userid"),
         username: sessionStorage.getItem("username"),
       };
-      postRequest(`notice/insertNotice?curUid=${sessionStorage.getItem("userid") - 0}`, params).then((res) => {
+      postRequest(
+        `notice/insertNotice?curUid=${sessionStorage.getItem("userid") - 0}`,
+        params
+      ).then((res) => {
         if (res.code == 200) {
           this.$message.success("发布通告成功");
           this.closeDialog();
@@ -326,8 +332,8 @@ export default {
   flex-direction: column;
   justify-content: center;
 }
-.pagination{
-     display: flex;
-  justify-content: center; 
+.pagination {
+  display: flex;
+  justify-content: right;
 }
 </style>

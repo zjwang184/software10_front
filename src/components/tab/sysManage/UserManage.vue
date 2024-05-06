@@ -23,8 +23,8 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="onFilter">查询</el-button>
           <el-button @click="clearFilter">清除条件</el-button>
+          <el-button type="primary" @click="onFilter">查询</el-button>
         </el-form-item>
       </el-form>
       <div class="searchByUserName">
@@ -61,11 +61,20 @@
         > -->
       </div>
 
-      <el-table :data="currentUserList" stripe style="width: 100%"  :header-cell-style="{ backgroundColor: '#e8e5e5', color: 'black', fontWeight: 'bold'}">
+      <el-table
+        :data="currentUserList"
+        stripe
+        style="width: 100%"
+        :header-cell-style="{
+          backgroundColor: '#e8e5e5',
+          color: 'black',
+          fontWeight: 'bold',
+        }"
+      >
         <el-table-column
           prop="username"
           label="用户名称"
-          width="200"
+          width="auto"
           align="center"
         >
         </el-table-column>
@@ -130,9 +139,9 @@
                     : null
                 "
               >
-                <template >
+                <template>
                   <el-option
-                  v-for="item in statusOptions"
+                    v-for="item in statusOptions"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
@@ -183,17 +192,17 @@
           </template>
         </el-table-column>
       </el-table>
-    <div class="pagination">
-      <el-pagination
-        @current-change="handleCurrentChange"
-        :current-page="this.currentPage"
-        :page-size="10"
-        layout="total, prev, pager, next, jumper"
-        :total="this.currentTotal"
-        style="margin-top: 2%; margin-left: 3%"
-      >
-      </el-pagination>
-    </div>
+      <div class="pagination">
+        <el-pagination
+          @current-change="handleCurrentChange"
+          :current-page="this.currentPage"
+          :page-size="10"
+          layout="total, prev, pager, next, jumper"
+          :total="this.currentTotal"
+          style="margin-top: 2%; margin-left: 3%"
+        >
+        </el-pagination>
+      </div>
     </el-card>
 
     <!-- <el-dialog title="新增用户" :visible.sync="addUserDialogVisible">
@@ -336,20 +345,20 @@ export default {
 
   created() {
     this.getUserTable(1);
-    this.getUserAll()
+    this.getUserAll();
   },
 
   methods: {
-    getUserAll(){
-        getRequest('user/querUser').then((res)=>{
-            if(res){
-                  this.tableData = res;
-                  this.currentUserList=res;
-            }
-        })
+    getUserAll() {
+      getRequest("user/querUser").then((res) => {
+        if (res) {
+          this.tableData = res;
+          this.currentUserList = res;
+        }
+      });
     },
     getUserTable(pageNum) {
-      getRequest("user/allUser?pageNum=" + pageNum ).then((res) => {
+      getRequest("user/allUser?pageNum=" + pageNum).then((res) => {
         if (res) {
           console.log("pageNum", pageNum);
           const dataWithEditing = res.data.map((item) => ({
@@ -360,29 +369,31 @@ export default {
           }));
           this.total = res.total;
           this.filterData(); // 加载完数据后进行筛选
-          this.tableData=dataWithEditing;
+          this.tableData = dataWithEditing;
           this.currentTotal = res.total;
-          this.currentUserList=dataWithEditing;
+          this.currentUserList = dataWithEditing;
         }
       });
     },
     toggleEditing(row) {
-      console.log("row.selectStatus", row.selectStatus)
+      console.log("row.selectStatus", row.selectStatus);
       if (row.editing) {
         this.saveChanges(row); // 如果当前是保存状态，保存数据
       }
       // row.editing = !row.editing; // 切换编辑状态
-      this.$set(row, "editing", !row.editing)
+      this.$set(row, "editing", !row.editing);
     },
     saveChanges(row) {
-
       const params = {
         uid: row.uid,
         status: row.selectStatus,
         role: row.selectRole,
         uploadSize: row.uploadSize,
       };
-      postRequest(`user/updateStatus?curUid=${sessionStorage.getItem("userid") - 0}`, params).then((res) => {
+      postRequest(
+        `user/updateStatus?curUid=${sessionStorage.getItem("userid") - 0}`,
+        params
+      ).then((res) => {
         if (res.code == 200) {
           this.$message.success("修改成功");
           this.getUserTable(1);
@@ -394,22 +405,22 @@ export default {
     },
 
     filterData() {
-
       let filteredData = this.tableData.filter((user) => {
-
-        const matchesRole = this.formInline.role!== ""
-          ? Number(user.role) === Number(this.formInline.role)
-          : true;
-        const matchesStatus = this.formInline.selectStatus!== ""
-          ? Number(user.userStatus) === Number(this.formInline.selectStatus)
-          : true;
+        const matchesRole =
+          this.formInline.role !== ""
+            ? Number(user.role) === Number(this.formInline.role)
+            : true;
+        const matchesStatus =
+          this.formInline.selectStatus !== ""
+            ? Number(user.userStatus) === Number(this.formInline.selectStatus)
+            : true;
         const matchesName = this.searchUser
           ? user.username.toLowerCase().includes(this.searchUser.toLowerCase())
           : true;
-        
+
         return matchesRole && matchesStatus && matchesName;
       });
-     
+
       this.currentUserList = filteredData;
       this.currentTotal = filteredData.length;
     },
@@ -424,7 +435,6 @@ export default {
     searchUserInData() {
       this.filterData();
     },
- 
 
     clearFilter() {
       this.currentUserList = this.tableData;
@@ -462,7 +472,10 @@ export default {
         uid: row.uid,
         status: row.selectStatus,
       };
-      postRequest(`user/delUser?curUid=${sessionStorage.getItem("userid") - 0}`, params).then((res) => {
+      postRequest(
+        `user/delUser?curUid=${sessionStorage.getItem("userid") - 0}`,
+        params
+      ).then((res) => {
         if (res.code == 200) {
           console.log("删除成功");
           this.$message.success("删除用户成功");
@@ -473,7 +486,6 @@ export default {
         }
       });
     },
-
   },
 };
 </script>
@@ -493,8 +505,8 @@ export default {
 .user_search_btn {
   margin-left: 1%;
 }
-.pagination{
-     display: flex;
-  justify-content: center; 
+.pagination {
+  display: flex;
+  justify-content: right;
 }
 </style>
