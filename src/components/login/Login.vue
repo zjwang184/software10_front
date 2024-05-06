@@ -163,14 +163,14 @@ export default {
             if (resp) {
               this.loading = false;
               console.log(resp);
-              if (resp.code == "200") {
+              if (resp.code == 200) {
                 sessionStorage.setItem("username", resp.data.username);
                 sessionStorage.setItem("userid", resp.data.uid);
                 sessionStorage.setItem("userrole", resp.data.role);
                 this.$router.push("/sideBar/SoftwareIntro");
               }
             } else {
-              this.$message.error("用户不存在或者密码错误");
+              this.$message.error(resp.message);
             }
           });
         } else {

@@ -883,6 +883,10 @@ export default {
     },
 
     submit(row) {
+      // 重置输入内容
+      this.m_changeTaskInfo({
+        personForm: {},
+      })
       // this.m_changeStep(2);
       getRequest(`Task/result/pred/${row.id}`).then((res) => {
         if (res.code == 200) {

@@ -144,7 +144,7 @@ export default {
   },
   methods: {
     init() {
-      this.tableData = this.m_patient_form;
+      this.tableData = this.m_personForm;
       delete this.tableData.featuredata;
       delete this.tableData.modelname;
       delete this.tableData.taskname;
