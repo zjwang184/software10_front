@@ -15,6 +15,7 @@ export default {
       known_features: [],
       target_features: [],
       algorithms: [],
+      personForm:{},
       SF_DRMB: {
         K_OR: 0.15,
         K_and_PC: 0.3,

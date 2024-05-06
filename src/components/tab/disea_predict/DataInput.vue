@@ -159,7 +159,7 @@ export default {
         type: "success",
       });
       this.predict_features = this.m_predict_features;
-      this.patient_form = this.m_patient_form;
+      this.personForm = this.m_personForm;
       this.predict_task_name = this.m_predict_task_name;
       this.predict_model_name = this.m_predict_model_name;
       this.predValue = this.m_predValue;
@@ -192,11 +192,17 @@ export default {
     },
 
     generateFormAndRules() {
-      // 动态生成表单项
-      this.personForm = this.predict_features.reduce((acc, cur) => {
-        acc[cur] = ""; // 将表单项添加到表单数据对象中，并初始化为空字符串
-        return acc;
-      }, {});
+      if (this.m_personForm.length != 0){
+        // 动态生成表单项
+        this.personForm = this.m_personForm;
+      }else{
+        // 动态生成表单项
+        this.personForm = this.predict_features.reduce((acc, cur) => {
+          acc[cur] = ""; // 将表单项添加到表单数据对象中，并初始化为空字符串
+          return acc;
+        }, {});
+      }
+      
 
       // 动态生成验证规则
       this.rules = this.predict_features.reduce((acc, cur) => {
@@ -290,12 +296,13 @@ export default {
       // 将列表存储在 featuredata 键中
       dictionary["featuredata"] = featuredata;
 
+   
       postRequest("/runtime_bus/runmodel", dictionary)
         .then((res) => {
           this.loading = true;
           this.predValue = res.res;
           this.m_changeTaskInfo({
-            patient_form: dictionary,
+            personForm: this.personForm,
             predValue: this.predValue,
           });
 
