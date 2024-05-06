@@ -10,7 +10,7 @@
             v-for="item in quickAccessItems"
             :key="item.route"
             @click="goToPage(item.route)"
-            style="cursor: pointer; text-align: center"
+            style="cursor: pointer; text-align: center; justify-content: center"
             slot="refrence"
           >
             <el-popover placement="top" trigger="hover">
@@ -37,21 +37,23 @@
               class="el-icon-s-grid"
               style="font-size: 15px; margin-right: 5px"
             ></el-icon
-            >专病集个数: {{ disease_num }}个
+            >专病集个数: <span>{{ disease_num }}</span
+            >个
           </div>
           <div class="tasksNumber">
             <el-icon
               class="el-icon-s-order"
               style="font-size: 15px; margin-right: 5px"
             ></el-icon
-            >任务总数:{{ task_num }}个
+            >任务总数:<span>{{ task_num }}</span> 个
           </div>
           <div class="featuresNumber">
             <el-icon
               class="el-icon-s-data"
               style="font-size: 15px; margin-right: 5px"
             ></el-icon
-            >知识条数:{{ knowledge_num }}个
+            >知识条数:<span> {{ knowledge_num }}</span
+            >个
           </div>
           <!-- <div class="predictDiseaseAccess"></div> -->
         </div>
@@ -62,7 +64,7 @@
       <el-card class="mid_statistic_card">
         <el-card>
           <div slot="header" class="clearfix">
-            <span class="lineStyle">▍</span><span>近期新建任务数</span>
+            <span class="lineStyle">▍</span><span>近期新建训练任务数</span>
             <!-- <el-select class="chartSelect" v-model="charttype" placeholder="请选择" size="mini" @change="changeChart">
               <el-option v-for="item in chartOptions" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
@@ -83,7 +85,12 @@
           <div id="chartBox" style="height: 400px; width: 30vw; margin: 0 auto">
             <!-- <LineChartVue v-if="sevendays.length > 0" :legend="chartLegend" :statistic="chartData" :x="sevendays">
             </LineChartVue> -->
-            <LineChartVue :x="LineChartVue_x" :y="LineChartVue_y"> </LineChartVue>
+            <LineChartVue
+              :x="LineChartVue_x"
+              :y="LineChartVue_y"
+              v-if="LineChartVue_x.length && LineChartVue_y.length"
+            >
+            </LineChartVue>
           </div>
         </el-card>
 
@@ -266,8 +273,8 @@ export default {
       disease_num: 0,
       task_num: 0,
       knowledge_num: 0,
-      LineChartVue_x:[],
-      LineChartVue_y:[],
+      LineChartVue_x: [],
+      LineChartVue_y: [],
 
       chartLegend: [],
       modelName: [],
@@ -327,33 +334,37 @@ export default {
     ...mapActions(["getTaskList"]),
     async init() {
       getRequest("/api/getDiseaseNum").then((res) => {
-          this.disease_num=res.data;
-          console.log("nums", this.disease_num)
+        this.disease_num = res.data;
+        console.log("nums", this.disease_num);
       });
       getRequest("/Task/taskNumb").then((res) => {
-          this.task_num=res.data;
-          console.log("nums", this.task_num)
+        this.task_num = res.data;
+        console.log("nums", this.task_num);
       });
       getRequest("/ten/knowledge/knowledgeNum").then((res) => {
-          this.knowledge_num=res.data;
-          console.log("nums", this.knowledge_num)
+        this.knowledge_num = res.data;
+        console.log("nums", this.knowledge_num);
       });
       await getRequest("/Task/GetTaskNearlySevenDays").then((res) => {
-          this.LineChartVue_x=res.date;
-          this.LineChartVue_y=res.number;
-          console.log("LineChartVue_y", this.LineChartVue_x, this.LineChartVue_y)
+        this.LineChartVue_x = res.date;
+        this.LineChartVue_y = res.number;
+        console.log(
+          "LineChartVue_y,LineChartVue_y",
+          this.LineChartVue_x,
+          this.LineChartVue_y
+        );
       });
       getRequest("/Task/GetEveryTaskNearlySevenDays").then((res) => {
-          this.Bar_x=res.date;
-          this.Bar_y=res.number;
-          console.log("Bar_x", this.Bar_x, this.Bar_y)
+        this.Bar_x = res.date;
+        this.Bar_y = res.number;
+        console.log("Bar_x", this.Bar_x, this.Bar_y);
       });
 
       // getRequest("/ten/knowledge/knowledgeNum").then((res) => {
       //     this.knowledge_num=res.data;
       //     console.log("nums", this.knowledge_num)
       // });
-      
+
       // getRequest("Task/totals").then((res) => {
       //   console.log(res);
       //   this.chartLegend = ["当天任务数"];
@@ -419,6 +430,11 @@ export default {
   column-gap: 20px;
   width: 100%;
 }
+
+.quickAccess {
+  margin-top: 10px;
+}
+
 .quickAccess,
 .statisticalInformation {
   display: flex;
@@ -435,15 +451,21 @@ export default {
   background-color: rgba(102, 102, 102, 0.2);
 }
 
-.dataManageAccess,
-.taskManageAccess,
-.modelTrainingAccess,
-.predictDiseaseAccess,
 .datasetsNuber,
 .tasksNumber,
 .featuresNumber {
   flex: 1;
   text-align: center;
+  justify-content: center;
+}
+
+.datasetsNuber span,
+.tasksNumber span,
+.featuresNumber span {
+  font-size: 30px;
+  color: rgba(51, 109, 185, 0.9);
+  margin: 0 1rem;
+  font-weight: bold;
 }
 
 .imgStyle {

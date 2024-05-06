@@ -1,31 +1,24 @@
 <template>
-  <div id="lineChart" ref="lineChart" ></div>
+  <div id="lineChart" ref="lineChart"></div>
 </template>
 
 <script>
 import * as echarts from "echarts";
 export default {
+  name: "lineChart",
   props: {
-    
-    
     x: {
       type: Array,
-      default: () => {},
+      default: () => [],
     },
     y: {
       type: Array,
-      default: () => {},
+      default: () => [],
     },
   },
-  watch:{
-    statistic(){
-      this.initMyChart();
-    }
-  },
+
   data() {
-    return {
-      myChart:''
-    };
+    return {};
   },
 
   mounted() {
@@ -34,11 +27,8 @@ export default {
 
   methods: {
     initMyChart() {
-      // console.log("LineChartVue_y", this.x, this.y)
       var chartDom = this.$refs.lineChart;
-      if(!this.myChart){
-        this.myChart = echarts.init(chartDom);
-      }
+      var myChart = echarts.init(chartDom);
       var option;
 
       option = {
@@ -65,16 +55,16 @@ export default {
         },
         // series: this.statistic,
         series: [
-            {
-              // data: [1, 2, 0, 7, 8, 12, 3],
-              data:this.y,
-              type: 'line',
-              smooth: true
-            }
-          ]
+          {
+            // data: [1, 2, 0, 7, 8, 12, 3],
+            data: this.y,
+            type: "line",
+            smooth: true,
+          },
+        ],
       };
 
-      option && this.myChart.setOption(option,true);
+      option && myChart.setOption(option);
     },
   },
 };

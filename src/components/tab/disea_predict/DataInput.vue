@@ -21,7 +21,7 @@
 
       <el-popover placement="right" trigger="hover">
         <div>
-          输入病人的具体详细信息，这里输入的信息是你上一个界面所选择的任务的数据集特征
+          输入患者的具体详细信息，这里输入的信息是你上一个界面所选择的任务的数据集特征
         </div>
         <el-icon
           class="el-icon-warning-outline"
@@ -33,6 +33,9 @@
 
     <div id="dataInput">
       <div v-if="importData === true">
+        <div style="text-align: center; font-size: 30px; margin-bottom: 20px">
+          批量输入患者信息
+        </div>
         <el-skeleton
           v-if="!dataLoaded"
           style="width: 100%"
@@ -107,7 +110,6 @@
   </div>
 </template>
 
-
 <script>
 import vuex_mixin from "@/components/mixins/vuex_mixin";
 import { getRequest, postRequest } from "@/api/user";
@@ -151,6 +153,11 @@ export default {
   },
   methods: {
     init() {
+      this.$notify({
+        title: "模型选择成功",
+        message: "请输入患者信息进行预测",
+        type: "success",
+      });
       this.predict_features = this.m_predict_features;
       this.patient_form = this.m_patient_form;
       this.predict_task_name = this.m_predict_task_name;
@@ -183,8 +190,6 @@ export default {
     handleManualInput() {
       this.importData = false;
     },
-
-    predictPatient() {},
 
     generateFormAndRules() {
       // 动态生成表单项
@@ -224,6 +229,7 @@ export default {
           console.log("response", response);
           // 获取表数据
           this.tableData = response.data;
+          console.log("this.tableData[0]", this.tableData[0]);
           this.dataLoaded = true;
         })
         .catch((error) => {
@@ -248,13 +254,8 @@ export default {
       if (emptyFields.length > 0) {
         // 如果有空值，则弹出警告
         this.$message.error("请填写完整的表单！");
-      } else {
-        // 如果没有空值，则进行页面跳转
-        // this.m_changeStep(3);
       }
       // alert("提交成功");
-
-      this.loading = true;
       let formData = new FormData();
 
       // formData.append("personForm", JSON.stringify(this.personForm))
@@ -288,24 +289,19 @@ export default {
       }
       // 将列表存储在 featuredata 键中
       dictionary["featuredata"] = featuredata;
-      console.log("typeof dictionary", typeof dictionary);
-      console.log("dictionary", dictionary);
-      console.log("=======");
-      this.m_changeTaskInfo({ patient_form: dictionary });
-      // console.log("this.m_patient_form   ", this.m_patient_form);
+
       postRequest("/runtime_bus/runmodel", dictionary)
         .then((res) => {
-          console.log("res:", res);
-
           this.loading = true;
-          this.predValue = res;
+          this.predValue = res.res;
           this.m_changeTaskInfo({
-            patient_form: dictionary.featuredata,
-            m_predValue: this.predValue,
+            patient_form: dictionary,
+            predValue: this.predValue,
           });
-          console.log("this.m_patient_form   ", this.m_patient_form);
-          console.log("this.predValue111   ", this.predValue);
+
+          console.log("this.m_patient_form11   ", this.m_patient_form);
           // 确保在数据处理完成后再跳转
+
           this.m_changeStep(3);
         })
         .catch((err) => {
@@ -317,7 +313,7 @@ export default {
           });
         });
       // postRequest("/ten/data/update_person2", formData)
-      this.loading = false;
+      this.loading = true;
     },
     backStep() {
       this.m_changeStep(1);

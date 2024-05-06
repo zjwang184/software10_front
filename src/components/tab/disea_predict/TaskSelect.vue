@@ -1111,4 +1111,9 @@ export default {
     transform: translateY(0);
   }
 }
+
+.el-pagination {
+  display: flex;
+  justify-content: right;
+}
 </style>

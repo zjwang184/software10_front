@@ -171,7 +171,7 @@
                 <span>&nbsp; &nbsp; &nbsp;{{ item.doctorRate }}%</span>
                 <el-slider
                   v-model="item.doctorRate"
-                  @change="sortFeatures();"
+                  @change="sortFeatures()"
                   style="width: 115%; margin-left: 10px"
                   :format-tooltip="formatTooltip"
                   show-input
@@ -215,9 +215,10 @@ export default {
       return this.allFeatures.slice(startIndex, endIndex);
     },
     displayedLabel() {
-      const startIndex = (this.currentPage - 1) * this.pageSize;
-      const endIndex = startIndex + this.pageSize;
-      return this.targetFeatures.slice(startIndex, endIndex);
+      // const startIndex = (this.currentPage - 1) * this.pageSize;
+      // const endIndex = startIndex + this.pageSize;
+      // return this.targetFeatures.slice(startIndex, endIndex);
+      return this.targetFeatures;
     },
     // 计算属性，计算总特性数量
     totalFeatures() {
@@ -454,7 +455,6 @@ export default {
       // });
 
       this.m_changeStep(this.m_step + 1);
-      
     },
     clearFilter() {
       for (let i = 0; i < this.allFeatures.length; i++) {
@@ -497,7 +497,6 @@ export default {
       // 重新排序逻辑
       this.allFeatures.sort((a, b) => b.doctorRate - a.doctorRate);
     },
-    
   },
 };
 </script>

@@ -20,7 +20,12 @@
           <el-dropdown style="float: right; margin-right: 30px">
             <span
               class="el-dropdown-link"
-              style="float: right; color: #fff; font-size: 15px"
+              style="
+                float: right;
+                color: #fff;
+                font-size: 15px;
+                cursor: pointer;
+              "
               ><i class="el-icon-user"></i>欢迎你，{{ LoginUserName }}</span
             ><i
               style="color: #fff"
