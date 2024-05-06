@@ -6,15 +6,13 @@
 import * as echarts from "echarts";
 export default {
   props: {
-    legend:{
-      type: Array,
-      default: () => {},
-    },
-    statistic: {
-      type: Array,
-      default: () => {},
-    },
+    
+    
     x: {
+      type: Array,
+      default: () => {},
+    },
+    y: {
       type: Array,
       default: () => {},
     },
@@ -36,6 +34,7 @@ export default {
 
   methods: {
     initMyChart() {
+      // console.log("LineChartVue_y", this.x, this.y)
       var chartDom = this.$refs.lineChart;
       if(!this.myChart){
         this.myChart = echarts.init(chartDom);
@@ -44,7 +43,7 @@ export default {
 
       option = {
         legend: {
-          data: this.legend,
+          data: "任务数",
         },
         // grid: {
         //   left: "2%",
@@ -58,8 +57,8 @@ export default {
         },
         xAxis: {
           type: "category",
-          // data: this.x,
-          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+          data: this.x,
+          // data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
         },
         yAxis: {
           type: "value",
@@ -67,7 +66,8 @@ export default {
         // series: this.statistic,
         series: [
             {
-              data: [1, 2, 0, 7, 8, 12, 3],
+              // data: [1, 2, 0, 7, 8, 12, 3],
+              data:this.y,
               type: 'line',
               smooth: true
             }

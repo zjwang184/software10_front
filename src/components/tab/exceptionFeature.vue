@@ -1,19 +1,231 @@
 <template>
   <div class="main">
-    <div class="left_tree">
-      <el-tree
-        ref="tree"
-        :data="treeData"
-        :show-checkbox="false"
-        node-key="id"
-        default-expand-all
-        :expand-on-click-node="true"
-        :check-on-click-node="true"
-        :highlight-current="true"
-        @node-click="changeData"
-      >
-      </el-tree>
-    </div>
+    <div class="treeArea">
+        <!-- =========================================私有数据集树 --------------------------->
+        <el-tree
+          ref="tree1"
+          :data="treeData1"
+          :show-checkbox="false"
+          node-key="id"
+          :default-expanded-keys="['1']"
+          :expand-on-click-node="false"
+          :highlight-current="true"
+          @node-click="changeData"
+          :filter-node-method="filterNode"
+        >
+          <span class="custom-tree-node" slot-scope="{ node, data }">
+            <span class="left_span">
+              <i
+                class="el-icon-document tree_icon"
+                v-if="data.isLeafs == 1 && data.uid != loginUserID"
+              ></i>
+              <i
+                class="el-icon-document tree_icon"
+                v-if="data.isLeafs == 1 && data.uid == loginUserID"
+                style="color: rgb(40, 207, 18)"
+              ></i>
+              <span
+                v-if="data.catLevel == 1"
+                style="font-weight: bold; font-size: 16px; color: #252525"
+                >{{ node.label }}</span
+              >
+              <span
+                v-else
+                :class="{
+                  nodeLabel: node.label.length <= 12,
+                  'scrolling-nodeLabel': node.label.length > 12,
+                }"
+                >{{ node.label }}
+                <span v-if="data.isLeafs == 1 && data.uid == loginUserID">
+                  （我）</span
+                >
+              </span>
+            </span>
+            <!-- <span>
+              <el-popconfirm
+                confirm-button-text="上传数据集"
+                cancel-button-text="纳排数据集"
+                title="请选择添加数据集方式"
+                cancel-button-type="primary"
+                @confirm="importData"
+                @cancel="openAddDataForm(data.label)"
+              >
+                <el-button
+                  v-if="
+                    data.catLevel != 1 && data.status != 2 && data.isLeafs == 0
+                  "
+                  icon="el-icon-circle-plus-outline"
+                  size="mini"
+                  type="text"
+                  slot="reference"
+                  @click="markNode(data)"
+                >
+                </el-button>
+              </el-popconfirm>
+
+              <el-popconfirm
+                title="删除后无法恢复"
+                icon="el-icon-warning"
+                icon-color="red"
+                confirm-button-text="确认"
+                cancel-button-text="取消"
+                @confirm="() => remove(node, data)"
+              >
+                <el-button
+                  v-if="
+                    (data.isLeafs == 1 && data.status == 0) ||
+                    (data.uid == loginUserID && data.status != 2)
+                  "
+                  icon="el-icon-delete"
+                  size="mini"
+                  type="text"
+                  slot="reference"
+                >
+                </el-button>
+              </el-popconfirm>
+            </span> -->
+          </span>
+        </el-tree>
+
+        <!-- =========================================共享数据集树 -->
+        <el-tree
+          ref="tree2"
+          :data="treeData2"
+          :show-checkbox="false"
+          node-key="id"
+          :default-expanded-keys="['1']"
+          :expand-on-click-node="false"
+          :highlight-current="true"
+          @node-click="changeData"
+          :filter-node-method="filterNode"
+        >
+          <span class="custom-tree-node" slot-scope="{ node, data }">
+            <span class="left_span">
+              <i
+                class="el-icon-document tree_icon"
+                v-if="data.isLeafs == 1 && data.uid != loginUserID"
+              ></i>
+              <i
+                class="el-icon-document tree_icon"
+                v-if="data.isLeafs == 1 && data.uid == loginUserID"
+                style="color: rgb(40, 207, 18)"
+              ></i>
+              <span
+                v-if="data.catLevel == 1"
+                style="font-weight: bold; font-size: 16px; color: #252525"
+                >{{ node.label }}</span
+              >
+              <span
+                v-else
+                :class="{
+                  nodeLabel: node.label.length <= 12,
+                  'scrolling-nodeLabel': node.label.length > 12,
+                }"
+                >{{ node.label }}
+                <span v-if="data.isLeafs == 1 && data.uid == loginUserID">
+                  （我）</span
+                >
+              </span>
+            </span>
+
+            <!-- <span>
+              <el-popconfirm
+                confirm-button-text="上传数据集"
+                cancel-button-text="纳排数据集"
+                title="请选择添加数据集方式"
+                cancel-button-type="primary"
+                @confirm="importData"
+                @cancel="openAddDataForm(data.label)"
+              >
+                <el-button
+                  v-if="
+                    data.catLevel != 1 && data.status != 2 && data.isLeafs == 0
+                  "
+                  icon="el-icon-circle-plus-outline"
+                  size="mini"
+                  type="text"
+                  slot="reference"
+                  @click="markNode(data)"
+                >
+                </el-button>
+              </el-popconfirm>
+
+              <el-popconfirm
+                title="删除后无法恢复"
+                icon="el-icon-warning"
+                icon-color="red"
+                confirm-button-text="确认"
+                cancel-button-text="取消"
+                @confirm="() => remove(node, data)"
+              >
+                <el-button
+                  v-if="
+                    (data.isLeafs == 1 && data.status == 0) ||
+                    (data.uid == loginUserID && data.status != 2)
+                  "
+                  icon="el-icon-delete"
+                  size="mini"
+                  type="text"
+                  slot="reference"
+                >
+                </el-button>
+              </el-popconfirm>
+            </span> -->
+          </span>
+        </el-tree>
+
+        <!-- =========================================公共数据集树 -->
+        <el-tree
+          ref="tree3"
+          :data="treeData3"
+          :show-checkbox="false"
+          node-key="id"
+          :default-expanded-keys="['1']"
+          :expand-on-click-node="false"
+          :highlight-current="true"
+          @node-click="changeData"
+          :filter-node-method="filterNode"
+        >
+          <span class="custom-tree-node" slot-scope="{ node, data }">
+            <span class="left_span">
+              <i
+                class="el-icon-document tree_icon"
+                v-if="data.isLeafs == 1"
+              ></i>
+              <span
+                v-if="data.catLevel == 1"
+                style="font-weight: bold; font-size: 16px; color: #252525"
+                >{{ node.label }}</span
+              >
+              <span
+                v-else
+                :class="{
+                  nodeLabel: node.label.length <= 12,
+                  'scrolling-nodeLabel': node.label.length > 12,
+                }"
+                >{{ node.label }}</span
+              >
+            </span>
+
+            <!-- <span>
+              <el-popconfirm confirm-button-text="上传数据集" cancel-button-text="纳排数据集" title="请选择添加数据集方式"
+                cancel-button-type="primary" @confirm="importData" @cancel="openAddDataForm(data.label)">
+                <el-button v-if="data.catLevel == 3 && data.status != 2 && data.isLeafs == 0" icon="el-icon-circle-plus-outline" size="mini"
+                  type="text" slot="reference" @click="markNode(data)">
+                </el-button>
+              </el-popconfirm>
+
+              <el-popconfirm title="删除后无法恢复" icon="el-icon-warning" icon-color="red" confirm-button-text="确认"
+                cancel-button-text="取消" @confirm="() => remove(node, data)">
+                <el-button v-if="(data.isLeafs == 1 && data.status == 0) ||
+                (data.uid == loginUserID && data.status != 2)
+                " icon="el-icon-delete" size="mini" type="text" slot="reference">
+                </el-button>
+              </el-popconfirm>
+            </span> -->
+          </span>
+        </el-tree>
+      </div>
 
     <div class="right">
       <!--===============================  头部按钮   ======================================================================-->
@@ -52,7 +264,14 @@
           <el-button
             slot="reference"
             size="small"
-            @click="searchByDisease(disease_name, risk)"
+            @click="cancelSelect()"
+            
+            >清除</el-button
+          >
+          <el-button
+            slot="reference"
+            size="small"
+            @click="searchByDisease()"
             type="primary"
             icon="el-icon-search"
             >搜索</el-button
@@ -247,6 +466,7 @@
   
 <script>
 import { getRequest, postRequest } from "@/api/user";
+import { getCategory, addDisease, removeCate } from "@/api/category";
 
 export default {
   data() {
@@ -258,12 +478,16 @@ export default {
       },
       activeName: "first",
       treeData: [],
+      treeData1: [],
+      treeData2: [],
+      treeData3: [],
 
       // 异常指标知识
       knowledges: [],
       disease: [],
-      disease_name: "",
+      disease_name: "",      
       risk: "",
+
       risks: [],
       id: 0,
       /* 添加知识的表单 */
@@ -421,15 +645,20 @@ export default {
   },
   mounted() {
     this.getList();
+    this.getCatgory();
   },
   methods: {
+    filterNode(value, data) {
+      if (!value) return true;
+      return data.label.indexOf(value) !== -1;
+    },
     getList() {
       //获取病种
-      getRequest("/api/category").then((response) => {
-        this.treeData = response.data;
-        console.log(typeof this.treeData);
-        console.log("this.treeData", this.treeData);
-      });
+      // getRequest("/api/category").then((response) => {
+      //   this.treeData = response.data;
+      //   console.log(typeof this.treeData);
+      //   console.log("this.treeData", this.treeData);
+      // });
       // 获取知识信息
       getRequest("/ten/knowledge/e_features")
         .then((res) => {
@@ -458,24 +687,43 @@ export default {
           console.log(error);
         });
     },
+    getCatgory() {
+      // console.log("uid", this.loginUserID)
+      getCategory(`/api/category?uid=${sessionStorage.getItem("userid")-0}`).then((response) => {
+        this.treeData1 = response.data.slice(0, 1);
+        this.treeData2 = response.data.slice(1, 2);
+        this.treeData3 = response.data.slice(2, 3);
+        console.log("this.treeData1", this.treeData1);
+        console.log("this.treeData2", this.treeData2);
+        console.log("this.treeData3", this.treeData3);
+        // 获取病种和数据集总数
+        this.diseaseNum = response.data[0].children.length;
+        // response.data[0].children.length + response.data[1].children.length;
+        getRequest("/api/getTableNumber").then((res) => {
+          if (res.code == 200) this.datasetNum = res.data;
+        });
+      });
+    },
 
     changeData(...theArgs) {
       this.disease_name = theArgs[0].label; //点击的节点的名字 `?diseaseName=${disease}`
+      this.knowledges =  this.searchByDisease(this.disease_name, this.risk)
       console.log("this.disease_name", this.disease_name);
     },
 
     handleCheckChange(data, checked) {
       if (checked) {
-        this.disease_name = theArgs[0].label; //点击的节点的名字 `?diseaseName=${disease}`
+        theArgs[0].label; //点击的节点的名字 `?diseaseName=${disease}`
         console.log("this.disease_name", this.disease_name);
       }
     },
 
-    searchByDisease(disease_name, risks) {
-      console.log("search By name risk", disease_name, risks);
+    searchByDisease() {
+      // this.risk = risks;
+      console.log("search By name risk", this.disease_name, this.risk);
       getRequest("/ten/knowledge/search", {
-        disease_name: disease_name,
-        risks: risks,
+        disease_name: this.disease_name,
+        risks: this.risk,
       })
         .then((res) => {
           this.knowledges = res.data;
@@ -485,6 +733,12 @@ export default {
           console.log(error);
         });
     },
+    cancelSelect(){
+      this.disease_name=''; 
+      this.risk='';
+      this.searchByDisease()
+    },
+
     handleEdit(index, row) {
       this.dialogForm = Object.assign({}, row);
       this.editIndex = index;

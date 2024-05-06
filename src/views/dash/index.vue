@@ -37,21 +37,21 @@
               class="el-icon-s-grid"
               style="font-size: 15px; margin-right: 5px"
             ></el-icon
-            >专病集个数:个
+            >专病集个数: {{ disease_num }}个
           </div>
           <div class="tasksNumber">
             <el-icon
               class="el-icon-s-order"
               style="font-size: 15px; margin-right: 5px"
             ></el-icon
-            >任务总数:个
+            >任务总数:{{ task_num }}个
           </div>
           <div class="featuresNumber">
             <el-icon
               class="el-icon-s-data"
               style="font-size: 15px; margin-right: 5px"
             ></el-icon
-            >样本总量:个
+            >知识条数:{{ knowledge_num }}个
           </div>
           <!-- <div class="predictDiseaseAccess"></div> -->
         </div>
@@ -68,7 +68,7 @@
               </el-option>
             </el-select> -->
 
-            <el-date-picker
+            <!-- <el-date-picker
               class="chartDateSelect"
               v-model="value"
               align="right"
@@ -77,13 +77,13 @@
               :picker-options="pickerOptions"
               size="mini"
             >
-            </el-date-picker>
+            </el-date-picker> -->
           </div>
 
           <div id="chartBox" style="height: 400px; width: 30vw; margin: 0 auto">
             <!-- <LineChartVue v-if="sevendays.length > 0" :legend="chartLegend" :statistic="chartData" :x="sevendays">
             </LineChartVue> -->
-            <LineChartVue> </LineChartVue>
+            <LineChartVue :x="LineChartVue_x" :y="LineChartVue_y"> </LineChartVue>
           </div>
         </el-card>
 
@@ -263,6 +263,12 @@ export default {
           text: "疾病风险预测",
         },
       ],
+      disease_num: 0,
+      task_num: 0,
+      knowledge_num: 0,
+      LineChartVue_x:[],
+      LineChartVue_y:[],
+
       chartLegend: [],
       modelName: [],
       chartData: [],
@@ -319,7 +325,35 @@ export default {
 
   methods: {
     ...mapActions(["getTaskList"]),
-    init() {
+    async init() {
+      getRequest("/api/getDiseaseNum").then((res) => {
+          this.disease_num=res.data;
+          console.log("nums", this.disease_num)
+      });
+      getRequest("/Task/taskNumb").then((res) => {
+          this.task_num=res.data;
+          console.log("nums", this.task_num)
+      });
+      getRequest("/ten/knowledge/knowledgeNum").then((res) => {
+          this.knowledge_num=res.data;
+          console.log("nums", this.knowledge_num)
+      });
+      await getRequest("/Task/GetTaskNearlySevenDays").then((res) => {
+          this.LineChartVue_x=res.date;
+          this.LineChartVue_y=res.number;
+          console.log("LineChartVue_y", this.LineChartVue_x, this.LineChartVue_y)
+      });
+      getRequest("/Task/GetEveryTaskNearlySevenDays").then((res) => {
+          this.Bar_x=res.date;
+          this.Bar_y=res.number;
+          console.log("Bar_x", this.Bar_x, this.Bar_y)
+      });
+
+      // getRequest("/ten/knowledge/knowledgeNum").then((res) => {
+      //     this.knowledge_num=res.data;
+      //     console.log("nums", this.knowledge_num)
+      // });
+      
       // getRequest("Task/totals").then((res) => {
       //   console.log(res);
       //   this.chartLegend = ["当天任务数"];
