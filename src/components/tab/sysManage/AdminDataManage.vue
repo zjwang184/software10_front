@@ -78,9 +78,9 @@
         <el-table-column prop="tableStatus" label="数据表状态">
         </el-table-column>
         <el-table-column prop="tableSize" label="数据表大小"> </el-table-column>
-        <el-table-column prop="checkApproving" label="申请用户">
+        <el-table-column prop="checkApproving" label="申请下载用户">
         </el-table-column>
-        <el-table-column prop="checkApproved" label="已批准用户">
+        <el-table-column prop="checkApproved" label="已批准下载用户">
         </el-table-column>
 
         <el-table-column label="操作" width="200">
@@ -1025,7 +1025,7 @@ export default {
           // 自定义状态码
           this.$message({
             type: "warning",
-            message: "该数据集现在没有用户申请下载",
+            message: "该数据集已经没有用户申请下载",
           });
           this.checkAdminDataManageVisible = false;
           return;

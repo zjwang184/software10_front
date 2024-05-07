@@ -674,18 +674,40 @@
         >
           <el-button
             type="primary"
+            @click="applyDownload()"
+            round
+            v-if="tableData.length && downloadStatus=='0'"
+            >申请下载</el-button
+          >
+          <el-button
+            type="warning"
+            @click="waitingCheck()"
+            round
+            v-if="tableData.length && downloadStatus=='1'"
+            >等待审核</el-button
+          >
+          <el-button
+            type="success"
+            @click="allowDownload();exportCSV()"
+            round
+            v-if="tableData.length && downloadStatus=='2' "
+            >允许下载</el-button
+          >
+
+          <!-- <el-button
+            type="primary"
             @click="exportCSV()"
             round
-            v-show="tableData"
+            v-if="tableData.length"
             >导出CSV文件</el-button
           >
           <el-button
             type="primary"
             @click="exportXLSX()"
             round
-            v-show="tableData"
+            v-if="tableData.length"
             >导出XLSX文件</el-button
-          >
+          > -->
         </div>
       </div>
     </div>
@@ -866,6 +888,10 @@ export default {
           Authorization: `${sessionStorage.getItem("token")}`,
         },
       },
+
+      nodeid:"",
+      downloadStatus: "0",
+
     };
   },
 
@@ -1175,7 +1201,65 @@ export default {
         });
     },
 
+    getCheckApprove(){
+      getRequest(`/api/sysManage/getCheckApprove`,{
+        id: this.nodeid,
+        username: sessionStorage.getItem("username")
+      }).then((res) => {
+        if (res.code == 200) {
+          // console.log("ret data", res.data);
+          this.downloadStatus = res.data;
+          // console.log(res.data);
+        }        
+      });
+    },
+
+    applyDownload(){
+      getRequest(`/api/sysManage/applyCheckApprove`,{
+        id: this.nodeid,
+        username: sessionStorage.getItem("username")
+      }).then((res) => {
+        if (res.code == 200) {
+          this.downloadStatus=res.data;
+          // console.log("ret data", res.data);
+          this.$message({
+            showClose: true,
+            type: "success",
+            message: res.msg,
+          });
+          // console.log(res.data);
+        }
+      });
+    },
+    waitingCheck(){
+      this.$message({
+            showClose: true,
+            type: "warning",
+            message: `申请还在审核中……，请尽快联系管理员审核`,
+          });
+    },
+    allowDownload(){
+      getRequest(`/api/sysManage/allowCheckApprove`,{
+        id: this.nodeid,
+        username: sessionStorage.getItem("username")
+      }).then((res) => {
+        if (res.code == 200) {
+          // console.log("ret data", res.data);
+          this.downloadStatus=res.data;
+          this.$message({
+            showClose: true,
+            type: "success",
+            message: res.msg,
+          });
+          // console.log(res.data);
+        }
+      });
+    },
+
     changeData(data) {
+      console.log("data:", data)
+      this.nodeid = data.id;
+      this.getCheckApprove();
       if (data.isLeafs == 1) {
         //数据获取前显示骨架屏
         this.dataLoaded = false;
