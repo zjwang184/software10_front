@@ -167,7 +167,12 @@ export default {
                 sessionStorage.setItem("username", resp.data.username);
                 sessionStorage.setItem("userid", resp.data.uid);
                 sessionStorage.setItem("userrole", resp.data.role);
-                this.$router.push("/sideBar/SoftwareIntro");
+                if (sessionStorage.getItem("userrole") === "1") {
+                  this.$router.push("/UserSideBar/SoftwareIntro");
+                } else {
+                  this.$router.push("/sideBar/SoftwareIntro");
+                }
+                // this.$router.push("/sideBar/SoftwareIntro");
               }
             } else {
               this.$message.error(resp.message);

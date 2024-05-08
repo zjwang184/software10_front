@@ -135,7 +135,6 @@
         </el-tree>
       </div>
     </div>
-
     <div class="right">
       <div>
         <span class="lineStyle" style="display: inline-block">▍</span

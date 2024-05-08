@@ -10,16 +10,6 @@
         slot="reference"
       ></el-page-header>
     </el-popover>
-    <el-popover placement="bottom-start" trigger="hover">
-      <div style="width: auto">返回首页</div>
-      <el-page-header
-        style="margin: 30px auto auto 50px"
-        @back="goBack"
-        content="修改密码页"
-        class="custom-page-header"
-        slot="reference"
-      ></el-page-header>
-    </el-popover>
     <div
       style="
         display: flex;

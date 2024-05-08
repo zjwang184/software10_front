@@ -85,8 +85,11 @@
               ><i class="el-icon-s-cooperation"></i>
               <span slot="title">疾病风险预测</span></el-menu-item
             >
-
-            <el-submenu index="settings">
+            <el-menu-item index="/sideBar/exceptionFeature"
+              ><i class="el-icon-s-opportunity"></i>
+              <span slot="title">知识管理</span></el-menu-item
+            >
+            <el-submenu index="settings" v-if="this.userRole === '0'">
               <template slot="title">
                 <i class="el-icon-s-operation"></i>
                 <span slot="title">系统设置</span>
@@ -100,10 +103,7 @@
                   <i class="el-icon-s-data"></i>
                   <span slot="title">数据管理</span></el-menu-item
                 >
-                <el-menu-item index="/sideBar/exceptionFeature"
-                  ><i class="el-icon-s-opportunity"></i>
-                  <span slot="title">知识管理</span></el-menu-item
-                >
+
                 <el-menu-item index="/sideBar/Inform"
                   ><i class="el-icon-message-solid"></i>
                   <span slot="title">通知管理</span></el-menu-item
@@ -120,11 +120,11 @@
             </el-submenu>
 
             <div class="menu-footer">
-              <el-menu-item index="/sideBar/SoftwareIntro">
+              <el-menu-item index="/sideBar/SoftwareIntro" width="220px">
                 <i class="el-icon-s-data"></i>
                 <span slot="title"> 软件介绍</span>
               </el-menu-item>
-              <el-menu-item>
+              <el-menu-item width="220px">
                 <i class="el-icon-s-help"></i
                 ><span slot="title"> 操作手册</span></el-menu-item
               >
@@ -154,8 +154,16 @@ export default {
   // components: { AppMain },
   mounted() {
     this.LoginUserName = sessionStorage.getItem("username");
+    console.log(
+      'sessionStorage.getItem("userrole")',
+      sessionStorage.getItem("userrole")
+    );
   },
-  computed: {},
+  computed: {
+    userRole() {
+      return sessionStorage.getItem("userrole");
+    },
+  },
   data() {
     return {
       activeIndex: "0",
