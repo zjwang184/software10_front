@@ -11,7 +11,7 @@ import userCenter from '@/components/tab/user/userCenter.vue'
 import SideBar from '@/components/sideBar/index.vue'
 import dash from '@/views/dash/index.vue'
 import TaskManage from "@/components/tab/TaskManage.vue";
-import DataManage from "@/components/tab/DataManage.vue";
+import DataManage from "@/components/tab/dataManage.vue";
 import ModelManage from "@/components/tab/ModelManage.vue";
 import ModelTraining from "@/components/tab/ModelTraining.vue"
 import F_Factor from "@/components/tab/F_Factor.vue";
