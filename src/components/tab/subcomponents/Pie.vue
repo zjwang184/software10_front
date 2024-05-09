@@ -12,9 +12,9 @@ export default {
       type: String,
       default: "饼图",
     },
-    data: {
-      type: Object,
-      default: () => { },
+    pie_data: {
+      type: Array,
+      default: () => [],
     },
   },
   data() {
@@ -53,14 +53,7 @@ export default {
             name: '数据集个数',
             type: 'pie',
             radius: '50%',
-            data: [
-              
-              { value: 1, name: '肺病' },
-              { value: 1, name: '糖尿病' },
-              { value: 5, name: '公共数据集' },
-              { value: 1, name: '胃病' },
-              // { value: 300, name: 'Video Ads' }
-            ],
+            data: this.pie_data,
             emphasis: {
               itemStyle: {
                 shadowBlur: 10,

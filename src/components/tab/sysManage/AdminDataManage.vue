@@ -986,7 +986,7 @@ export default {
     checkInfos(usernames) {
       // 确保 usernames 是字符串
       if (typeof usernames !== "string") {
-        console.error("usernames is not a string:", usernames);
+        //console.error("usernames is not a string:", usernames);
         return "";
       }
       if (usernames == null || usernames.trim().length === 0) {

@@ -83,8 +83,6 @@
           </div>
 
           <div id="chartBox" style="height: 400px; width: 30vw; margin: 0 auto">
-            <!-- <LineChartVue v-if="sevendays.length > 0" :legend="chartLegend" :statistic="chartData" :x="sevendays">
-            </LineChartVue> -->
             <LineChartVue
               :x="LineChartVue_x"
               :y="LineChartVue_y"
@@ -99,7 +97,8 @@
             <span class="lineStyle">▍</span><span>疾病占比</span>
           </div>
           <div id="chartBox" style="height: 400px; width: 30vw; margin: 0 auto">
-            <Pie> </Pie>
+            <Pie :pie_data="pie_data"
+            v-if="pie_data.length"> </Pie>
           </div>
         </el-card>
       </el-card>
@@ -109,19 +108,29 @@
       <el-card class="bottom_statistic_card">
         <el-card>
           <div slot="header" class="clearfix">
-            <span class="lineStyle">▍</span><span>知识融入频次</span>
+            <span class="lineStyle">▍</span><span>缺失占比</span>
+            <el-select class="BarchartSelect" v-model="table_value" placeholder="请选择数据集" size="mini" @change="table_val_change">
+              <el-option v-for="item in table_value_options" :key="item" :label="item" :value="item" size="mini">
+              </el-option>
+            </el-select>
           </div>
-          <div id="chartBox" style="height: 400px; width: 30vw; margin: 0 auto">
-            <Sprit> </Sprit>
+          <div id="chartBox" style="height: 400px;width: 950px;" v-loading="fill_rate_loading" element-loading-text="后台加载中">
+            <Sprit v-if="this.sprit_names.length !==0" :sprit_names="sprit_names" :sprit_values="sprit_values" :height="400" :width="950" :title="table_value">
+            </Sprit>
           </div>
         </el-card>
 
         <el-card>
           <div slot="header" class="clearfix">
-            <span class="lineStyle">▍</span><span>模型使用占比</span>
+            <span class="lineStyle">▍</span><span>算法使用频次</span>
           </div>
           <div id="chartBox">
-            <Bar style="height: 400px; width: 80%; margin: 0 auto"> </Bar>
+            <Bar style="height: 400px; width: 80%; margin: 0 auto"
+            :data="Bar_data"
+            :date="Bar_date"
+            :modelnames="modelnames"
+            v-if="Bar_data.length"
+            > </Bar>
           </div>
         </el-card>
       </el-card>
@@ -236,6 +245,7 @@ import LineChartVue from "@/components/tab/subcomponents/LineChart.vue";
 import Pie from "@/components/tab/subcomponents/Pie.vue";
 import Sprit from "@/components/tab/subcomponents/Sprit.vue";
 import Bar from "@/components/tab/subcomponents/Bar.vue";
+import { log } from '@antv/g2plot/lib/utils';
 export default {
   name: "index",
   components: { LineChartVue, Pie, Sprit, Bar },
@@ -252,10 +262,10 @@ export default {
           text: "数据管理",
         },
         {
-          route: "/sideBar/taskManage",
-          imageSrc: require("../../assets/任务管理（快捷入口）.png"),
+          route: "/sideBar/exceptionFeature",
+          imageSrc: require("../../assets/知识管理（快捷入口）.png"),
           altText: "数据管理（快捷入口)",
-          text: "历史任务查看",
+          text: "知识管理",
         },
         {
           route: "/sideBar/ModelTraining",
@@ -275,6 +285,18 @@ export default {
       knowledge_num: 0,
       LineChartVue_x: [],
       LineChartVue_y: [],
+
+      pie_data: [],
+
+      fill_rate_loading: false,
+      table_value: "",
+      table_value_options: [],
+      sprit_names:[],
+      sprit_values: [],
+
+      Bar_date: [],
+      Bar_data: [],
+      modelnames: [],
 
       chartLegend: [],
       modelName: [],
@@ -322,6 +344,7 @@ export default {
           },
         ],
       },
+      
     };
   },
 
@@ -345,21 +368,57 @@ export default {
         this.knowledge_num = res.data;
         console.log("nums", this.knowledge_num);
       });
-      await getRequest("/Task/GetTaskNearlySevenDays").then((res) => {
+
+      getRequest("/Task/GetTaskNearlySevenDays").then((res) => {
         this.LineChartVue_x = res.date;
         this.LineChartVue_y = res.number;
-        console.log(
-          "LineChartVue_y,LineChartVue_y",
-          this.LineChartVue_x,
-          this.LineChartVue_y
-        );
       });
-      getRequest("/Task/GetEveryTaskNearlySevenDays").then((res) => {
-        this.Bar_x = res.date;
-        this.Bar_y = res.number;
-        console.log("Bar_x", this.Bar_x, this.Bar_y);
-      });
+      getRequest("/Task/GetEveryTaskNearlySevenDays").then((res) => {        
+        Object.keys(res).forEach(key=>{
+          if (key == "date"){
+            this.Bar_date = res.date;
+          }else{
+            this.modelnames.push(key);
+            this.Bar_data.push(              
+                {
+                  name: key,
+                  type: 'bar',
+                  tooltip: {
+                    valueFormatter: function (value) {
+                      return value + ' 次';
+                    }
+                  },
+                  data: res[key]
+                }              
+            );
+          }  
+        });
 
+        console.log("Bar_data res", this.Bar_data,res)
+        
+      });
+      getRequest("/api/category/static").then((res) => {
+        //实现思路：通过 Object.keys()对象方法将对象的key转化为一个数组，再通过forEach遍历出数组的值，再通过[key]去获取对象的value值。
+        Object.keys(res).forEach(key=>{
+          this.pie_data.push({'name':key,'value':res[key]});
+        });
+
+        console.log("pie data", this.pie_data, this.pie_data.length)
+      });     
+
+
+      getRequest("/api/getAllTableNames").then(
+        (res) => {
+          if (res.code == 200) {
+            this.table_value_options = res.data;
+            this.table_value = this.table_value_options[0];
+            this.table_val_change();
+          }
+          else {
+            this.$message.error("获取数据失败");
+          }
+        }
+      );
       // getRequest("/ten/knowledge/knowledgeNum").then((res) => {
       //     this.knowledge_num=res.data;
       //     console.log("nums", this.knowledge_num)
@@ -401,6 +460,22 @@ export default {
       //   console.log(this.chartData[0].data);
       // });
     },
+
+    table_val_change(){
+        this.fill_rate_loading=true;
+        this.sprit_names = [];
+        this.sprit_values = [];
+        getRequest(`scripts/get_fill_rate?tablename=${this.table_value}`).then(
+          (res) => {
+            this.sprit_names = res.column_name;
+            console.log("res.column_name",res.column_name)
+            console.log("res.column_name",res)
+
+            this.sprit_values = res.miss_rate;
+            this.fill_rate_loading=false;
+          }
+        );
+      },
     goToPage(route) {
       this.$router.push(route); // 使用 Vue Router 的 push 方法进行页面跳转
     },
