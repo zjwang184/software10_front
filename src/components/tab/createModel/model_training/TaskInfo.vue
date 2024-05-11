@@ -4,7 +4,8 @@
       <span> 模型训练： </span>
       <br />
       <span
-        >在进行疾病预测任务之前您需要训练模型, 通过训练好的模型对个人进行疾病风险预测</span
+        >在进行疾病预测任务之前您需要训练模型,
+        通过训练好的模型对个人进行疾病风险预测</span
       >
     </div>
     <el-form
@@ -17,15 +18,7 @@
       <el-form-item prop="taskName" class="inputBox shortItem">
         <template slot="label">
           <span class="lineStyle">▍</span>
-          <span>任务（模型）名称</span
-          ><el-popover placement="top" trigger="hover">
-            <div>任务名称仅允许出现汉字、英文字母、数字及下划线</div>
-            <el-icon
-              class="el-icon-warning-outline"
-              slot="reference"
-              style="font-size: 15px; margin-left: 20px"
-            ></el-icon>
-          </el-popover>
+          <span>任务（模型）名称</span>
         </template>
         <el-input
           v-model="taskInfoForm.taskName"
@@ -38,7 +31,10 @@
           <span class="lineStyle">▍</span>
           <span>任务负责人</span>
         </template>
-        <el-input v-model="taskInfoForm.responsiber" :disabled="true"></el-input>
+        <el-input
+          v-model="taskInfoForm.responsiber"
+          :disabled="true"
+        ></el-input>
       </el-form-item>
       <el-form-item prop="participants" class="inputBox shortItem">
         <template slot="label">
@@ -108,12 +104,12 @@ export default {
 
   methods: {
     init() {
-      this.tips();  // 弹出提示
-      this.synchronous();  // 同步保存的信息
+      this.tips(); // 弹出提示
+      this.synchronous(); // 同步保存的信息
     },
 
     // 弹出提示
-    tips(){
+    tips() {
       this.$notify({
         title: "提示",
         message: "请填写任务信息进行下一步操作",
@@ -122,7 +118,7 @@ export default {
     },
 
     // 同步保存的信息
-    synchronous(){
+    synchronous() {
       this.taskInfoForm.taskName = this.m_train_model.taskName;
       this.taskInfoForm.responsiber = sessionStorage.getItem("username");
       this.taskInfoForm.participants = this.m_train_model.participants;
@@ -155,9 +151,9 @@ export default {
       this.taskInfoForm.taskName = "";
       this.taskInfoForm.participants = "";
       this.taskInfoForm.remark = "";
-      
+
       this.m_changeModelTrain(this.taskInfoForm);
-      console.log("this.m_train_model", this.m_train_model)
+      console.log("this.m_train_model", this.m_train_model);
     },
 
     // 下一步
@@ -190,7 +186,7 @@ export default {
       }
 
       this.m_changeModelTrain(this.taskInfoForm);
-      console.log("this.m_train_model", this.m_train_model)
+      console.log("this.m_train_model", this.m_train_model);
       this.$notify({
         title: "任务信息填写成功",
         message: "请选择数据集进行下一步操作",
@@ -258,7 +254,7 @@ export default {
 /* 这里是最后的两个按钮固定在页面上 */
 .buttonGroup {
   position: fixed;
-  bottom: 10%; /* 距离页面底部 10px */
+  bottom: 2%; /* 距离页面底部 10px */
   left: 50%;
   transform: translateX(-50%); /* 水平居中 */
   width: 200px;
@@ -275,5 +271,3 @@ export default {
   transition: all 0.5s ease;
 }
 </style>
-
-

@@ -1,4 +1,4 @@
-<template >
+<template>
   <div
     class="main"
     v-loading="next_loading"
@@ -161,10 +161,10 @@
           <i class="el-icon-time"></i>创建时间:
           <span>{{ showDataForm.createTime }}</span>
         </div>
-        <div>
+        <!-- <div>
           <i class="el-icon-folder-opened"></i>所属类别:
           <span>{{ showDataForm.classPath }}</span>
-        </div>
+        </div> -->
         <div>
           <i class="el-icon-date"></i>特征个数:
           <span>{{ showDataForm.columnCount }}</span>
@@ -364,7 +364,7 @@ export default {
     },
 
     //显示表数据
-    getTableData(){
+    getTableData() {
       if (this.nodeId != "") {
         this.getTableDescribe(this.nodeId, this.chosenData);
         //显示表数据
@@ -384,7 +384,7 @@ export default {
     },
 
     // 同步保存的信息
-    synchronous(){
+    synchronous() {
       this.chosenData = this.m_train_model.dataset;
       this.disease = this.m_train_model.disease;
       this.nodeId = this.m_train_model.nodeId;
@@ -625,7 +625,7 @@ export default {
 
 .buttonGroup {
   position: fixed;
-  bottom: 6vh; /* 距离页面底部 10vh */
+  bottom: 2%;
   left: 55%;
   transform: translateX(-50%); /* 水平居中 */
   width: 200px;

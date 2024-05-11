@@ -4,10 +4,10 @@
       <el-header>
         <div id="step">
           <el-steps :active="step" align-center>
-            <el-step title="任务信息" icon="el-icon-guide"></el-step>
-            <el-step title="选择数据" icon="el-icon-edit"></el-step>
+            <el-step title="任务信息" icon="el-icon-user"></el-step>
+            <el-step title="数据选择" icon="el-icon-document"></el-step>
             <el-step title="特征选择" icon="el-icon-edit"></el-step>
-            <el-step title="算法选择" icon="el-icon-edit"></el-step>
+            <el-step title="算法选择" icon="el-icon-data-line"></el-step>
             <el-step title="运算结果" icon="el-icon-view"></el-step>
           </el-steps>
         </div>
@@ -40,13 +40,13 @@
 
 <script>
 import { mapState } from "vuex";
-import AlgorithmSelectVue from "./subcomponents/AlgorithmSelect.vue";
-import DataSelectVue from "./subcomponents/DataSelect.vue";
-import FeatureSelectVue from "./subcomponents/FeatureSelect.vue";
-import ResultVue from "./subcomponents/Result.vue";
-import TaskInfoVue from "./subcomponents/TaskInfo.vue";
+import AlgorithmSelectVue from "../model_training/AlgorithmSelect.vue";
+import DataSelectVue from "../model_training/DataSelect.vue";
+import FeatureSelectVue from "../model_training/FeatureSelect.vue";
+import ResultVue from "../model_training/Result.vue";
+import TaskInfoVue from "../model_training/TaskInfo.vue";
 export default {
-  name: "F_Factor",
+  name: "ModelTraining",
   components: {
     TaskInfoVue,
     DataSelectVue,
@@ -55,16 +55,15 @@ export default {
     ResultVue,
   },
   computed: {
-    ...mapState("f_Factor", ["step"]),
+    ...mapState("modelTraining", ["step"]),
   },
   data() {
     return {
-      moduleName: "f_Factor",
+      moduleName: "modelTraining",
     };
   },
 
-  methods: {
-  },
+  methods: {},
 };
 </script>
 

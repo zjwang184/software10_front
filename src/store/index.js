@@ -69,7 +69,7 @@ export default new Vuex.Store({
           console.log(err);
         });
     },
-    
+
     getTaskList(context) {
       getRequest("/Task/all")
         .then((res) => {
@@ -105,7 +105,5 @@ export default new Vuex.Store({
   modules: {
     modelTraining: taskModule,
     diseaPredict: taskModule,
-    f_Factor: taskModule,
-    factorDis: taskModule,
   },
 });

@@ -1,3 +1,4 @@
+..
 <template>
   <div>
     <div id="pdf_1">
@@ -235,18 +236,17 @@ import XLSX from "xlsx";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import vuex_mixin from "@/components/mixins/vuex_mixin";
-import GraphVue from "./Graph.vue";
-import LossCurve from "./LossCurve.vue";
-import RewardCurve from "./RewardCurve.vue";
-import treeMap from "./treeMap.vue";
-import PredictLineChart from "./PredictLineChart.vue";
-import featuresPie from "./featuresPie.vue";
+import GraphVue from "../model_eCharts/Graph.vue";
+import LossCurve from "../model_eCharts/LossCurve.vue";
+import RewardCurve from "../model_eCharts/RewardCurve.vue";
+import treeMap from "../model_eCharts/treeMap.vue";
+import PredictLineChart from "../model_eCharts/PredictLineChart.vue";
+import featuresPie from "../model_eCharts/featuresPie.vue";
 
 import { postRequest } from "@/api/user";
 import { mapMutations } from "vuex";
 
 import * as echarts from "echarts";
-
 
 export default {
   name: "Result",

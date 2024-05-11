@@ -137,11 +137,11 @@
 </template>
 
 <script>
-import featuresPie from "@/components/tab/subcomponents/featuresPie.vue";
-import GraphVue from "./Graph.vue";
-import LossCurve from "@/components/tab/subcomponents/LossCurve.vue";
-import RewardCurve from "@/components/tab/subcomponents/RewardCurve.vue";
-import treeMap from "./treeMap.vue";
+import featuresPie from "../model_eCharts/featuresPie.vue";
+import GraphVue from "../model_eCharts/Graph.vue";
+import LossCurve from "../model_eCharts/LossCurve.vue";
+import RewardCurve from "../model_eCharts/RewardCurve.vue";
+import treeMap from "../model_eCharts/treeMap.vue";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 
@@ -169,6 +169,9 @@ export default {
 
   mounted() {
     this.init();
+  },
+  created() {
+    console.log("11111111111");
   },
   data() {
     return {

@@ -136,7 +136,9 @@
 
             <!------- 下拉框得到默认值 ----------------->
             <el-icon class="el-icon-warning-outline"></el-icon>
-            选择一个算法初步计算各特征的特征重要性：
+            <span id="tipText" :style="tipTextStyle"
+              >选择一个算法初步计算各特征的特征重要性：</span
+            >
             <el-select
               v-model="value"
               style="margin: 20px"
@@ -215,9 +217,6 @@ export default {
       return this.allFeatures.slice(startIndex, endIndex);
     },
     displayedLabel() {
-      // const startIndex = (this.currentPage - 1) * this.pageSize;
-      // const endIndex = startIndex + this.pageSize;
-      // return this.targetFeatures.slice(startIndex, endIndex);
       return this.targetFeatures;
     },
     // 计算属性，计算总特性数量
@@ -247,6 +246,13 @@ export default {
       });
       return sorted;
     },
+
+    // 字体提示颜色
+    tipTextStyle() {
+      return {
+        color: this.isDisabled ? "red" : "green",
+      };
+    },
   },
   data() {
     return {
@@ -265,6 +271,8 @@ export default {
       defaultReward: [],
       tableData: [], // 存储表格数据
       value: "",
+
+      // tipTextStyle: "red",
       //分页数据
       pageSize: 10,
       pageSizes: [10, 20, 30, 40, 50],
@@ -284,12 +292,8 @@ export default {
     };
   },
 
-  created() {
-    // this.init();
-    //   this.getData("");
-    // 在组件创建时将 JSON 数据赋值给 treeData
-    // this.treeData = treeData;
-  },
+  created() {},
+  watch: {},
 
   mounted() {
     this.init();
@@ -298,13 +302,13 @@ export default {
   methods: {
     init() {
       //   同步vuex里的数据
-      this.targetFeatures = this.m_target_features;
-      this.allFeatures = this.m_all_features;
-      this.computeFeatures = this.m_use_features;
-      this.labelFeatures = this.m_use_labels;
+      this.targetFeatures = this.m_train_model.target_features;
+      this.allFeatures = this.m_train_model.all_features;
+      this.computeFeatures = this.m_train_model.use_features;
+      this.labelFeatures = this.m_train_model.use_labels;
       this.changeBox_compute();
       this.changeBox_label();
-      this.knownFeatures = this.m_known_features;
+      this.knownFeatures = this.m_train_model.known_features;
     },
 
     handleCheckAll_compute(checked) {
@@ -366,10 +370,10 @@ export default {
     },
 
     runDefaultReward(model) {
-      if (this.computeFeatures.length < 5) {
+      if (this.computeFeatures.length < 1) {
         this.$message({
           type: "warning",
-          message: "请选择至少5个特征参与运算",
+          message: "请选择至少1个特征参与运算",
         });
         return;
       }
@@ -382,7 +386,7 @@ export default {
       }
 
       console.log("model", model);
-      console.log("tableName", this.m_dataset);
+      console.log("tableName", this.m_train_model.dataset);
       console.log("features", this.computeFeatures);
       console.log("labels", this.labelFeatures);
       console.log("mode", "public");
@@ -394,7 +398,7 @@ export default {
         postRequest("/runtime_bus/submitBus", {
           // model: model,
 
-          tableName: this.m_dataset,
+          tableName: this.m_train_model.dataset,
           features: this.computeFeatures,
           labels: this.labelFeatures,
           alg: model,
@@ -421,6 +425,8 @@ export default {
               this.allFeatures[risk]["doctorRate"]
             );
           }
+
+          // this.tipTextStyle = "green";
           this.compute_loading = false;
           this.sortFeatures();
         });
@@ -434,14 +440,14 @@ export default {
         });
         return;
       }
-      if (this.computeFeatures.length < 5) {
+      if (this.computeFeatures.length < 1) {
         this.$message({
           type: "warning",
-          message: "请选择至少5个特征参与运算",
+          message: "请选择至少1个特征参与运算",
         });
         return;
       }
-      this.m_changeTaskInfo({
+      this.m_changeModelTrain({
         // known_features: this.knownFeatures,
         target_feature: this.labelFeatures,
         use_features: this.computeFeatures,
@@ -544,7 +550,7 @@ export default {
 
 .buttonGroup {
   position: fixed;
-  bottom: 10%;
+  bottom: 2%;
   left: 50%;
   transform: translateX(-50%); /* 水平居中 */
   width: 200px;

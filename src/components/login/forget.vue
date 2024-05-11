@@ -102,15 +102,15 @@
                   placeholder="请输入新密码"
                 ></el-input>
               </el-form-item>
-              <div style="margin-top:30px;">
-                <el-form-item prop="repsw" label="重复新密码" >
-                <el-input
-                  type="password"
-                  auto-complete="false"
-                  v-model="forgetForm3.repsw"
-                  placeholder="请重复新密码"
-                ></el-input>
-              </el-form-item>
+              <div style="margin-top: 30px">
+                <el-form-item prop="repsw" label="重复新密码">
+                  <el-input
+                    type="password"
+                    auto-complete="false"
+                    v-model="forgetForm3.repsw"
+                    placeholder="请重复新密码"
+                  ></el-input>
+                </el-form-item>
               </div>
             </el-form>
           </div>
@@ -201,7 +201,7 @@ export default {
   name: "forget",
 
   data() {
-     let checkPwd2 = (rule, value, callback) => {
+    let checkPwd2 = (rule, value, callback) => {
       if (value.trim().length == 0) {
         callback(new Error("请确认密码不能为空"));
       } else if (value != this.forgetForm3.password) {
@@ -245,10 +245,14 @@ export default {
         q3: [{ required: true, message: "请输入答案", trigger: "blur" }],
       },
       rules3: {
-        password: [{ required: true, message: "请输入密码", trigger: "blur" },
-          { validator: checkPwd1, trigger: "blur" },],
-        repsw: [ { required: true, message: "请输入密码", trigger: "blur" },
-          { validator: checkPwd2, trigger: "blur" }],
+        password: [
+          { required: true, message: "请输入密码", trigger: "blur" },
+          { validator: checkPwd1, trigger: "blur" },
+        ],
+        repsw: [
+          { required: true, message: "请输入密码", trigger: "blur" },
+          { validator: checkPwd2, trigger: "blur" },
+        ],
       },
       questions: [],
     };
@@ -287,12 +291,10 @@ export default {
       if (this.active === 2) {
         this.$refs.forgetForm2.validate((valid) => {
           if (valid) {
-            this.customValidation()
-          
+            this.customValidation();
           }
         });
       }
-     
     },
     customValidation() {
       if (this.active === 2) {
@@ -302,16 +304,13 @@ export default {
           q2: this.questions[1] + ":" + this.forgetForm2.q2,
           q3: this.questions[2] + ":" + this.forgetForm2.q3,
         };
-    
+
         postRequest("user/verify", params).then((res) => {
-   
           if (res.code === 200) {
             this.$message.success(`${res.msg}`);
-               this.active++;
-  
+            this.active++;
           } else {
             this.$message.error(`${res.msg}`);
-  
           }
         });
       }
@@ -335,32 +334,31 @@ export default {
         }
       });
     },
-    submit(){
-       if(this.active===3){
-         this.$refs.forgetForm3.validate((valid) => {
-           if(valid){
-             const params={
-               username:this.forgetForm1.username,
-               password:this.forgetForm3.password
-             }
-             postRequest('user/updatePwd',params).then((res)=>{
-               console.log('res',res)
-               if(res){
-               if(res.code===200){
-                   this.$message.success("密码修改成功");
-                  this.returnLogin()
-               }
-               else{
-                 this.$message.error("密码修改失败！");
-               }
-               }else{
-                 this.$message.error("服务器发生错误，请稍后再试");
-               }
-             })
-           }
-         });
+    submit() {
+      if (this.active === 3) {
+        this.$refs.forgetForm3.validate((valid) => {
+          if (valid) {
+            const params = {
+              username: this.forgetForm1.username,
+              password: this.forgetForm3.password,
+            };
+            postRequest("user/updatePwd", params).then((res) => {
+              console.log("res", res);
+              if (res) {
+                if (res.code === 200) {
+                  this.$message.success("密码修改成功");
+                  this.returnLogin();
+                } else {
+                  this.$message.error("密码修改失败！");
+                }
+              } else {
+                this.$message.error("服务器发生错误，请稍后再试");
+              }
+            });
+          }
+        });
       }
-    }
+    },
   },
 };
 </script>
@@ -401,7 +399,7 @@ li {
   /* margin: 20px 10px; */
   margin-bottom: 150px;
   width: 500px;
-  height: 450px;
+  height: 600px;
   background: white;
   border: 1px solid #eaeaee;
   box-shadow: 0 0 25px #cac6c6;

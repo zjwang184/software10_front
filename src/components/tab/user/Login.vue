@@ -1,7 +1,7 @@
 <template>
   <div class="myMain">
     <div class="mainContainer">
-      <div class="leftContainer">
+      <!-- <div class="leftContainer">
         <div class="mainRight">
           <img
             src="http://www.cqupt.edu.cn/dfiles/13011/cqupt/img/favicon_128x128.ico"
@@ -33,6 +33,189 @@
               </div>
             </div>
           </div>
+          <div class="myForm">
+
+            <el-form
+              element-loading-text="正在登陆..."
+              element-loading-spinner="el-icon-loading"
+              element-loading-background="rgba(0, 0, 0, 0.8)"
+              ref="loginForm"
+              :model="loginForm"
+              :rules="rules"
+              style="font-size: 30px"
+            >
+              <h3 class="loginTitle">软件登陆</h3>
+              <el-form-item prop="username">
+                <el-input
+                  type="text"
+                  auto-complete="false"
+                  v-model="loginForm.username"
+                  placeholder="请输入用户名"
+                ></el-input>
+              </el-form-item>
+              <el-form-item prop="password">
+                <el-input
+                  type="password"
+                  auto-complete="false"
+                  v-model="loginForm.password"
+                  placeholder="请输入密码"
+                ></el-input>
+              </el-form-item>
+              <el-form-item prop="code">
+                <el-input
+                  type="text"
+                  auto-complete="false"
+                  v-model="loginForm.code"
+                  placeholder="点击图片更换验证码"
+                  style="width: 250px; margin-right: 5px"
+                ></el-input>
+                <img :src="captchaUrl" @click="updatecaptcha" />
+              </el-form-item>
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  margin-top: -15px;
+                "
+              >
+                <el-button type="text" @click="forgetPsw">忘记密码</el-button>
+                <el-button type="text" @click="register">注册账号</el-button>
+              </div>
+              <el-button
+                type="primary"
+                style="width: 100%; font-size: 20px; margin-top: 20px"
+                @click="submitlogin"
+                >登录</el-button
+              >
+              <el-button
+                type="danger"
+                style="
+                  width: 100%;
+                  margin-top: 20px;
+                  margin-left: 0px;
+                  font-size: 20px;
+                "
+                @click="backToPlatform"
+                >退出软件</el-button
+              >
+            </el-form>
+          </div>
+        </div>
+        <el-dialog
+          title="通告详细信息"
+          :visible.sync="dialogVisible"
+          width="50%"
+          center
+          :close-on-click-modal="true"
+        >
+          <div class="selectedNotificationTitle">
+            {{ selectedNotification.title }}
+          </div>
+          <div class="selectedNotificationContent">
+            {{ selectedNotification.content }}
+          </div>
+        </el-dialog>
+        <el-dialog
+          title="通告栏"
+          :visible.sync="dialogVisible2"
+          width="50%" 
+          center
+          :close-on-click-modal="true"
+        >
+          <div v-for="(item, index) in notificationList" :key="item.infoId">
+            <ul>
+              <li
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  line-height: 15px;
+                  overflow: hidden;
+                "
+              >
+                <span
+                  class="notification_content_title"
+                  @click="showDetails(item)"
+                >
+                  <span> {{ item.title }}</span>
+                </span>
+                <span style="padding-right: 20px">{{ item.updateTime }}</span>
+              </li>
+            </ul>
+            <el-divider></el-divider>
+          </div>
+        </el-dialog>
+      </div> -->
+      <div class="topContainer">
+        <div class="mainRight1">
+          <img
+            src="http://www.cqupt.edu.cn/dfiles/13011/cqupt/img/favicon_128x128.ico"
+            style="height: 100px; width: 100px"
+          />
+          <h1>医学知识引导的多病种疾病风险预测强化学习工具软件</h1>
+        </div>
+        <div class="mainImg">
+          <img
+            class="gif"
+            src="https://img.benmu-health.com/sanyi-health/gif.gif"
+          />
+          <img
+            class="png"
+            src="https://img.benmu-health.com/sanyi-health/main-pic-new.png"
+          />
+        </div>
+      </div>
+      <div class="bottomContainer">
+        <div class="notificationDiv">
+          <div class="notification_title">
+            <span style="font-size: 20px; font-weight: bold; margin-top: 20px"
+              >通告栏</span
+            >
+            <div style="display: flex; line-height: 20px; margin-top: 20px">
+              <el-button type="text" @click="moreNotice">
+                <i class="el-icon-zoom-in"></i>更多</el-button
+              >
+            </div>
+          </div>
+          <div class="notification_container">
+            <div v-for="(item, index) in notification" :key="item.infoId">
+              <ul>
+                <li
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: end;
+                    line-height: 15px;
+                    overflow: hidden;
+                    width: 650px;
+                  "
+                >
+                  <span
+                    class="notification_content_title"
+                    @click="showDetails(item)"
+                    :class="{ 'scroll-on-hover': shouldScroll(item.title) }"
+                  >
+                    <span> {{ item.title }}</span>
+                  </span>
+                  <span style="padding-right: 20px">{{ item.updateTime }}</span>
+                </li>
+              </ul>
+              <el-divider></el-divider>
+            </div>
+          </div>
+        </div>
+        <div class="loginContainer">
+          <!-- <div class="banner">
+            <div class="notification_container">
+              <div
+                class="scroll-text"
+                title="点击查看更多通知"
+                @click="moreNotice"
+              >
+                {{ notification }}
+              </div>
+            </div>
+          </div> -->
           <div class="myForm">
             <!-- </div> -->
 
@@ -104,6 +287,7 @@
         </div>
         <el-dialog
           title="通告详细信息"
+          :modal-append-to-body="false"
           :visible.sync="dialogVisible"
           width="50%"
           center
@@ -118,12 +302,13 @@
         </el-dialog>
         <el-dialog
           title="通告栏"
+          :modal-append-to-body="false"
           :visible.sync="dialogVisible2"
-          width="50%" 
+          width="50%"
           center
           :close-on-click-modal="true"
         >
-          <div v-for="(item, index) in notificationList" :key="item.infoId">
+          <div v-for="(item, index) in notification" :key="item.infoId">
             <ul>
               <li
                 style="
@@ -237,6 +422,20 @@ export default {
     this.updatecaptcha();
   },
   methods: {
+    shouldScroll(title) {
+      // Check if the title length exceeds 20 characters
+      const tempDiv = document.createElement("div");
+      tempDiv.style.position = "absolute";
+
+      tempDiv.style.visibility = "hidden";
+      tempDiv.innerHTML = title;
+      document.body.appendChild(tempDiv);
+      const width = tempDiv.offsetWidth;
+      document.body.removeChild(tempDiv);
+
+      // Check if the width exceeds 180px
+      return width > 300;
+    },
     showDetails(item) {
       this.selectedNotification = item;
       this.dialogVisible = true;
@@ -265,6 +464,29 @@ export default {
         .replace(/\//g, "-")
         .replace(", ", " ");
     },
+    // getNotification() {
+    //   getRequest("notice/queryNotices").then((res) => {
+    //     if (res) {
+    //       const temp = res.map((item) => ({
+    //         ...item,
+    //         updateTime: this.convertToBeijingTime(item.updateTime),
+    //       }));
+    //       const templates = ["通知一", "通知二", "通知三"];
+    //       const notificationString = res
+    //         .slice(0, 3)
+    //         .map((item, index) => {
+    //           // 确保模板存在，否则使用默认模板
+    //           const template = templates[index]
+    //             ? `${templates[index]}: '${item.title}'`
+    //             : `通知${index + 1}: '${item.title}'`;
+    //           return template;
+    //         })
+    //         .join(", ");
+    //       this.notification = notificationString;
+    //       this.notificationList = temp;
+    //     }
+    //   });
+    // },
     getNotification() {
       getRequest("notice/queryNotices").then((res) => {
         if (res) {
@@ -272,19 +494,7 @@ export default {
             ...item,
             updateTime: this.convertToBeijingTime(item.updateTime),
           }));
-          const templates = ["通知一", "通知二", "通知三"];
-          const notificationString = res
-            .slice(0, 3)
-            .map((item, index) => {
-              // 确保模板存在，否则使用默认模板
-              const template = templates[index]
-                ? `${templates[index]}: '${item.title}'`
-                : `通知${index + 1}: '${item.title}'`;
-              return template;
-            })
-            .join(", ");
-          this.notification = notificationString;
-          this.notificationList = temp;
+          this.notification = temp;
         }
       });
     },
@@ -301,7 +511,7 @@ export default {
       this.$refs.loginForm.validate((valid) => {
         if (valid) {
           this.loading = true;
-          console.log("dengl")
+          console.log("dengl");
           postRequest(`user/login`, this.loginForm).then((resp) => {
             if (resp) {
               this.loading = false;
@@ -314,11 +524,12 @@ export default {
                   sessionStorage.setItem("userrole", resp.data.role);
                   sessionStorage.setItem("token", resp.msg);
 
-                  this.$router.push("/sideBar/SoftwareIntro");
+                  this.$router.push("/sideBar/dash");
                   this.$message.success("登录成功");
                 }
               } else {
                 this.$message.warning(`${resp.msg}`);
+                this.updatecaptcha();
               }
             } else {
               this.$message.error("用户不存在或者密码错误");
@@ -362,8 +573,120 @@ li {
   background-size: 100% 100%;
 }
 .mainContainer {
-  display: flex; /* 启用Flex布局 */
+  display: flex;
   height: 90vh;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column;
+}
+
+.topContainer {
+  flex: 0.2;
+  padding: 20px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.bottomContainer {
+  flex: 0.8;
+  display: flex;
+  padding-top: 30px;
+  z-index: 2;
+  opacity: 0.9;
+  align-items: flex-start;
+  flex-direction: row;
+}
+
+.notificationDiv {
+  border-radius: 15px;
+  background-clip: padding-box;
+  /* margin: 20px 10px; */
+  margin-bottom: 150px;
+  width: 700px;
+  height: 450px;
+  background: white;
+  border: 1px solid #eaeaee;
+  box-shadow: 0 0 25px #cac6c6;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  margin-right: 40px;
+}
+
+.notification_title {
+  height: 50px;
+  width: 100%;
+  margin-bottom: 40px;
+  display: flex;
+  justify-content: space-between;
+  align-content: center;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.notification_container {
+  width: 100%;
+  height: 400px;
+  overflow: hidden;
+  display: flex; /* 使用 Flexbox */
+  align-items: center; /* 垂直居中子元素 */
+  flex-direction: column;
+}
+
+.notification_content_title {
+  padding-left: 20px;
+  white-space: nowrap;
+  overflow: hidden;
+  cursor: pointer;
+  max-width: 400px;
+}
+
+.notification_content_title:hover .scroll-text {
+  animation-play-state: running;
+}
+
+.loginContainer {
+  border-radius: 15px;
+  background-clip: padding-box;
+  /* margin: 20px 10px; */
+  margin-bottom: 150px;
+  width: 450px;
+  height: 450px;
+  background: white;
+  border: 1px solid #eaeaee;
+  box-shadow: 0 0 25px #cac6c6;
+  display: flex;
+  align-items: center;
+}
+
+.myForm {
+  padding-left: 30px;
+  padding-right: 30px;
+}
+.myForm img {
+  cursor: pointer;
+}
+
+.loginTitle {
+  margin: 0px auto 40px auto;
+  text-align: center;
+}
+
+.selectedNotificationTitle {
+  font-size: 30px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+}
+.selectedNotificationContent {
+  font-size: 17px;
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
 }
 .leftContainer {
   flex: 0.4; /* 左侧盒子的放大比例为1 */
@@ -377,32 +700,10 @@ li {
   justify-content: center;
   padding-top: 30px;
 }
-.loginContainer {
-  border-radius: 15px;
-  background-clip: padding-box;
-  /* margin: 20px 10px; */
-  margin-bottom: 150px;
-  width: 450px;
-  height: 550px;
-  background: white;
-  border: 1px solid #eaeaee;
-  box-shadow: 0 0 25px #cac6c6;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-}
-.myForm {
-  padding-left: 30px;
-  padding-right: 30px;
-}
+
 .banner {
   height: 100px;
   width: 100%;
-}
-
-.loginTitle {
-  margin: 0px auto 40px auto;
-  text-align: center;
 }
 
 /* .loginDiv {
@@ -422,7 +723,22 @@ img.png {
   top: 315px;
   left: 612px;
 }
+.mainRight1 {
+  /* position: absolute;
+  top: 8px;
+  left: 100px; */
+  display: flex;
+  align-items: center;
+  vertical-align: bottom;
+}
 
+.mainRight1 h1 {
+  display: block;
+  color: white;
+  font-size: 40px;
+  letter-spacing: 4px;
+  margin-top: -10px;
+}
 .mainRight {
   position: absolute;
   top: 8px;
@@ -446,6 +762,11 @@ img.png {
   top: -200px;
 }
 
+.mainImg {
+  display: flex;
+  z-index: 1;
+}
+
 .cooperation {
   background-color: white;
   position: absolute;
@@ -455,8 +776,8 @@ img.png {
 }
 .cooperation .text-photo1 .el-col {
   display: flex;
-  justify-content: center; 
-  align-items: center;   
+  justify-content: center;
+  align-items: center;
   margin-bottom: 10px;
 }
 
@@ -493,13 +814,7 @@ img.png {
   flex: 0.75;
   width: 100%;
 }
-.notification_content_title {
-  padding-left: 20px;
-  white-space: nowrap;
-  overflow: hidden;
-  cursor: pointer;
-  max-width: 250px;
-}
+
 @keyframes scroll {
   0% {
     transform: translateX(500px);
@@ -520,20 +835,19 @@ img.png {
   cursor: pointer;
 }
 
-/* s */
-.notification_content_title:hover .scroll-text {
-  animation-play-state: running;
+.notification_container {
+  width: 100%;
+  height: 400px;
+  overflow: hidden;
+  display: flex; /* 使用 Flexbox */
+  align-items: center; /* 垂直居中子元素 */
+  flex-direction: column;
 }
-.selectedNotificationTitle {
-  font-size: 30px;
-  font-weight: bold;
-  display: flex;
-  justify-content: center;
-}
-.selectedNotificationContent {
-  font-size: 17px;
-  margin-top: 20px;
-  display: flex;
-  justify-content: center;
+
+.el-divider--horizontal {
+  display: block;
+  height: 1px;
+  width: 100%;
+  margin: 18px 0;
 }
 </style>

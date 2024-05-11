@@ -10,13 +10,11 @@ import userCenter from "@/components/tab/user/userCenter.vue";
 
 import SideBar from "@/components/sideBar/index.vue";
 import dash from "@/views/dash/index.vue";
-import TaskManage from "@/components/tab/TaskManage.vue";
-import DataManage from "@/components/tab/DataManage.vue";
+import TaskManage from "@/components/tab/createModel/model_manage/TaskManage.vue";
+import DataManage from "@/components/tab/DataManage2.vue";
 import ModelManage from "@/components/tab/ModelManage.vue";
-import ModelTraining from "@/components/tab/createModel/ModelTraining.vue";
+import ModelTraining from "@/components/tab/createModel/model_training/ModelTraining.vue";
 // import ModelTraining from "@/components/tab/ModelTraining.vue";
-import F_Factor from "@/components/tab/F_Factor.vue";
-import FactorDis from "@/components/tab/FactorDis.vue";
 import TableManage from "@/components/tab/TableManage.vue";
 // import Login from "@/components/login/Login.vue";
 // import Register from "@/components/login/register.vue";
@@ -24,7 +22,7 @@ import exceptionFeature from "@/components/tab/exceptionFeature";
 import DiseaPredict from "@/components/tab/disea_predict/DiseaPredict.vue";
 // import Login from "@/views/LogIn.vue";
 import SoftwareIntro from "@/components/tab/SoftwareIntro.vue";
-import TaskCheck from "@/components/tab/subcomponents/TaskCheck.vue";
+import TaskCheck from "@/components/tab/createModel/model_manage/TaskCheck.vue";
 
 // 系统管理的几个功能模块
 import UserManage from "@/components/tab/sysManage/UserManage.vue";
@@ -122,27 +120,15 @@ const routes = [
         meta: { roles: ["1", "0"] },
       },
       {
-        path: "F_Factor",
-        name: "F_Factor",
-        component: F_Factor,
-        meta: { roles: ["1", "0"] },
-      },
-      {
-        path: "FactorDis",
-        name: "FactorDis",
-        component: FactorDis,
-        meta: { roles: ["1", "0"] },
-      },
-      {
         path: "exceptionFeature",
         name: "exceptionFeature",
         component: exceptionFeature,
         meta: { roles: ["1", "0"] },
       },
       {
-        path: "/tab/subcomponents/TaskCheck",
+        path: "TaskCheck",
         name: "TaskCheck",
-        component: TaskCheck, // 将 TaskCheck 组件与路由关联
+        component: TaskCheck,
         meta: { roles: ["1", "0"] },
       },
       {

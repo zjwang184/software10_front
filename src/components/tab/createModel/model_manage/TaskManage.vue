@@ -175,7 +175,7 @@
               @select="handleSelect"
             ></el-autocomplete>
           </span>
-          <el-button @click="clearFilter">清除条件</el-button>
+          <el-button @click="clearFilter">清除</el-button>
           <div style="float: right">
             <el-popover placement="bottom" trigger="hover">
               <div>跳转到模型训练进行新建任务</div>
@@ -272,14 +272,12 @@
                 slot="reference"
                 type="primary"
                 @click="handleCheck(item)"
-                round
                 >查看</el-button
               >
             </el-popover>
             <span style="margin: 10px"></span>
 
             <el-popconfirm
-              
               confirm-button-text="确认"
               cancel-button-text="取消"
               icon="el-icon-info"
@@ -288,9 +286,12 @@
               @confirm="handleDelete(item)"
               @cancel="onCancel"
             >
-              <el-button type="danger" round slot="reference"
-              v-if="role == 0 || item.uid == uid"
-              >删除</el-button>
+              <el-button
+                type="danger"
+                slot="reference"
+                v-if="role == 0 || item.uid == uid"
+                >删除</el-button
+              >
             </el-popconfirm>
           </div>
         </el-card>
@@ -309,12 +310,11 @@
   </div>
 </template>
 
-
 <script>
 import { getRequest, deleteRequest } from "@/utils/api";
 import { state } from "@antv/g2plot/lib/adaptor/common";
 import { getCategory } from "@/api/category";
-import TaskCheck from "./subcomponents/TaskCheck";
+import TaskCheck from "./TaskCheck.vue";
 // import { treeData } from "@/components/tab/treeData.js";
 // import { taskList } from "@/components/tab/constTaskList.js";
 
@@ -385,7 +385,7 @@ export default {
   data() {
     return {
       uid: sessionStorage.getItem("userid"),
-      role: sessionStorage.getItem('userrole'),
+      role: sessionStorage.getItem("userrole"),
 
       moduluName: "TaskManage",
       treeData: [],
@@ -406,7 +406,7 @@ export default {
       filterText: "",
       resultDialogShow: false,
       result: {},
-
+      currentHighlightedTree: null, // 用于记录当前高亮的树的引用
       dialogDiseaseVisible: false,
       diseaseName: "",
       // treeData: JSON.parse(JSON.stringify(treeData)),
@@ -470,7 +470,7 @@ export default {
       this.$router.push("/sideBar/ModelTraining");
     },
     handleCheck(row) {
-      console.log("查看",row)
+      console.log("查看", row);
       // 显示 loading
       this.$loading({
         lock: true,
@@ -493,7 +493,7 @@ export default {
 
             // 构造目标路由
             const routeData = {
-              path: "/tab/subcomponents/TaskCheck",
+              path: "TaskCheck",
               query: { result: this.result },
             };
 
@@ -602,18 +602,29 @@ export default {
       this.pageSize = size;
       this.currentPage = 1; // 页码重置为1，因为换了每页显示数量
     },
-
     changeData(treeRef, node) {
-      if (this.lastClickedNode && this.lastClickedNode === node) {
-        // 如果当前节点已经被高亮，则取消高亮
+      if (this.currentHighlightedTree === treeRef) {
+        // 如果当前节点属于已高亮的树，则取消高亮
         this.$refs[treeRef].setCurrentKey(null);
         this.lastClickedNode = null;
+        this.currentHighlightedTree = null;
         this.disease = "";
         this.dataset = "";
-      } else {
+      } else if (
+        !this.currentHighlightedTree ||
+        this.currentHighlightedTree !== treeRef
+      ) {
+        // 如果不在限制内或者切换到新的树
+        if (this.currentHighlightedTree) {
+          // 取消之前高亮的树
+          this.$refs[this.currentHighlightedTree].setCurrentKey(null);
+        }
+
         // 高亮当前节点
         this.$refs[treeRef].setCurrentKey(node.id);
         this.lastClickedNode = node;
+        this.currentHighlightedTree = treeRef;
+
         if (node.isLeafs == 0) {
           this.disease = node.label;
           this.dataset = "";
@@ -700,10 +711,9 @@ export default {
 <style scoped>
 .main {
   display: grid;
-  grid-template-columns: 15% 82%;
+  grid-template-columns: 15% 85%;
   height: 100%;
-  width: 90vw;
-  overflow-y: auto;
+  /* overflow-y: auto; */
 }
 .tipInfo {
   background-color: rgba(124, 124, 124, 0.1);
@@ -729,7 +739,6 @@ export default {
 .right {
   margin-left: 3%;
   width: 95%;
-  height: auto;
 }
 .right .el-select {
   margin-right: 20px;
@@ -794,7 +803,7 @@ export default {
 
 .search-input div:nth-child(2) span,
 .search-input div:nth-child(2) .el-button {
-  margin-right: 15px;
+  margin-right: 10px;
   margin-bottom: 10px;
 }
 
@@ -821,13 +830,13 @@ export default {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-gap: 20px;
-  overflow-y: scroll; /* 或者 auto */
-  /* scrollbar-width: none; 
-  -ms-overflow-style: none; */
+  overflow-y: scroll;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 .cardGroup .card {
-  max-height: 400px; /* 新增这一行来限制卡片的高度 */
-  overflow-y: auto; /* 可选，为卡片内容添加滚动条如果内容超出300px */
+  max-height: 400px;
+  overflow-y: auto;
 }
 
 .cardGroup::-webkit-scrollbar {
@@ -841,9 +850,9 @@ export default {
 
 .cardInfo {
   display: grid;
-  grid-template-columns: 1fr 1fr; /* 定义两列，每列占用相等的空间 */
-  grid-template-rows: auto auto auto auto; /* 定义四行，高度根据内容自适应 */
-  gap: 10px; /* 定义网格行和列之间的间隙 */
+  grid-template-columns: 7fr 4fr;
+  grid-template-rows: auto auto auto auto;
+  gap: 18px;
 }
 
 .cardInfo > div:nth-child(9),
@@ -852,8 +861,8 @@ export default {
 }
 .buttonGroup {
   display: flex;
-  justify-content: center; /* 水平居中 */
-  align-items: center; /* 垂直居中 */
+  justify-content: center;
+  align-items: center;
   margin-top: 10px;
   margin-bottom: 0;
 }
@@ -879,6 +888,9 @@ export default {
   overflow-y: scroll;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  position: relative;
+  transition: all 0.2s ease;
+  top: 0%;
 }
 
 .taskCard:hover {
@@ -888,7 +900,7 @@ export default {
 .el-card {
   border: 1px solid #fff !important;
   border-radius: 10px !important;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.4) !important; /* 修正阴影的颜色和透明度 */
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.4) !important;
   background: rgba(255, 255, 255, 0.1) !important;
 }
 
@@ -901,8 +913,8 @@ export default {
 }
 .taskCard-item {
   opacity: 0;
-  transform: translateY(100%); /* 初始位置设为屏幕之外 */
-  animation: fadeInUp 1s ease forwards;
+  transform: translateY(100%);
+  animation: fadeInUp 0.5s ease forwards;
 }
 
 @keyframes fadeInUp {

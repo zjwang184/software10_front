@@ -82,7 +82,7 @@
             </el-date-picker> -->
           </div>
 
-          <div id="chartBox" style="height: 400px; width: 30vw; margin: 0 auto">
+          <div id="chartBox" style="height: 40vh; width: 39vw; margin: 0 auto">
             <LineChartVue
               :x="LineChartVue_x"
               :y="LineChartVue_y"
@@ -96,9 +96,8 @@
           <div slot="header" class="clearfix">
             <span class="lineStyle">▍</span><span>疾病占比</span>
           </div>
-          <div id="chartBox" style="height: 400px; width: 30vw; margin: 0 auto">
-            <Pie :pie_data="pie_data"
-            v-if="pie_data.length"> </Pie>
+          <div id="chartBox" style="height: 40vh; width: 37vw; margin: 0 auto">
+            <Pie :pie_data="pie_data" v-if="pie_data.length"> </Pie>
           </div>
         </el-card>
       </el-card>
@@ -109,13 +108,37 @@
         <el-card>
           <div slot="header" class="clearfix">
             <span class="lineStyle">▍</span><span>缺失占比</span>
-            <el-select class="BarchartSelect" v-model="table_value" placeholder="请选择数据集" size="mini" @change="table_val_change">
-              <el-option v-for="item in table_value_options" :key="item" :label="item" :value="item" size="mini">
+            <el-select
+              class="BarchartSelect"
+              v-model="table_value"
+              placeholder="请选择数据集"
+              size="mini"
+              @change="table_val_change"
+            >
+              <el-option
+                v-for="item in table_value_options"
+                :key="item"
+                :label="item"
+                :value="item"
+                size="mini"
+              >
               </el-option>
             </el-select>
           </div>
-          <div id="chartBox" style="height: 400px;width: 950px;" v-loading="fill_rate_loading" element-loading-text="后台加载中">
-            <Sprit v-if="this.sprit_names.length !==0" :sprit_names="sprit_names" :sprit_values="sprit_values" :height="400" :width="950" :title="table_value">
+          <div
+            id="chartBox"
+            style="height: 35vh; width: 39vw; margin-left: 3vh"
+            v-loading="fill_rate_loading"
+            element-loading-text="后台加载中"
+          >
+            <Sprit
+              v-if="this.sprit_names.length !== 0"
+              :sprit_names="sprit_names"
+              :sprit_values="sprit_values"
+              :height="400"
+              :width="950"
+              :title="table_value"
+            >
             </Sprit>
           </div>
         </el-card>
@@ -125,12 +148,14 @@
             <span class="lineStyle">▍</span><span>算法使用频次</span>
           </div>
           <div id="chartBox">
-            <Bar style="height: 400px; width: 80%; margin: 0 auto"
-            :data="Bar_data"
-            :date="Bar_date"
-            :modelnames="modelnames"
-            v-if="Bar_data.length"
-            > </Bar>
+            <Bar
+              style="height: 40vh; width: 39vw; margin-right: 3vh"
+              :data="Bar_data"
+              :date="Bar_date"
+              :modelnames="modelnames"
+              v-if="Bar_data.length"
+            >
+            </Bar>
           </div>
         </el-card>
       </el-card>
@@ -245,7 +270,7 @@ import LineChartVue from "@/components/tab/subcomponents/LineChart.vue";
 import Pie from "@/components/tab/subcomponents/Pie.vue";
 import Sprit from "@/components/tab/subcomponents/Sprit.vue";
 import Bar from "@/components/tab/subcomponents/Bar.vue";
-import { log } from '@antv/g2plot/lib/utils';
+import { log } from "@antv/g2plot/lib/utils";
 export default {
   name: "index",
   components: { LineChartVue, Pie, Sprit, Bar },
@@ -291,7 +316,7 @@ export default {
       fill_rate_loading: false,
       table_value: "",
       table_value_options: [],
-      sprit_names:[],
+      sprit_names: [],
       sprit_values: [],
 
       Bar_date: [],
@@ -344,7 +369,6 @@ export default {
           },
         ],
       },
-      
     };
   },
 
@@ -373,52 +397,45 @@ export default {
         this.LineChartVue_x = res.date;
         this.LineChartVue_y = res.number;
       });
-      getRequest("/Task/GetEveryTaskNearlySevenDays").then((res) => {        
-        Object.keys(res).forEach(key=>{
-          if (key == "date"){
+      getRequest("/Task/GetEveryTaskNearlySevenDays").then((res) => {
+        Object.keys(res).forEach((key) => {
+          if (key == "date") {
             this.Bar_date = res.date;
-          }else{
+          } else {
             this.modelnames.push(key);
-            this.Bar_data.push(              
-                {
-                  name: key,
-                  type: 'bar',
-                  tooltip: {
-                    valueFormatter: function (value) {
-                      return value + ' 次';
-                    }
-                  },
-                  data: res[key]
-                }              
-            );
-          }  
+            this.Bar_data.push({
+              name: key,
+              type: "bar",
+              tooltip: {
+                valueFormatter: function (value) {
+                  return value + " 次";
+                },
+              },
+              data: res[key],
+            });
+          }
         });
 
-        console.log("Bar_data res", this.Bar_data,res)
-        
+        console.log("Bar_data res", this.Bar_data, res);
       });
       getRequest("/api/category/static").then((res) => {
         //实现思路：通过 Object.keys()对象方法将对象的key转化为一个数组，再通过forEach遍历出数组的值，再通过[key]去获取对象的value值。
-        Object.keys(res).forEach(key=>{
-          this.pie_data.push({'name':key,'value':res[key]});
+        Object.keys(res).forEach((key) => {
+          this.pie_data.push({ name: key, value: res[key] });
         });
 
-        console.log("pie data", this.pie_data, this.pie_data.length)
-      });     
+        console.log("pie data", this.pie_data, this.pie_data.length);
+      });
 
-
-      getRequest("/api/getAllTableNames").then(
-        (res) => {
-          if (res.code == 200) {
-            this.table_value_options = res.data;
-            this.table_value = this.table_value_options[0];
-            this.table_val_change();
-          }
-          else {
-            this.$message.error("获取数据失败");
-          }
+      getRequest("/api/getAllTableNames").then((res) => {
+        if (res.code == 200) {
+          this.table_value_options = res.data;
+          this.table_value = this.table_value_options[0];
+          this.table_val_change();
+        } else {
+          this.$message.error("获取数据失败");
         }
-      );
+      });
       // getRequest("/ten/knowledge/knowledgeNum").then((res) => {
       //     this.knowledge_num=res.data;
       //     console.log("nums", this.knowledge_num)
@@ -461,21 +478,21 @@ export default {
       // });
     },
 
-    table_val_change(){
-        this.fill_rate_loading=true;
-        this.sprit_names = [];
-        this.sprit_values = [];
-        getRequest(`scripts/get_fill_rate?tablename=${this.table_value}`).then(
-          (res) => {
-            this.sprit_names = res.column_name;
-            console.log("res.column_name",res.column_name)
-            console.log("res.column_name",res)
+    table_val_change() {
+      this.fill_rate_loading = true;
+      this.sprit_names = [];
+      this.sprit_values = [];
+      getRequest(`scripts/get_fill_rate?tablename=${this.table_value}`).then(
+        (res) => {
+          this.sprit_names = res.column_name;
+          console.log("res.column_name", res.column_name);
+          console.log("res.column_name", res);
 
-            this.sprit_values = res.miss_rate;
-            this.fill_rate_loading=false;
-          }
-        );
-      },
+          this.sprit_values = res.miss_rate;
+          this.fill_rate_loading = false;
+        }
+      );
+    },
     goToPage(route) {
       this.$router.push(route); // 使用 Vue Router 的 push 方法进行页面跳转
     },
@@ -622,15 +639,16 @@ export default {
   margin-top: 10px;
   margin-bottom: 10px;
   width: 100%;
-  height: 100%;
+  height: 50vh;
 }
 
 .mid_statistic_card .el-card,
 .bottom_statistic_card .el-card {
   display: inline-block;
   width: 47%;
-  height: 100%;
-  margin: 0.5% 1.3% 0.5% 1.3%;
+  height: 45vh;
+  /* margin: 0.5% 1.3% 0.5% 1.3%; */
+  margin: 0 1%;
   border: 1px solid #fff;
   border-radius: 10px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.2);

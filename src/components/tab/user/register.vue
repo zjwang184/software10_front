@@ -26,13 +26,8 @@
             <el-button
               type="text"
               @click="returnLogin"
-              style="
-                align-self: flex-start;
-                margin-left: 20px;
-                color: gray;
-                font-size: 15px;
-              "
-              ><返回</el-button
+              style="color: gray; font-size: 15px; margin-right: 65%"
+              >已有账号？返回</el-button
             >
             <div class="myForm">
               <el-form
@@ -328,6 +323,7 @@ export default {
   },
   methods: {
     returnLogin() {
+      console.log("11111");
       this.$router.push("/");
     },
     validateUsername() {
@@ -345,7 +341,7 @@ export default {
       }
       getRequest("user/querUserNameExist?userName=" + value).then((res) => {
         console.log("res", res);
-        if (res.code == 500) {
+        if (res.code == 400) {
           callback(new Error("用户名已经存在"));
         } else {
           callback();
@@ -391,12 +387,14 @@ export default {
             userStatus: 0,
           };
           console.log("params", params);
-          postRequest(`/user/signUp?curUid=${sessionStorage.getItem("userid") - 0}`, params).then((resp) => {
+          postRequest(
+            `/user/signUp?curUid=${sessionStorage.getItem("userid") - 0}`,
+            params
+          ).then((resp) => {
             if (resp) {
               this.loading = false;
               console.log(resp);
               if (resp.code == "200") {
-                
                 this.$message.success("注册成功！");
                 this.$router.replace("/");
               }
@@ -454,7 +452,7 @@ export default {
 .registerContainer {
   border-radius: 15px;
   background-clip: padding-box;
-  /* margin: 20px 10px; */
+  margin-top: 30px;
   margin-bottom: 80px;
   width: 550px;
   height: 750px;
@@ -531,4 +529,4 @@ img.png {
 .cooperation img {
   margin-left: 10px;
 }
-</style>  
+</style>

@@ -65,6 +65,10 @@
               <i class="el-icon-s-data"></i>
               <span slot="title">数据管理</span>
             </el-menu-item>
+            <el-menu-item index="/sideBar/exceptionFeature"
+              ><i class="el-icon-s-opportunity"></i>
+              <span slot="title">知识管理</span></el-menu-item
+            >
             <el-submenu index="task">
               <template slot="title">
                 <i class="el-icon-menu"></i>
@@ -84,10 +88,6 @@
             <el-menu-item index="/sideBar/DiseaPredict"
               ><i class="el-icon-s-cooperation"></i>
               <span slot="title">疾病风险预测</span></el-menu-item
-            >
-            <el-menu-item index="/sideBar/exceptionFeature"
-              ><i class="el-icon-s-opportunity"></i>
-              <span slot="title">知识管理</span></el-menu-item
             >
             <el-submenu index="settings" v-if="this.userRole === '0'">
               <template slot="title">

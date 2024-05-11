@@ -355,15 +355,12 @@
                   slot="reference"
                   type="success"
                   @click="handleCheck(item)"
-                  round
                   >查看</el-button
                 >
               </el-popover>
               <span style="margin: 10px"></span>
 
-              <el-button type="primary" @click="submit(item)" round
-                >确认</el-button
-              >
+              <el-button type="primary" @click="submit(item)">调用</el-button>
             </span>
           </el-card>
         </div>
@@ -821,16 +818,28 @@ export default {
     // },
 
     changeData(treeRef, node) {
-      if (this.lastClickedNode && this.lastClickedNode === node) {
-        // 如果当前节点已经被高亮，则取消高亮
+      if (this.currentHighlightedTree === treeRef) {
+        // 如果当前节点属于已高亮的树，则取消高亮
         this.$refs[treeRef].setCurrentKey(null);
         this.lastClickedNode = null;
+        this.currentHighlightedTree = null;
         this.disease = "";
         this.dataset = "";
-      } else {
+      } else if (
+        !this.currentHighlightedTree ||
+        this.currentHighlightedTree !== treeRef
+      ) {
+        // 如果不在限制内或者切换到新的树
+        if (this.currentHighlightedTree) {
+          // 取消之前高亮的树
+          this.$refs[this.currentHighlightedTree].setCurrentKey(null);
+        }
+
         // 高亮当前节点
         this.$refs[treeRef].setCurrentKey(node.id);
         this.lastClickedNode = node;
+        this.currentHighlightedTree = treeRef;
+
         if (node.isLeafs == 0) {
           this.disease = node.label;
           this.dataset = "";
@@ -885,7 +894,7 @@ export default {
       // 重置输入内容
       this.m_changeTaskInfo({
         personForm: {},
-      })
+      });
       // this.m_changeStep(2);
       getRequest(`Task/result/pred/${row.id}`).then((res) => {
         if (res.code == 200) {
@@ -921,7 +930,7 @@ export default {
   border-radius: 3px;
   border: 1px solid #fff;
   border-radius: 10px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.4); /* 修正阴影的颜色和透明度 */
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.4);
   background: rgba(255, 255, 255, 0.1);
   overflow-y: scroll; /* 或者 auto */
   scrollbar-width: none; /* 隐藏 Firefox 的滚动条 */
@@ -954,7 +963,7 @@ export default {
 }
 
 .right_top {
-  display: flex; /* 将容器设置为弹性布局 */
+  display: flex;
   width: auto;
 }
 
@@ -992,8 +1001,8 @@ export default {
 
 .buttonGroup {
   display: flex;
-  justify-content: center; /* 水平居中 */
-  align-items: center; /* 垂直居中 */
+  justify-content: center;
+  align-items: center;
 }
 
 .algorithmSelect_box {
@@ -1001,7 +1010,7 @@ export default {
   height: auto;
   border: 1px solid #fff;
   border-radius: 10px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1); /* 修正阴影的颜色和透明度 */
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
   background: rgba(255, 255, 255, 0.1);
   margin-top: 10px;
 }
@@ -1012,7 +1021,7 @@ export default {
   height: auto;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-gap: 20px; /* 间距 */
+  grid-gap: 20px;
   overflow-y: scroll; /* 或者 auto */
   scrollbar-width: none; /* 隐藏 Firefox 的滚动条 */
   -ms-overflow-style: none; /* 隐藏 IE/Edge 的滚动条 */
@@ -1026,9 +1035,10 @@ export default {
   margin-bottom: 10px;
   margin-left: 10px;
   width: 95%;
-  overflow-y: scroll; /* 或者 auto */
-  scrollbar-width: none; /* 隐藏 Firefox 的滚动条 */
-  -ms-overflow-style: none; /* 隐藏 IE/Edge 的滚动条 */
+  overflow-y: scroll;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  transition: all 0.2s ease;
   position: relative;
   top: 0;
 }
@@ -1046,10 +1056,9 @@ export default {
 
 .cardInfo {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 7fr 4fr;
   grid-template-rows: auto auto auto auto;
-  gap: 10px;
-  margin-left: 10%;
+  gap: 20px;
 }
 
 .cardInfo > div:nth-child(9),
@@ -1091,7 +1100,6 @@ export default {
 
 .ttl {
   font-weight: 600;
-  /* font-size: 20px; */
   color: #071135;
 }
 
@@ -1101,7 +1109,7 @@ export default {
 .taskCard-item {
   opacity: 0;
   transform: translateY(100%); /* 初始位置设为屏幕之外 */
-  animation: fadeInUp 1s ease forwards;
+  animation: fadeInUp 0.5s ease forwards;
 }
 
 @keyframes fadeInUp {
