@@ -1068,9 +1068,26 @@ export default {
         return;
       }
       this.multipleLoding = true;
+
+      let usernames = [];
       this.multipleSelection.forEach((selection) =>
-        this.updateCheckApprove(selection.username, type)
+        usernames.push(selection.username)
       );
+
+      getRequest(`/api/sysManage/updateCheckApproves`, {
+        id: this.tid,
+        multipleSelection: usernames.join(","),
+        type: type,
+      }).then((res) => {
+        if (res.code == 200) {
+          console.log("res.data:", res.data);
+          this.getCheckDataById(this.tid, this.tname);
+          this.getAllAdminDataTable();
+        } else {
+          this.$message.error("获取用户信息失败");
+          this.getAllAdminDataTable();
+        }
+      });
       this.multipleLoding = false;
     },
     toggleSelection(rows) {

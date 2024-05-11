@@ -279,6 +279,7 @@
             <span style="margin: 10px"></span>
 
             <el-popconfirm
+              
               confirm-button-text="确认"
               cancel-button-text="取消"
               icon="el-icon-info"
@@ -287,7 +288,9 @@
               @confirm="handleDelete(item)"
               @cancel="onCancel"
             >
-              <el-button type="danger" round slot="reference">删除</el-button>
+              <el-button type="danger" round slot="reference"
+              v-if="role == 0 || item.uid == uid"
+              >删除</el-button>
             </el-popconfirm>
           </div>
         </el-card>
@@ -381,6 +384,9 @@ export default {
   },
   data() {
     return {
+      uid: sessionStorage.getItem("userid"),
+      role: sessionStorage.getItem('userrole'),
+
       moduluName: "TaskManage",
       treeData: [],
       treeData1: [],
@@ -464,6 +470,7 @@ export default {
       this.$router.push("/sideBar/ModelTraining");
     },
     handleCheck(row) {
+      console.log("查看",row)
       // 显示 loading
       this.$loading({
         lock: true,

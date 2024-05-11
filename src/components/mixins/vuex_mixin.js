@@ -66,6 +66,11 @@ export default {
       return this.$store.state[this.moduleName].result;
     },
 
+    // 模型训练
+    m_train_model() {
+      return this.$store.state[this.moduleName].train_model;
+    },
+
     // 风险预测
     m_predict_features() {
       return this.$store.state[this.moduleName].predict_features;
@@ -124,6 +129,14 @@ export default {
 
     m_reset_state_from_datasets() {
       this.$store.commit(`${this.moduleName}/reset_state_from_datasets`);
+    },
+    m_reset_train_select_data(){
+      this.$store.commit(`${this.moduleName}/reset_train_select_data`);
+    },
+
+    // 更改模型训练的字典
+    m_changeModelTrain(newValue) {
+      this.$store.commit(`${this.moduleName}/ChangeModelTrain`, newValue);
     },
   },
 };

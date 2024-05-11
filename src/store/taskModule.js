@@ -77,6 +77,36 @@ export default {
 
       result: [],
 
+
+      // 模型训练
+      train_model:{
+        // 任务信息页面
+        taskName: "",     // 任务名
+        responsiber: "",  // 责任人
+        participants: "", // 参与人员
+        remark: "", // 任务备注
+
+        // 数据选择页面
+        disease: "", // 所属疾病
+        dataset: "", // 数据集 表名称
+        nodeId: "",  // 结点id
+
+        // 特征选择页
+        all_features: [], // 数据集所有特征
+        use_features: [], // 使用的特征
+        use_labels: [],  //使用的标签
+        known_features: [],  // 
+        target_features: [],
+
+        // 算法选择页
+        algorithm_select:{
+          source: "",   // 数据来源  “数据库”，“前端”
+          selected_algorithms: [],  // 选择的算法集合 例如[svm, dqn]
+          algorithm_infos:[],       // 算法各参数信息
+          res: []                   // 算法结果
+        }       
+      },
+
       // 风险预测
       predict_features: [],
       patient_form: [],
@@ -90,6 +120,7 @@ export default {
   actions: {},
   mutations: {
     ChangeStep(state, step) {
+      // console.log("state", state["step"])
       state.step = step;
     },
     ChangeTaskInfo(state, newInfo) {
@@ -221,13 +252,7 @@ export default {
 
     reset_state_from_datasets(state) {
       let defaultValue = {
-        // step: 1,
-        // taskName: "",
-        // nodeId: "",
-        // principal: "",
-        // participants: "",
-        // disease: "",
-        // dataset: "",
+
         all_features: [],
         use_features: [],
         use_labels: [],
@@ -298,5 +323,25 @@ export default {
 
       state = Object.assign(state, defaultValue);
     },
+
+    reset_train_select_data(state){
+      let defaultValue = {
+
+        all_features: [],
+        use_features: [],
+        use_labels: [],
+        target_features: [],
+
+        models: [],
+
+      };
+
+      state = Object.assign(state.train_model, defaultValue);
+    },
+
+    // 更改模型训练的字典
+    ChangeModelTrain(state, newInfo){
+      Object.assign(state.train_model, newInfo);
+    }
   },
 };

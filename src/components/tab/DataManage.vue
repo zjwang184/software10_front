@@ -824,7 +824,7 @@ export default {
     },
     toXLSX() {
       // 发送请求给后端，传递表名和选定的字段
-      getRequest(`/api/getInfoByTableName/${this.showDataForm.tableName}`).then(
+      getRequest(`/getInfoByTableName/${this.showDataForm.tableName}`).then(
         (res) => {
           //二维数组 包含表头以及每一行数据
           const final_data = [];
