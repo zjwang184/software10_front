@@ -2917,6 +2917,7 @@ export default {
           const final_data = [];
           final_data.push(this.selectedFields);
           const data = res.data;
+          console.log("data", data);
           // 构建数据行
           const rows = data.map((row) => {
             const values = this.selectedFields.map((field) => {
@@ -2937,6 +2938,16 @@ export default {
           this.selectedFields = [];
         }
       );
+    },
+    formatCSVValue(value) {
+      // 处理特殊字符
+      if (
+        typeof value === "string" &&
+        (value.includes(",") || value.includes("\n"))
+      ) {
+        return `"${value.replace(/"/g, '""')}"`;
+      }
+      return value;
     },
     //导出CSV文件
     exportCSV() {
