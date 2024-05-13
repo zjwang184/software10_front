@@ -73,19 +73,18 @@
                 <p>{{ item.introduction }}</p>
                 <p></p>
               </div>
-              
+
               <!-- 模型参数表单 -->
               <div>
-                <div class="paramBox"                 
-                v-if="editableTabsValue === item.modelname">
-                  <el-form
-                    label-position="top"
-                    :model="paramObject"
-                  >
-                    <el-form-item 
-                    v-for="(valueobj,keyobj, index2) in paramObject"
-                    :key="index2"
-                    :prop="keyobj"
+                <div
+                  class="paramBox"
+                  v-if="editableTabsValue === item.modelname"
+                >
+                  <el-form label-position="top" :model="paramObject">
+                    <el-form-item
+                      v-for="(valueobj, keyobj, index2) in paramObject"
+                      :key="index2"
+                      :prop="keyobj"
                     >
                       <!-- <template slot="label" v-if="valueobj">
                         <span class="paramTitle" style="margin: auto"
@@ -93,9 +92,9 @@
                         >
                       </template> -->
                       <template slot="label">
-                        <span class="paramTitle" style="margin: auto"
-                          >{{ valueobj.meaning }}</span
-                        >
+                        <span class="paramTitle" style="margin: auto">{{
+                          valueobj.meaning
+                        }}</span>
                       </template>
                       <el-input v-model.trim="valueobj.value"></el-input>
                       <span class="valueRange">{{ valueobj.range }}</span>
@@ -116,7 +115,7 @@
 import { postRequest } from "@/api/user";
 import { resetForm } from "@/components/mixins/mixin.js";
 import vuex_mixin from "@/components/mixins/vuex_mixin";
-import { getRequest } from '@/utils/api';
+import { getRequest } from "@/utils/api";
 export default {
   name: "AlgorithmSelect",
   mixins: [resetForm, vuex_mixin],
@@ -131,24 +130,23 @@ export default {
       // 根据条件筛选 editableTabs 数组
       return this.model_froms.filter((item) => item.isSelect);
     },
-    sorted_models_forms(){
+    sorted_models_forms() {
       return this.model_froms.slice().sort((a, b) => {
-            if (a.isSelect && !b.isSelect) {
-                return -1;
-            } else if (!a.isSelect && b.isSelect) {
-                return 1;
-            } else {
-                return 0;
-            }
-        }); 
-    }
-    
+        if (a.isSelect && !b.isSelect) {
+          return -1;
+        } else if (!a.isSelect && b.isSelect) {
+          return 1;
+        } else {
+          return 0;
+        }
+      });
+    },
   },
   data() {
-    return {      
+    return {
       // 所有模型的表单都在集合中
-      model_froms:[],
-      paramObject:{},
+      model_froms: [],
+      paramObject: {},
 
       editableTabsValue: "",
 
@@ -165,47 +163,56 @@ export default {
   },
 
   watch: {
-    editableTabsValue(newValue, oldValue){
+    editableTabsValue(newValue, oldValue) {
       this.modifyParamObject(newValue, oldValue);
-    }
+    },
   },
 
   methods: {
-    modifyParamObject(newValue, oldValue){
-      for (let i in this.model_froms){
-          if (this.model_froms[i].modelname == this.editableTabsValue){            
-            // 将单引号替换为双引号
-            let dataWithDoubleQuotes = this.model_froms[i].defaultparams.replace(/'/g, '"');
-            // 解析 JSON
-            let parsedData = JSON.parse(dataWithDoubleQuotes);
+    modifyParamObject(newValue, oldValue) {
+      for (let i in this.model_froms) {
+        if (this.model_froms[i].modelname == this.editableTabsValue) {
+          // 将单引号替换为双引号
+          let dataWithDoubleQuotes = this.model_froms[i].defaultparams.replace(
+            /'/g,
+            '"'
+          );
+          // 解析 JSON
+          let parsedData = JSON.parse(dataWithDoubleQuotes);
 
-            // let paramsKeyValue = {};
-            // for (var index in parsedData){      
-            //   paramsKeyValue[parsedData.Keys()[index]] = parsedData.Keys()[index]["value"];
-            // }                
-            // this.paramObject = paramsKeyValue
+          // let paramsKeyValue = {};
+          // for (var index in parsedData){
+          //   paramsKeyValue[parsedData.Keys()[index]] = parsedData.Keys()[index]["value"];
+          // }
+          // this.paramObject = paramsKeyValue
 
-            this.paramObject = parsedData
-          }
+          this.paramObject = parsedData;
         }
+      }
 
-        let params = {}
-        for (let i in this.model_froms){
-          if (this.model_froms[i].isSelect && this.model_froms[i].modelname==oldValue || this.model_froms[i].modelname==newValue){            
-            let dataWithDoubleQuotes = this.model_froms[i].defaultparams.replace(/'/g, '"');
-            // 解析 JSON
-            let parsedData = JSON.parse(dataWithDoubleQuotes);  
+      let params = {};
+      for (let i in this.model_froms) {
+        if (
+          (this.model_froms[i].isSelect &&
+            this.model_froms[i].modelname == oldValue) ||
+          this.model_froms[i].modelname == newValue
+        ) {
+          let dataWithDoubleQuotes = this.model_froms[i].defaultparams.replace(
+            /'/g,
+            '"'
+          );
+          // 解析 JSON
+          let parsedData = JSON.parse(dataWithDoubleQuotes);
 
-            // let paramsKeyValue = {};
-            // for (var index in parsedData){      
-            //   paramsKeyValue[parsedData.Keys()[index]] = parsedData.Keys()[index]["value"];
-            // }  
-            // this.model_froms[i].algorithm_params=paramsKeyValue;
+          // let paramsKeyValue = {};
+          // for (var index in parsedData){
+          //   paramsKeyValue[parsedData.Keys()[index]] = parsedData.Keys()[index]["value"];
+          // }
+          // this.model_froms[i].algorithm_params=paramsKeyValue;
 
-            this.model_froms[i].algorithm_params=parsedData;
-          }
+          this.model_froms[i].algorithm_params = parsedData;
         }
-    
+      }
     },
     handleTabsEdit(targetName, action) {
       if (action === "remove") {
@@ -222,9 +229,8 @@ export default {
           });
         }
 
-        
         this.editableTabsValue = activeName;
-        
+
         tabs.forEach((tab, index) => {
           if (tab.name === targetName) {
             this.$set(tab, "isSelect", false); // 使用 Vue 的 $set 方法确保响应性
@@ -249,99 +255,114 @@ export default {
 
     init() {
       // 同步数据库数据或者缓存数据
-      this.getInitInfo();      
+      this.getInitInfo();
     },
 
     // 同步数据库数据或者缓存数据
-    getInitInfo(){
-        if (this.m_train_model.algorithm_select.source === ""){  // 刚进页面
-          getRequest(`Task/getAllModelInfo`).then((res) => { 
-            if(res){              
-              let i = 0
-              for(i = 0; i< res.length;i++){
-                this.model_froms.push(res[i])
-                if (res[i].isSelect){
-                  this.model_froms[i].isSelect=true;
-                  this.editableTabsValue = res[i].modelname;            
-                }
+    getInitInfo() {
+      if (this.m_train_model.algorithm_select.source === "") {
+        // 刚进页面
+        getRequest(`Task/getAllModelInfo`).then((res) => {
+          if (res) {
+            let i = 0;
+            for (i = 0; i < res.length; i++) {
+              this.model_froms.push(res[i]);
+              if (res[i].isSelect) {
+                this.model_froms[i].isSelect = true;
+                this.editableTabsValue = res[i].modelname;
               }
-            }                       
-          });
-        }else {// 已经有缓存数据
-           this.model_froms = this.m_train_model.algorithm_select.algorithm_infos;
-        }
-        
-        console.log("this.model_froms", this.model_froms)
-    },
+            }
+          }
+        });
+      } else {
+        // 已经有缓存数据
+        this.model_froms = this.m_train_model.algorithm_select.algorithm_infos;
+      }
 
-    getParamPbject(){
-
+      console.log("this.model_froms", this.model_froms);
     },
 
     backStep() {
       this.m_changeStep(this.m_step - 1);
     },
 
-    
-
     async submit(url) {
       this.loading = true;
       let targets = [];
-      console.log("chak", this.m_train_model.target_features)
+      console.log("chak", this.m_train_model.target_features);
       for (var target in this.m_train_model.target_features) {
         targets.push(this.m_train_model.target_features[target].riskFactor);
         console.log(
-          "this.m_target_features[target]:",  this.m_train_model.target_features[target].riskFactor
+          "this.m_target_features[target]:",
+          this.m_train_model.target_features[target].riskFactor
         );
       }
 
       console.log("==========");
       let models = [];
-      let algorithms = []
+      let algorithms = [];
       for (var ind = 0; ind < this.model_froms.length; ind++) {
         console.log(ind);
         let selected_model = {
           name: this.model_froms[ind].modelname,
           forms: {
-            "taskname": "",
-            "table_name": "",
-            "cols": "",
-            "labels": "",
+            taskname: "",
+            table_name: "",
+            cols: "",
+            labels: "",
           }, //获取不到editableTabs的值，所以更改成{}
         };
-        selected_model.forms= {};
+        selected_model.forms = {};
         let forms = {};
         if (this.model_froms[ind].isSelect) {
           algorithms.push(this.model_froms[ind].modelname);
-          selected_model.forms["paramObject"] = this.model_froms[ind].algorithm_params
+          selected_model.forms["paramObject"] =
+            this.model_froms[ind].algorithm_params;
           models.push(selected_model);
-        } 
+        }
 
-        console.log("train_mode", this.m_train_model, "\n", this.model_froms[ind])
-        console.log("t", this.paramObject)
-        
+        console.log(
+          "train_mode",
+          this.m_train_model,
+          "\n",
+          this.model_froms[ind]
+        );
+        console.log("t", this.paramObject);
+
         selected_model.forms["taskname"] = this.m_train_model.taskName;
         selected_model.forms["table_name"] = this.m_train_model.dataset;
         selected_model.forms["cols"] = this.m_train_model.use_features;
-        selected_model.forms["labels"] = targets; 
+        selected_model.forms["labels"] = targets;
 
         console.log("selected_model", selected_model.forms);
       }
 
       // let results = []
       // 使用 Promise.all 来等待所有的 POST 请求完成
-      await Promise.all(models.map((model) => postRequest(url, {modelname: [model], features: this.m_train_model.all_features})))
+      await Promise.all(
+        models.map((model) =>
+          postRequest(url, {
+            modelname: [model],
+            features: this.m_train_model.all_features,
+          })
+        )
+      )
         .then((responses) => {
           responses.forEach((res, index) => {
             let name = models[index]["name"];
             let values = res[name];
             console.log(
-              "name:", name, " ", values, 
-              "\n==models",  index, models[index]
+              "name:",
+              name,
+              " ",
+              values,
+              "\n==models",
+              index,
+              models[index]
             );
             models[index]["res"] = values;
             for (var ind = 0; ind < this.model_froms.length; ind++) {
-              if (this.model_froms[ind].modelname == name) { 
+              if (this.model_froms[ind].modelname == name) {
                 this.model_froms[ind].res = values;
               }
             }
@@ -356,18 +377,17 @@ export default {
           console.error("Error occurred while sending POST requests:", error);
           this.loading = false;
         });
-        
-        this.m_changeModelTrain({
-          algorithm_select:{
-            source: "前端",
-            selected_algorithms: algorithms,
-            algorithm_infos: this.model_froms
-          },
-          // res: results
-        });
-        this.loading = false;
-        this.m_changeStep(this.m_step + 1);
 
+      this.m_changeModelTrain({
+        algorithm_select: {
+          source: "前端",
+          selected_algorithms: algorithms,
+          algorithm_infos: this.model_froms,
+        },
+        // res: results
+      });
+      this.loading = false;
+      this.m_changeStep(this.m_step + 1);
     },
   },
 };

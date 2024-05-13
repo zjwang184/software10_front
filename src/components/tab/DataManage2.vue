@@ -1542,6 +1542,7 @@ export default {
       all_uid_list: [],
       share_uid_list: [],
       dialogDiseaseVisible2: false,
+      dialogSelectItemsVisible: false,
       selectedFields: [],
       nodeData: {},
       // 新增纳排按钮
@@ -2094,6 +2095,17 @@ export default {
       console.log(this.uid_list);
       console.log(this.share_uid_list);
       this.share_username = username_list.join(",");
+    },
+    handleFilterClick(row) {
+      console.log("row.filterCondition", row.filterCondition);
+      const tempColumn = row.filterCondition.map((item) => {
+        return {
+          ...item,
+          opt: item.showOpt,
+        };
+      });
+      this.addDataForm.characterList = tempColumn;
+      this.dialogSelectItemsVisible = false;
     },
     closeDialog() {
       this.uploadDataDialogVisible = false;
@@ -3189,6 +3201,9 @@ export default {
   row-gap: 10px;
 }
 
+.addDataClass .el-input {
+  width: 200px;
+}
 .addDataClass .addDataBaseInfo .titleText {
   font-weight: 600;
   margin-left: 5px;

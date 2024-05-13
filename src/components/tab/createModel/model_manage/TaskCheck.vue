@@ -33,7 +33,7 @@
         <span>{{ this.taskData.participant }}</span>
       </div>
       <div class="taskInfoBox comment">
-        <el-icon class="el-icon-edit el-icon"></el-icon><span>任务备注：</span>
+        <!-- <el-icon class="el-icon-edit el-icon"></el-icon><span>任务备注：</span> -->
       </div>
       <div class="taskInfoBox disease">
         <el-icon class="el-icon-price-tag el-icon"></el-icon
@@ -56,6 +56,9 @@
         <el-icon class="el-icon-notebook-2 el-icon"></el-icon
         ><span>所用特征：</span>
         <span>{{ featureString }}</span>
+      </div>
+      <div class="taskInfoBox comment">
+        <el-icon class="el-icon-edit el-icon"></el-icon><span>任务备注：</span>
       </div>
     </div>
 

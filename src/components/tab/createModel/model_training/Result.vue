@@ -8,7 +8,6 @@
         </div>
         <div></div>
         <div></div>
-        <div></div>
         <div class="taskInfoBox taskname">
           <el-icon class="el-icon-edit-outline el-icon"></el-icon>
           <span>任务名称：</span>
@@ -24,12 +23,10 @@
           ><span>参与人：</span>
           <span>{{ m_train_model.participant }}</span>
         </div>
-        <div class="taskInfoBox comment">
-          <el-icon class="el-icon-edit el-icon"></el-icon
-          ><span>任务备注：</span>
-          <span>{{ m_train_model.remark }}</span>
+        <div class="taskInfoBox algorithm">
+          <el-icon class="el-icon-cpu el-icon"></el-icon><span>所用算法：</span>
+          <span>{{ this.processedSelectedAlgorithms }}</span>
         </div>
-
         <div class="taskInfoBox disease">
           <el-icon class="el-icon-price-tag el-icon"></el-icon
           ><span>研究病种：</span>
@@ -40,14 +37,15 @@
           ><span>所用数据：</span>
           <span>{{ m_train_model.dataset }}</span>
         </div>
-        <div class="taskInfoBox algorithm">
-          <el-icon class="el-icon-cpu el-icon"></el-icon><span>所用算法：</span>
-          <span>{{ this.processedSelectedAlgorithms }}</span>
-        </div>
         <div class="taskInfoBox use_features">
           <el-icon class="el-icon-notebook-2 el-icon"></el-icon
           ><span>所用特征：</span>
           <span>{{ m_train_model.use_features.toString() }}</span>
+        </div>
+        <div class="taskInfoBox comment">
+          <el-icon class="el-icon-edit el-icon"></el-icon
+          ><span>任务备注：</span>
+          <span>{{ m_train_model.remark }}</span>
         </div>
       </div>
     </div>
@@ -723,7 +721,7 @@ export default {
 <style scoped>
 .taskBox1 {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 500px));
+  grid-template-columns: repeat(3, 1fr);
   margin-bottom: 20px;
   width: 100%;
   height: auto;
@@ -732,6 +730,12 @@ export default {
   border-radius: 10px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.4);
   background: rgba(118, 118, 118, 0.1);
+}
+
+.taskBox1 div:nth-child(10),
+.taskBox1 div:nth-child(11),
+.taskBox1 div:nth-child(12) {
+  grid-column: span 3;
 }
 
 .taskBox2 {
