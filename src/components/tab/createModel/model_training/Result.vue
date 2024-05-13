@@ -42,7 +42,7 @@
         </div>
         <div class="taskInfoBox algorithm">
           <el-icon class="el-icon-cpu el-icon"></el-icon><span>所用算法：</span>
-          <span>{{ m_train_model.algorithm_select.selected_algorithms }}</span>
+          <span>{{ this.processedSelectedAlgorithms }}</span>
         </div>
         <div class="taskInfoBox use_features">
           <el-icon class="el-icon-notebook-2 el-icon"></el-icon
@@ -343,6 +343,14 @@ export default {
         return [];
       }
     },
+    processedSelectedAlgorithms() {
+      const reg = /[\[\"\]]+/g;
+      return JSON.stringify(
+        this.m_train_model.algorithm_select.selected_algorithms
+      )
+        .replace(reg, "")
+        .replace(/,/g, ", ");
+    },
     // knnModel() {
     //   // 根据条件筛选 editableTabs 数组
     //   const filteredModels = this.m_models.filter(
@@ -394,6 +402,10 @@ export default {
       });
 
       console.log("this.m_train_model", this.m_train_model);
+      console.log(
+        "this.m_train_model.algorithm_select.selected_algorithms",
+        this.m_train_model.algorithm_select.selected_algorithms
+      );
       console.log(
         "console.log(this.m_target_featuress);",
         this.m_train_model.target_features
@@ -711,7 +723,7 @@ export default {
 <style scoped>
 .taskBox1 {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 500px));
   margin-bottom: 20px;
   width: 100%;
   height: auto;
