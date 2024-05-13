@@ -7,7 +7,7 @@
       class="custom-page-header"
     ></el-page-header>
     <div class="buttonGroup">
-      <el-button type="success" @click="exportToPDF()" round>导出PDF</el-button>
+      <el-button type="success" @click="exportToPDF()">导出PDF</el-button>
     </div>
     <div class="taskBox1" id="pdf_1">
       <div>
@@ -160,7 +160,10 @@ export default {
   computed: {
     featureString() {
       if (this.taskData && this.taskData.feature) {
-        return this.taskData.feature.toString();
+        return this.taskData.feature
+          .toString()
+          .replace(/[\[\"\]]+/g, "")
+          .replace(/,/g, ", ");
       } else {
         return "";
       }

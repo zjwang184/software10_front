@@ -571,6 +571,10 @@ export default {
 ::v-deep .el-pagination input:focus {
   width: 100px;
 }
+
+::v-deep .el-select input:focus {
+  width: 100%;
+}
 .checkbox-item {
   opacity: 0;
   transform: translateY(100%);

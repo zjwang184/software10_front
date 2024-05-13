@@ -275,34 +275,148 @@
           <el-button type="primary" @click="() => append(0)">确 定</el-button>
         </span>
       </el-dialog>
+      <el-dialog title="筛选历史记录" :visible.sync="dialogSelectItemsVisible">
+        <el-table :data="filterConditionsData" height="500">
+          <el-table-column
+            property="time"
+            label="筛选日期"
+            width="150"
+          ></el-table-column>
+          <el-table-column
+            property="user"
+            label="筛选人"
+            width="150"
+          ></el-table-column>
+          <template v-for="n in maxConditions">
+            <el-table-column
+              v-if="n > 1"
+              :key="`opt${n}`"
+              :label="`关系${n}`"
+              width="100"
+            >
+              <template v-slot="scope">
+                <span>{{
+                  scope.row.filterCondition[n - 1]
+                    ? scope.row.filterCondition[n - 1].showOpt
+                    : ""
+                }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              :key="`chName${n}`"
+              :label="`特征${n}`"
+              width="100"
+            >
+              <template v-slot="scope">
+                <span>{{
+                  scope.row.filterCondition[n - 1]
+                    ? scope.row.filterCondition[n - 1].chName
+                    : ""
+                }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              :key="`computeOpt${n}`"
+              :label="`条件${n}`"
+              width="100"
+            >
+              <template v-slot="scope">
+                <span>{{
+                  scope.row.filterCondition[n - 1]
+                    ? scope.row.filterCondition[n - 1].computeOpt
+                    : ""
+                }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column :key="`value${n}`" :label="`取值${n}`" width="100">
+              <template v-slot="scope">
+                <span>{{
+                  scope.row.filterCondition[n - 1]
+                    ? scope.row.filterCondition[n - 1].value
+                    : ""
+                }}</span>
+              </template>
+            </el-table-column>
+          </template>
+          <el-table-column fixed="right" label="操作" width="100">
+            <template slot-scope="scope">
+              <el-button
+                @click="handleFilterClick(scope.row)"
+                type="text"
+                size="small"
+                >应用</el-button
+              >
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-dialog>
     </div>
-    <el-dialog title="新增数据集" :visible.sync="dialogDataVisible" width="60%">
+
+    <!--===============================      纳排数据按钮 表单   ===================================================================-->
+    <el-dialog
+      title="新增纳排数据集"
+      :visible.sync="filterDataDialogVisible"
+      width="1150px"
+    >
       <div class="addDataClass">
-        <i style="margin-left: 10px" class="el-icon-s-data"></i
-        >&nbsp;&nbsp;&nbsp;数据集：<el-input
-          v-model="addDataForm.dataName"
-          placeholder="请输入数据集名称"
-        ></el-input>
-        <span class="addDataBaseInfo">
-          <i class="el-icon-user-solid"></i>&nbsp;&nbsp;&nbsp;创建人：<el-input
+        <div class="addDataBaseInfo">
+          <i class="el-icon-s-data"></i>
+          <span class="titleText">数据集：</span>
+          <el-input
+            v-model="addDataForm.dataName"
+            placeholder="请输入数据集名称"
+          ></el-input>
+        </div>
+        <div class="addDataBaseInfo">
+          <i class="el-icon-user-solid"></i>
+          <span class="titleText">创建人：</span>
+          <el-input
             v-model="addDataForm.createUser"
             placeholder="请输入创建人姓名"
+            disabled
           ></el-input>
-        </span>
-        <span class="addDataBaseInfo">
-          <i class="el-icon-time"></i>&nbsp;&nbsp;&nbsp;创建时间：<span>{{
-            showDataForm.createTime
-          }}</span>
-        </span>
-        <span class="addDataBaseInfo">
-          <i class="el-icon-pie-chart"></i>&nbsp;&nbsp;&nbsp;所属类别：<span>{{
-            showDataForm.classPath
-          }}</span>
-        </span>
+        </div>
+        <div class="addDataBaseInfo createTimeArea">
+          <i class="el-icon-time"></i>
+          <span class="titleText">创建时间：</span>
+          <span>{{ showFeatureDataForm.createTime }}</span>
+        </div>
+        <div class="addDataBaseInfo">
+          <!-- <i class="el-icon-pie-chart"></i>
+          <span class="titleText">所属类别：</span>
+          <span class="belongType">{{ showFeatureDataForm.classPath }}</span> -->
+        </div>
       </div>
+
+      <div class="addDataClass" style="margin-top: 1%">
+        <div class="block">
+          <span class="demonstration">请选择疾病：</span>
+          <el-cascader
+            :options="disOptions"
+            :props="{ checkStrictly: true }"
+            v-model="selectedOptions"
+            @change="handleCascaderChange"
+          ></el-cascader>
+          <span class="demonstration" style="margin-left: 2%">是否共享：</span>
+          <el-switch
+            v-model="is_share"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+            @change="is_share_change()"
+            style="margin-left: 1%"
+          ></el-switch>
+          <span v-if="is_share" style="margin-left: 1%"
+            >共享用户名单：{{ share_username }}</span
+          >
+        </div>
+      </div>
+
       <div class="addDataClass" style="margin-top: 20px">
         <div class="addDataTitle">
           <i class="el-icon-connection"></i>&nbsp;&nbsp;特征选择
+          <el-button type="primary" plain @click="getSelectItems"
+            >查看历史筛选条件</el-button
+          >
         </div>
         <div style="margin-top: 20px">
           <el-button
@@ -315,7 +429,7 @@
           >
           <el-button
             @click="chooseCharacter(addDataForm.characterList[0])"
-            style="width: 130px; margin-right: 8px; margin-left: 0px"
+            style="margin-right: 8px; margin-left: 0px"
             >{{ addDataForm.characterList[0].button }}</el-button
           >
           <span v-if="addDataForm.characterList[0].type === 'discrete'">
@@ -358,8 +472,8 @@
               placeholder="请输入特征取值"
               style="width: 300px"
             ></el-input>
-            <el-button disabled style="width: 200px; background-color: #f5f7fa"
-              >单位：{{ addDataForm.characterList[0].unit }}</el-button
+            <span style="width: 200px; color: #858585">
+              单位：{{ addDataForm.characterList[0].unit }}</span
             >
           </span>
         </div>
@@ -423,8 +537,286 @@
               placeholder="请输入特征取值"
               style="width: 300px"
             ></el-input>
-            <el-button disabled style="width: 115px; background-color: #f5f7fa"
-              >单位：{{ characterItem.unit }}</el-button
+            <span style="width: 200px; color: #858585">
+              单位：{{ characterItem.unit }}</span
+            >
+          </span>
+          <el-button
+            type="primary"
+            plain
+            icon="el-icon-delete"
+            style="margin-left: 10px"
+            @click="deleteToAddDataForm(characterItem)"
+            >删除</el-button
+          >
+        </div>
+        <div
+          style="
+            margin-top: 20px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: center;
+          "
+        >
+          <button
+            class="cool-button"
+            @click="
+              submitCharacterConditionWithNodeId();
+              is_after_filterd = true;
+            "
+          >
+            筛选病例
+          </button>
+        </div>
+        <!-- 显示筛选出来的表数据 -->
+        <el-table
+          :data="addTableData"
+          stripe
+          style="width: 100%"
+          height="500"
+          v-show="showAddTableData"
+          :header-cell-style="{ background: '#eee', color: '#606266' }"
+          v-loading="addDataLoading"
+          element-loading-text="正在抽取数据"
+        >
+          <el-table-column
+            v-for="(value, key) in addTableData[0]"
+            :key="key"
+            :prop="key"
+            :label="key"
+            width="80"
+            sortable
+          >
+            <template slot-scope="{ row }">
+              <div class="truncate-text">{{ row[key] }}</div>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="cleanDataInput()">取 消</el-button>
+        <el-button
+          v-if="is_after_filterd == true"
+          type="primary"
+          @click="addUserFilterTable()"
+          >新建表</el-button
+        >
+      </span>
+      <el-dialog
+        title="特征选择"
+        :visible.sync="characterVisible"
+        width="50%"
+        append-to-body
+      >
+        <el-container>
+          <el-aside width="180px">
+            <el-menu default-active="1" class="el-menu-vertical-demo">
+              <el-menu-item index="1" @click="exchangeCharacterList(0)">
+                <span slot="title">人口学</span>
+              </el-menu-item>
+              <el-menu-item index="3" @click="exchangeCharacterList(2)">
+                <span slot="title">生理指标</span>
+              </el-menu-item>
+              <el-menu-item index="4" @click="exchangeCharacterList(3)">
+                <span slot="title">行为学</span>
+              </el-menu-item>
+            </el-menu>
+          </el-aside>
+          <el-main>
+            <el-radio-group v-model="characterId" class="charactersGroup">
+              <el-radio
+                v-for="optItem in characterOptList"
+                :key="optItem.characterId"
+                :label="optItem.characterId"
+                border
+                style="
+                  margin-bottom: 10px;
+                  margin-left: 0px;
+                  margin-right: 10px;
+                "
+                >{{ optItem.chName }}</el-radio
+              >
+            </el-radio-group>
+          </el-main>
+        </el-container>
+        <span slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="confirmCharacter()"
+            >确 定</el-button
+          >
+        </span>
+      </el-dialog>
+    </el-dialog>
+    <el-dialog
+      title="新增数据集"
+      :visible.sync="dialogDataVisible"
+      width="1150px"
+    >
+      <div class="addDataClass">
+        <div class="addDataBaseInfo">
+          <i class="el-icon-s-data"></i>
+          <span class="titleText">数据集：</span>
+          <el-input
+            v-model="addDataForm.dataName"
+            placeholder="请输入数据集名称"
+          ></el-input>
+        </div>
+        <div class="addDataBaseInfo">
+          <i class="el-icon-user-solid"></i>
+          <span class="titleText">创建人：</span>
+          <el-input
+            v-model="addDataForm.createUser"
+            placeholder="请输入创建人姓名"
+            disabled
+          ></el-input>
+        </div>
+        <div class="addDataBaseInfo createTimeArea">
+          <i class="el-icon-time"></i>
+          <span class="titleText">创建时间：</span>
+          <span>{{ showFeatureDataForm.createTime }}</span>
+        </div>
+        <div class="addDataBaseInfo">
+          <!-- <i class="el-icon-pie-chart"></i>
+          <span class="titleText">所属类别：</span>
+          <span class="belongType">{{ showFeatureDataForm.classPath }}</span> -->
+        </div>
+        <span v-if="nodeData.status == '1'"
+          >共享用户名单：{{ share_username }}</span
+        >
+        <el-button
+          v-if="nodeData.status == '1'"
+          @click="shareUserSelectDialog = true"
+          >选择共享用户</el-button
+        >
+      </div>
+      <div class="addDataClass" style="margin-top: 20px">
+        <div class="addDataTitle">
+          <div><i class="el-icon-connection"></i>&nbsp;&nbsp;特征选择</div>
+          <el-button type="primary" plain @click="getSelectItems"
+            >查看历史筛选条件</el-button
+          >
+        </div>
+        <div style="margin-top: 20px">
+          <el-button
+            type="primary"
+            plain
+            icon="el-icon-plus"
+            style="margin-right: 8px"
+            @click="putToAddDataForm"
+            >添加新条件</el-button
+          >
+          <el-button
+            @click="chooseCharacter(addDataForm.characterList[0])"
+            style="margin-right: 8px; margin-left: 0px"
+            >{{ addDataForm.characterList[0].button }}</el-button
+          >
+          <span v-if="addDataForm.characterList[0].type === 'discrete'">
+            <el-select
+              :value="'='"
+              slot="prepend"
+              placeholder="运算符"
+              style="width: 90px; margin-right: 8px"
+              disabled
+            >
+              <el-option label="=" value="="></el-option>
+            </el-select>
+            <el-select
+              v-model="addDataForm.characterList[0].value"
+              placeholder="请选择特征取值"
+              style="width: 300px"
+            >
+              <el-option
+                v-for="item in addDataForm.characterList[0].range"
+                :key="item"
+                :label="item"
+                :value="item"
+              >
+              </el-option>
+            </el-select>
+          </span>
+          <span v-else>
+            <el-select
+              v-model="addDataForm.characterList[0].computeOpt"
+              slot="prepend"
+              placeholder="运算符"
+              style="width: 90px; margin-right: 8px"
+            >
+              <el-option label=">" value=">"></el-option>
+              <el-option label="<" value="<"></el-option>
+              <el-option label="=" value="="></el-option>
+            </el-select>
+            <el-input
+              v-model="addDataForm.characterList[0].value"
+              placeholder="请输入特征取值"
+              style="width: 300px"
+            ></el-input>
+            <span style="width: 200px; color: #858585">
+              单位：{{ addDataForm.characterList[0].unit }}</span
+            >
+          </span>
+        </div>
+        <div
+          style="margin-top: 20px"
+          v-for="(characterItem, index) in addDataForm.characterList.slice(1)"
+          :key="index"
+        >
+          <el-select
+            v-model="characterItem.opt"
+            slot="prepend"
+            placeholder="条件选择"
+            style="width: 130px; margin-right: 8px"
+          >
+            <el-option label="AND" value="0"></el-option>
+            <el-option label="OR" value="1"></el-option>
+            <el-option label="NOT" value="2"></el-option>
+          </el-select>
+          <el-button
+            @click="chooseCharacter(characterItem)"
+            style="width: 130px; margin-right: 8px"
+            >{{ characterItem.button }}</el-button
+          >
+          <span v-if="characterItem.type === 'discrete'">
+            <el-select
+              :value="'='"
+              slot="prepend"
+              placeholder="运算符"
+              style="width: 90px; margin-right: 8px"
+              disabled
+            >
+              <el-option label="=" value="="></el-option>
+            </el-select>
+            <el-select
+              v-model="characterItem.value"
+              placeholder="请选择特征取值"
+              style="width: 300px"
+            >
+              <el-option
+                v-for="item in characterItem.range"
+                :key="item"
+                :label="item"
+                :value="item"
+              >
+              </el-option>
+            </el-select>
+          </span>
+          <span v-else>
+            <el-select
+              v-model="characterItem.computeOpt"
+              slot="prepend"
+              placeholder="运算符"
+              style="width: 90px; margin-right: 8px"
+            >
+              <el-option label=">" value=">"></el-option>
+              <el-option label="<" value="<"></el-option>
+              <el-option label="=" value="="></el-option>
+            </el-select>
+            <el-input
+              v-model="characterItem.value"
+              placeholder="请输入特征取值"
+              style="width: 300px"
+            ></el-input>
+            <span style="width: 200px; color: #858585">
+              单位：{{ characterItem.unit }}</span
             >
           </span>
           <el-button
@@ -453,8 +845,11 @@
           :data="addTableData"
           stripe
           style="width: 100%"
-          height="450"
+          height="500"
           v-show="showAddTableData"
+          :header-cell-style="{ background: '#eee', color: '#606266' }"
+          v-loading="addDataLoading"
+          element-loading-text="正在抽取数据"
         >
           <el-table-column
             v-for="(value, key) in addTableData[0]"
@@ -462,6 +857,7 @@
             :prop="key"
             :label="key"
             width="80"
+            sortable
           >
             <template slot-scope="{ row }">
               <div class="truncate-text">{{ row[key] }}</div>
@@ -472,7 +868,12 @@
 
       <span slot="footer" class="dialog-footer">
         <el-button @click="cleanDataInput()">取 消</el-button>
-        <el-button type="primary" @click="addTable()">新建表</el-button>
+        <el-button
+          v-if="is_after_filterd == true"
+          type="primary"
+          @click="addTable()"
+          >新建表</el-button
+        >
       </span>
       <el-dialog
         title="特征选择"
@@ -495,13 +896,17 @@
             </el-menu>
           </el-aside>
           <el-main>
-            <el-radio-group v-model="characterId">
+            <el-radio-group v-model="characterId" class="charactersGroup">
               <el-radio
                 v-for="optItem in characterOptList"
                 :key="optItem.characterId"
                 :label="optItem.characterId"
                 border
-                style="margin-bottom: 10px"
+                style="
+                  margin-bottom: 10px;
+                  margin-left: 0px;
+                  margin-right: 10px;
+                "
                 >{{ optItem.chName }}</el-radio
               >
             </el-radio-group>
@@ -916,7 +1321,6 @@
           >
         </div>
       </div>
-
       <!-- 点击左树之前显示的提示内容 -->
       <div>
         <div v-if="!selectedDataset">
@@ -938,7 +1342,6 @@
               :rows="30"
               animated
             />
-
             <el-table
               v-else
               :data="tableData"
@@ -946,7 +1349,7 @@
               class="custom-table"
               :header-cell-style="headerCellStyle"
               ref="scrollTable"
-              height="700vh"
+              height="70vh"
             >
               <el-table-column
                 v-for="(value, key) in tableData[0]"
@@ -962,6 +1365,38 @@
                 </template>
               </el-table-column>
             </el-table>
+            <el-dialog
+              title="请选择要导出的字段"
+              :visible.sync="csvDialogVisible"
+              width="60%"
+              :before-close="handleCloseCSV"
+            >
+              <div
+                class="selectFeatrueDescribe"
+                style="background-color: #f5f7fa"
+              >
+                <i class="el-icon-s-help"></i> 字段个数:<span>{{
+                  fields.length
+                }}</span>
+                <i class="el-icon-finished" style="margin-left: 50%"></i>
+                已选字段个数:<span>{{ selectedFields.length }}</span>
+              </div>
+              <el-divider></el-divider>
+              <el-checkbox v-model="selectAll" @change="handleSelectAll" /> 全选
+              <el-checkbox-group v-model="selectedFields">
+                <el-checkbox
+                  style="width: 150px"
+                  v-for="field in fields"
+                  :key="field"
+                  :label="field"
+                  >{{ field }}</el-checkbox
+                >
+              </el-checkbox-group>
+              <span slot="footer" class="dialog-footer">
+                <el-button @click="handleCloseCSV">取 消</el-button>
+                <el-button type="primary" @click="toXLSX">确 定</el-button>
+              </span>
+            </el-dialog>
           </div>
         </div>
       </div>
@@ -996,6 +1431,11 @@ export default {
       return {
         color: "black",
       };
+    },
+    maxConditions() {
+      return this.filterConditionsData.reduce((max, item) => {
+        return Math.max(max, item.filterCondition.length);
+      }, 0);
     },
   },
 
@@ -1050,6 +1490,7 @@ export default {
       dialogDiseaseVisible: false,
       uploadDataDialogVisible: false,
       share_username: "",
+      is_after_filterd: false,
       TableshareUserSelectDialog: false,
       TableshareUserChangeDialog: false,
       shareUserSelectDialog: false,
@@ -1101,11 +1542,12 @@ export default {
       all_uid_list: [],
       share_uid_list: [],
       dialogDiseaseVisible2: false,
-
+      selectedFields: [],
       nodeData: {},
-
+      // 新增纳排按钮
+      filterDataDialogVisible: false,
       diseaseName: "",
-
+      selectAll: false,
       loading: false,
       loading2: false,
       getData_loading: false,
@@ -1121,6 +1563,8 @@ export default {
       is_share: false,
       featuresMap: {},
       patientTable: [],
+      fields: [],
+      addDataLoading: false,
       dialogForm: {
         filesInfo: [],
         tableName: "",
@@ -1160,10 +1604,15 @@ export default {
           Authorization: `${sessionStorage.getItem("token")}`,
         },
       },
-
+      optMap: {
+        0: "AND",
+        1: "OR",
+        2: "NOT",
+      },
       nodeid: "",
       downloadStatus: "0",
       selectedOptions: [],
+      filterConditionsData: [],
     };
   },
 
@@ -1583,6 +2032,31 @@ export default {
         });
       }
     },
+
+    //历史纳排记录
+    getSelectItems() {
+      console.log("in");
+      getRequest("/api/getFilterConditionInfos").then((res) => {
+        this.dialogSelectItemsVisible = true;
+        var reg = /^"|"$|'|'/g;
+        const filterTableData = res.data.map((item) => {
+          return {
+            filterCondition: item.filterDataCols.map((item) => {
+              return {
+                ...item,
+                button: item.chName,
+                showOpt: this.optMap[item.opt],
+                value: item.value.replace(reg, ""),
+              };
+            }),
+            user: item.filterDataInfo.username,
+            time: item.filterDataInfo.filterTime,
+          };
+        });
+        this.filterConditionsData = filterTableData;
+      });
+      console.log("filterConditionsData", this.filterConditionsData);
+    },
     getUserList() {
       getRequest(`/user/getTransferUserList?uid=${this.loginUserID}`)
         .then((response) => {
@@ -1728,6 +2202,7 @@ export default {
       });
     },
     getTableDescribe(id, label) {
+      this.showDataForm.tableName = label;
       getTableDes("/api/tableDescribe", id)
         .then((response) => {
           // 将 JSON 字符串解析为对象
@@ -1749,8 +2224,12 @@ export default {
         .then((response) => {
           // 获取表数据
           this.tableData = response.data;
+          const fields = Object.keys(this.tableData[0]);
+          this.fields = fields;
           this.showDataForm.dataLength = response.data.length;
+          this.showDataForm.featureNum = this.fields.length;
           this.dataLoaded = true;
+          console.log("this.dataLoaded", this.dataLoaded);
         })
         .catch((error) => {
           console.log(error);
@@ -1774,6 +2253,43 @@ export default {
         .catch((error) => {
           console.log(error);
         });
+    },
+    addUserFilterTable() {
+      // 创建表
+      (this.addDataForm.uid_list = this.uid_list),
+        (this.diseaseName = this.addDataForm.dataName);
+      this.dialogDataVisible = false;
+      let filterConditions = {};
+      filterConditions.addDataForm = this.addDataForm;
+      filterConditions.nodeid =
+        this.selectedOptions[this.selectedOptions.length - 1];
+      if (this.is_share == true) {
+        filterConditions.status = "1";
+      } else {
+        filterConditions.status = "0";
+      }
+      this.options = {
+        method: "post",
+        data: filterConditions,
+        url: "api/createFilterBtnTable",
+        headers: {
+          "Content-Type": "application/json",
+          uid: this.loginUserID,
+          username: sessionStorage.getItem("username"),
+          role: sessionStorage.getItem("userrole"),
+        },
+      };
+
+      this.$axios(this.options).then((res) => {
+        this.getCatgory();
+        this.share_uid_list = [];
+        this.share_username = "";
+        this.uid_list = "";
+        this.filterDataDialogVisible = false;
+        this.selectedOptions = [];
+        this.is_after_filterd = false;
+        this.is_share = false;
+      });
     },
     getCheckApprove() {
       getRequest(`/api/sysManage/getCheckApprove`, {
@@ -2056,6 +2572,13 @@ export default {
     },
     cleanDataInput() {
       this.dialogDataVisible = false;
+      this.share_uid_list = [];
+      this.share_username = "";
+      this.uid_list = "";
+      this.filterDataDialogVisible = false;
+      this.selectedOptions = [];
+      this.is_after_filterd = false;
+      this.is_share = false;
     },
     addTable() {
       // 创建表
@@ -2063,7 +2586,15 @@ export default {
         (this.diseaseName = this.addDataForm.dataName);
       this.dialogDataVisible = false;
       let filterConditions = {};
-      filterConditions.addDataForm = this.addDataForm;
+
+      const tempData = this.addDataForm.characterList.map((item) => {
+        return {
+          ...item,
+          opt: isNaN(item.opt) ? this.optValueMap[item.opt] : item.opt,
+        };
+      });
+      const tempAddDataForm = { ...this.addDataForm, characterList: tempData };
+      filterConditions.addDataForm = tempAddDataForm;
       filterConditions.nodeData = this.nodeData;
       console.log(filterConditions);
       this.options = {
@@ -2131,10 +2662,19 @@ export default {
       this.characterOptItem = item;
     },
     submitCharacterCondition() {
-      console.log("this.addDataForm.characterList");
-      console.log(this.addDataForm.characterList);
+      // console.log("this.addDataForm.characterList");
+      // console.log(this.addDataForm.characterList);
+      this.showAddTableData = true;
+      this.addDataLoading = true;
       let filterConditions = {};
-      filterConditions.addDataForm = this.addDataForm;
+      const tempData = this.addDataForm.characterList.map((item) => {
+        return {
+          ...item,
+          opt: isNaN(item.opt) ? this.optValueMap[item.opt] : item.opt,
+        };
+      });
+      const tempAddDataForm = { ...this.addDataForm, characterList: tempData };
+      filterConditions.addDataForm = tempAddDataForm;
       filterConditions.nodeData = this.nodeData;
       this.options = {
         method: "post",
@@ -2144,22 +2684,75 @@ export default {
           "Content-Type": "application/json",
         },
       };
-      console.log("请求参数：" + JSON.stringify(filterConditions));
+      // console.log("请求参数：" + JSON.stringify(filterConditions));
       this.$axios(this.options)
         .then((res) => {
           this.addTableData = res.data;
-          console.log("数据:");
-          console.log(this.addTableData);
-          this.showAddTableData = true;
+          if (this.addTableData.length == 0) {
+            this.is_after_filterd = false;
+          } else {
+            this.is_after_filterd = true;
+          }
+          // console.log("数据:");
+          // console.log(this.addTableData);
+          // this.showAddTableData = true;
+          this.addDataLoading = false;
         })
         .catch((error) => {
           this.$message.error("获取数据失败");
           console.log("获取数据失败" + error);
+          this.addDataLoading = false;
         });
       let s = JSON.stringify(this.addDataForm.characterList, null, 2);
-      console.log("this.addDataForm:");
-      console.log(this.addDataForm);
-      console.log(s);
+    },
+    submitCharacterConditionWithNodeId() {
+      // console.log("this.addDataForm.characterList");
+      // console.log(this.addDataForm.characterList);
+      console.log(this.selectedOptions);
+      this.showAddTableData = true;
+      this.addDataLoading = true;
+      let filterConditions = {};
+      const tempData = this.addDataForm.characterList.map((item) => {
+        return {
+          ...item,
+          opt: isNaN(item.opt) ? this.optValueMap[item.opt] : item.opt,
+        };
+      });
+      const tempAddDataForm = { ...this.addDataForm, characterList: tempData };
+      filterConditions.addDataForm = tempAddDataForm;
+      filterConditions.nodeData = this.nodeData;
+      filterConditions.nodeid =
+        this.selectedOptions[this.selectedOptions.length - 1];
+      console.log(filterConditions);
+      console.log(filterConditions.nodeid);
+      this.options = {
+        method: "post",
+        data: filterConditions,
+        url: "api/getFilterDataByConditionsByDieaseId",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+      // console.log("请求参数：" + JSON.stringify(filterConditions));
+      this.$axios(this.options)
+        .then((res) => {
+          this.addTableData = res.data;
+          if (this.addTableData.length == 0) {
+            this.is_after_filterd = false;
+          } else {
+            this.is_after_filterd = true;
+          }
+          // console.log("数据:");
+          // console.log(this.addTableData);
+          // this.showAddTableData = true;
+          this.addDataLoading = false;
+        })
+        .catch((error) => {
+          this.$message.error("获取数据失败");
+          console.log("获取数据失败" + error);
+          this.addDataLoading = false;
+        });
+      let s = JSON.stringify(this.addDataForm.characterList, null, 2);
     },
     getNowDateFormat() {
       const currentDate = new Date();
@@ -2282,6 +2875,14 @@ export default {
       } else {
         // 如果没有找到点号或者点号在文件名的开头或结尾，直接返回原文件名
         return fileName;
+      }
+    },
+    handleSelectAll() {
+      if (this.selectAll) {
+        this.selectedFields = this.fields.filter((feature) => feature);
+      } else {
+        // 如果一键全选按钮未选中，则清空已选择数组
+        this.selectedFields = [];
       }
     },
     handleCloseCSV() {
@@ -2554,7 +3155,7 @@ export default {
 .nameInput {
   width: 70%;
 }
-.addDataClass {
+/* .addDataClass {
   border-radius: 10px;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
   padding: 10px;
@@ -2572,6 +3173,34 @@ export default {
   padding-bottom: 10px;
   font-size: 18px;
   border-bottom: 1px solid #ebeef5;
+} */
+.addDataClass {
+  width: calc(1150px * 0.94);
+  border-radius: 10px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  font-size: 16px;
+}
+
+.addDataClass:first-child {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  justify-items: start;
+  row-gap: 10px;
+}
+
+.addDataClass .addDataBaseInfo .titleText {
+  font-weight: 600;
+  margin-left: 5px;
+}
+
+.addDataClass .addDataBaseInfo:last-child {
+  grid-column-start: 1;
+  grid-column-end: 4;
+}
+.addDataBaseInfo.createTimeArea {
+  line-height: 40px;
+  vertical-align: text-bottom;
 }
 .el-select .el-input {
   width: 130px;

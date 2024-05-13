@@ -389,6 +389,7 @@ export default {
     getInfoDisease(row) {
       this.editDialogDiseaseVisible = true;
       console.log(row);
+      this.test = "";
       if (row.parentId !== "1") {
         // for(var i=0;i<this.tableData.length;i++){
         //   for(var j=0;j<this.tableData[i].children.length;j++){

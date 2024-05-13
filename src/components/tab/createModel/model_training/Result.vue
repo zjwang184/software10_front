@@ -1,4 +1,3 @@
-..
 <template>
   <div>
     <div id="pdf_1">
@@ -13,51 +12,51 @@
         <div class="taskInfoBox taskname">
           <el-icon class="el-icon-edit-outline el-icon"></el-icon>
           <span>任务名称：</span>
-          <span>{{ m_taskName }}</span>
+          <span>{{ m_train_model.taskName }}</span>
         </div>
         <div class="taskInfoBox principal">
           <el-icon class="el-icon-user el-icon"></el-icon
           ><span>任务负责人：</span>
-          <span>{{ m_principal }}</span>
+          <span>{{ m_train_model.responsiber }}</span>
         </div>
         <div class="taskInfoBox participants">
           <el-icon class="el-icon-user-solid el-icon"></el-icon
           ><span>参与人：</span>
-          <span>{{ m_participants }}</span>
+          <span>{{ m_train_model.participant }}</span>
         </div>
         <div class="taskInfoBox comment">
           <el-icon class="el-icon-edit el-icon"></el-icon
           ><span>任务备注：</span>
-          <span>{{ m_comment }}</span>
+          <span>{{ m_train_model.remark }}</span>
         </div>
 
         <div class="taskInfoBox disease">
           <el-icon class="el-icon-price-tag el-icon"></el-icon
           ><span>研究病种：</span>
-          <span>{{ m_disease }}</span>
+          <span>{{ m_train_model.disease }}</span>
         </div>
         <div class="taskInfoBox dataset">
           <el-icon class="el-icon-coin el-icon"></el-icon
           ><span>所用数据：</span>
-          <span>{{ m_dataset }}</span>
+          <span>{{ m_train_model.dataset }}</span>
         </div>
         <div class="taskInfoBox algorithm">
           <el-icon class="el-icon-cpu el-icon"></el-icon><span>所用算法：</span>
-          <span>{{ m_algorithms }}</span>
+          <span>{{ m_train_model.algorithm_select.selected_algorithms }}</span>
         </div>
         <div class="taskInfoBox use_features">
           <el-icon class="el-icon-notebook-2 el-icon"></el-icon
           ><span>所用特征：</span>
-          <span>{{ m_use_features.toString() }}</span>
+          <span>{{ m_train_model.use_features.toString() }}</span>
         </div>
       </div>
     </div>
 
-    <div id="pdf_2" v-if="dqnModel.length > 0">
-      <div class="taskBox2" v-for="(item, index) in dqnModel" :key="index">
+    <div id="pdf_2" v-if="rlModel.length > 0">
+      <div class="taskBox2" v-for="(item, index) in rlModel" :key="index">
         <div>
           <span class="lineStyle">▍</span
-          ><span class="featureTitle">{{ item.name }}模型信息：</span>
+          ><span class="featureTitle">{{ item.modelname }}模型信息：</span>
         </div>
         <div></div>
         <div></div>
@@ -116,8 +115,57 @@
       </div>
     </div>
 
-    <div id="pdf_3" v-if="svmModel.length > 0">
-      <div id="pdf_3" v-for="(item, index) in svmModel" :key="index">
+    <div id="pdf_3" v-if="mlModel.length > 0">
+      <div class="taskBox2" v-for="(item, index) in mlModel" :key="index">
+        <div>
+          <span class="lineStyle">▍</span
+          ><span class="featureTitle">{{ item.modelname }}模型信息：</span>
+        </div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div class="algorithm_info">
+          <div class="taskInfoBox disease">
+            <el-icon class="el-icon-s-data el-icon"></el-icon
+            ><span>精确率acc：</span>
+            <span>{{ transTOPercent(item.res.accuracy) }}</span>
+          </div>
+          <div class="taskInfoBox dataset">
+            <el-icon class="el-icon-s-claim el-icon"></el-icon
+            ><span>准确率precision：</span>
+            <span>{{ transTOPercent(item.res.precision) }}</span>
+          </div>
+          <div class="taskInfoBox algorithm">
+            <el-icon class="el-icon-s-order el-icon"></el-icon
+            ><span>召回率recall：</span>
+            <span>{{ transTOPercent(item.res.recall) }}</span>
+          </div>
+          <div class="taskInfoBox use_features">
+            <el-icon class="el-icon-s-grid el-icon"></el-icon
+            ><span>f1-score：</span>
+            <span>{{ transTOPercent(item.res.f1) }}</span>
+          </div>
+        </div>
+
+        <div class="taskInfoBox result">
+          <el-icon class="el-icon-s-promotion el-icon"></el-icon
+          ><span>任务结果可视化：</span>
+        </div>
+
+        <div class="graphBox">
+          <featuresPie :data="transToPie(item.res.avg_shapvalue)"></featuresPie>
+          <treeMap
+            :TP="transTONumber(item.res.TP)"
+            :FN="transTONumber(item.res.FN)"
+            :FP="transTONumber(item.res.FP)"
+            :TN="transTONumber(item.res.TN)"
+          ></treeMap>
+        </div>
+      </div>
+    </div>
+
+    <!-- <div id="pdf_3" v-if="mlModel.length > 0">
+      <div id="pdf_3" v-for="(item, index) in mlModel" :key="index">
         <div class="taskBox2">
           <div>
             <span class="lineStyle">▍</span
@@ -220,7 +268,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <div class="buttonGroup">
       <el-button @click="backStep()" round>上一步</el-button>
@@ -266,13 +314,14 @@ export default {
     },
   },
   computed: {
-    dqnModel() {
-      console.log("dqn result", this.m_models);
+    rlModel() {
+      console.log("rl result", this.m_train_model);
       // 根据条件筛选 editableTabs 数组
-      const filteredModels = this.m_models.filter(
-        (item) => item.name === "dqn" && item.is_select === true
-      );
-      console.log("dqnModel length:", filteredModels.length, filteredModels);
+      const filteredModels =
+        this.m_train_model.algorithm_select.algorithm_infos.filter(
+          (item) => item.modelType === "rl" && item.isSelect === true
+        );
+      console.log("rl length:", filteredModels.length, filteredModels);
       if (filteredModels.length > 0) {
         return filteredModels;
       } else {
@@ -280,12 +329,13 @@ export default {
         return [];
       }
     },
-    svmModel() {
+    mlModel() {
       // 根据条件筛选 editableTabs 数组
-      const filteredModels = this.m_models.filter(
-        (item) => item.name === "svm" && item.is_select === true
-      );
-      console.log("svmModel length:", filteredModels.length, filteredModels);
+      const filteredModels =
+        this.m_train_model.algorithm_select.algorithm_infos.filter(
+          (item) => item.modelType === "ml" && item.isSelect === true
+        );
+      console.log("mlModel length:", filteredModels.length, filteredModels);
       if (filteredModels.length > 0) {
         return filteredModels;
       } else {
@@ -293,35 +343,26 @@ export default {
         return [];
       }
     },
-    knnModel() {
-      // 根据条件筛选 editableTabs 数组
-      const filteredModels = this.m_models.filter(
-        (item) => item.name === "knn" && item.is_select === true
-      );
-      console.log("knnModel length:", filteredModels.length, filteredModels);
-      if (filteredModels.length > 0) {
-        return filteredModels;
-      } else {
-        // 如果数组为空，则返回一个空数组或者执行其他操作
-        return [];
-      }
-    },
+    // knnModel() {
+    //   // 根据条件筛选 editableTabs 数组
+    //   const filteredModels = this.m_models.filter(
+    //     (item) => item.name === "knn" && item.is_select === true
+    //   );
+    //   console.log("knnModel length:", filteredModels.length, filteredModels);
+    //   if (filteredModels.length > 0) {
+    //     return filteredModels;
+    //   } else {
+    //     // 如果数组为空，则返回一个空数组或者执行其他操作
+    //     return [];
+    //   }
+    // },
 
     filteredModels() {
       // 根据条件筛选 editableTabs 数组
-      return this.m_models.filter((item) => item.is_select);
+      return this.m_train_model.algorithm_select.algorithm_infos.filter(
+        (item) => item.isSelect
+      );
     },
-
-    ratio() {
-      let num = (this.m_result.ratio * 100).toFixed(2);
-      return num + "%";
-    },
-  },
-  mounted() {
-    console.log("this.m_models", this.m_models);
-
-    this.init_reward_loss("reward");
-    this.init_reward_loss("loss");
   },
 
   data() {
@@ -335,24 +376,31 @@ export default {
     };
   },
 
-  created() {
-    this.$notify({
-      title: "运算成功",
-      message: "您可根据需要保存任务或导出结果",
-      type: "success",
-    });
-    console.log("console.log(this.m_models);", this.m_models);
-    console.log(
-      "console.log(this.m_target_featuress);",
-      this.m_target_features
-    );
-    console.log("this.m_result" + JSON.stringify(this.m_result.res));
-    console.log("this.tree" + JSON.stringify(this.m_result.treeRes));
+  mounted() {
+    this.printInfos();
+    this.init_reward_loss("reward");
+    this.init_reward_loss("loss");
     this.initFlag = true;
   },
 
   methods: {
     ...mapMutations(["SetTaskList"]),
+
+    printInfos() {
+      this.$notify({
+        title: "运算成功",
+        message: "您可根据需要保存任务或导出结果",
+        type: "success",
+      });
+
+      console.log("this.m_train_model", this.m_train_model);
+      console.log(
+        "console.log(this.m_target_featuress);",
+        this.m_train_model.target_features
+      );
+      console.log("this.m_train_model.res" + this.m_train_model.res);
+    },
+
     transTONumber(confusion) {
       return parseInt(confusion);
     },
@@ -360,7 +408,6 @@ export default {
     transTOPercent(rate) {
       return (parseFloat(rate) * 100).toFixed(2) + "%";
     },
-
     transToPie(shapeValueStr) {
       console.log("shapeValueStr", shapeValueStr);
       // 将字符串按逗号分割成对象数组
@@ -397,28 +444,43 @@ export default {
     },
 
     init_reward_loss(curve) {
-      let model = {};
-      for (var i = 0; i < this.m_models.length; i++) {
-        if (this.m_models[i]["name"] === "dqn") {
-          model = this.m_models[i];
+      let models = [];
+      console.log(
+        "initrewardloss",
+        this.m_train_model.algorithm_select.algorithm_infos
+      );
+      for (
+        var i = 0;
+        i < this.m_train_model.algorithm_select.algorithm_infos.length;
+        i++
+      ) {
+        if (
+          this.m_train_model.algorithm_select.algorithm_infos[i][
+            "modelType"
+          ] === "rl"
+        ) {
+          models.push(this.m_train_model.algorithm_select.algorithm_infos[i]);
           break;
         }
       }
+      console.log("models:", models);
+      console.log("rlModel:", this.rlModel);
       // 假设您的数据存储在 dqnModel 中，并且您希望遍历它们来初始化每个图表
-      this.dqnModel.forEach((item, index) => {
+      this.rlModel.forEach((item, index) => {
+        console.log("rl item", item);
         let str = "";
         let text = "Reward curve";
+        console.log("asdfasdfadsfsdafasdfasdfsadf", this.$refs);
+        console.log("asdfasdfadsfsdafasdfasdfsadf", this.$refs.RewardCurve);
         let chartDom = this.$refs.RewardCurve[index];
-
         if (curve === "reward") {
-          str = model.res.total_rewards;
+          str = item.res.total_rewards;
           text = "Reward curve";
         } else if (curve === "loss") {
-          str = model.res.total_losses;
+          str = item.res.total_losses;
           text = "Losses curve";
           chartDom = this.$refs.LossCurve[index];
         }
-
         console.log("当前curve:", curve, text, str);
 
         // 使用正则表达式匹配每个子数组中的数字和字符串，并构建二维数组
@@ -464,6 +526,7 @@ export default {
           grid: [{}, { top: "100%" }],
           series: [{ type: "line", showSymbol: false, data: valueList }],
         };
+        console.log("option", option);
         option && myChart.setOption(option);
       });
     },
@@ -471,17 +534,17 @@ export default {
     next() {
       //上传任务
       let payload = {
-        taskName: this.m_taskName,
-        leader: this.m_principal,
-        participant: this.m_participants,
+        taskName: this.m_train_model.taskName,
+        leader: this.m_train_model.responsiber,
+        participant: this.m_train_model.participants,
 
-        disease: this.m_disease,
-        dataset: this.m_dataset,
-        feature: this.m_use_features,
-        targetcolumn: this.m_target_features[0].riskFactor,
+        disease: this.m_train_model.disease,
+        dataset: this.m_train_model.dataset,
+        feature: this.m_train_model.use_features,
+        targetcolumn: this.m_train_model.target_features[0].riskFactor,
         models: this.filteredModels,
 
-        time: this.m_result?.time,
+        time: this.m_train_model.res?.time,
         uid: sessionStorage.getItem("userid") - 0,
       };
 
@@ -606,12 +669,12 @@ export default {
     },
 
     async exportRes() {
-      const divsToExport = ["pdf_1", "pdf_2", "pdf_3", "pdf_4"];
+      const divsToExport = ["pdf_1", "pdf_2", "pdf_3"];
       const pdf_positions = [
         { x: 5, y: 5 },
         { x: 5, y: 35 },
         { x: 5, y: 160 },
-        { x: 5, y: 210 },
+        // { x: 5, y: 210 },
       ];
       const pdf = new jsPDF();
 

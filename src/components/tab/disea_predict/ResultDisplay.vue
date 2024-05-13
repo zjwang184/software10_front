@@ -8,15 +8,16 @@
         </div> -->
         <el-card>
           <h2 v-if="predValue == 1" style="color: red" align="center">
-            高风险
+            <span style="color: black">患病风险：</span> 高风险
           </h2>
           <h2
             v-if="predValue == 0"
             style="color: rgb(0, 255, 76)"
             align="center"
           >
-            低风险
+            <span style="color: black">患病风险：</span>低风险
           </h2>
+          <h3>患者信息：</h3>
           <!-- <div
             v-for="(item, index) in cardItems"
             :key="index"
@@ -70,6 +71,7 @@
           各特征对结果的影响
         </div>
         <div class="box">
+          <div>这里是展示结果介绍</div>
           <div>
             <img :src="imgurl1" alt="Image" />
           </div>
@@ -279,6 +281,14 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.box div:first-child {
+  background-color: rgba(99, 97, 97, 0.1);
+  margin-bottom: 10px;
+  padding: 10px;
+  height: 40px;
+  text-align: center;
 }
 
 .custom-table tr {

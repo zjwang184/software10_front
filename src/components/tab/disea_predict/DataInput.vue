@@ -1,5 +1,5 @@
 <template>
-  <div v-loading="loading">
+  <div v-loading="loading" element-loading-text="预测中...">
     <div style="display: flex; align-items: center">
       <span class="lineStyle" style="display: inline-block">▍</span
       ><span class="featureTitle" style="display: inline-block"
@@ -99,11 +99,12 @@
           </el-row>
         </el-form>
         <div class="buttonGroup">
-          <el-button @click="backStep()" round>上一步</el-button>
-          <el-button @click="resetForm('personForm')" type="info" plain
+          <el-button @click="backStep()">上一步</el-button>
+          <!-- <el-button @click="resetForm('personForm')" type="info" plain
             >重置</el-button
-          >
-          <el-button type="primary" @click="submit()" round>下一步</el-button>
+          > -->
+          <el-button @click="claerForm" type="info" plain>清空</el-button>
+          <el-button type="primary" @click="submit()">开始预测</el-button>
         </div>
       </div>
     </div>
@@ -192,24 +193,21 @@ export default {
     },
 
     generateFormAndRules() {
-      if (this.m_personForm.length != 0){
+      if (this.m_personForm.length != 0) {
         // 动态生成表单项
         this.personForm = this.m_personForm;
-      }else{
+      } else {
         // 动态生成表单项
         this.personForm = this.predict_features.reduce((acc, cur) => {
           acc[cur] = ""; // 将表单项添加到表单数据对象中，并初始化为空字符串
           return acc;
         }, {});
       }
-      
-
       // 动态生成验证规则
       this.rules = this.predict_features.reduce((acc, cur) => {
         acc[cur] = [
           { required: true, message: "此项不能为空", trigger: "blur" },
-          { validator: this.validateInput, trigger: "blur" }, // 添加自定义验证器
-          // 可以添加其他验证规则
+          { validator: this.validateInput, trigger: "blur" },
         ];
         return acc;
       }, {});
@@ -260,7 +258,21 @@ export default {
       if (emptyFields.length > 0) {
         // 如果有空值，则弹出警告
         this.$message.error("请填写完整的表单！");
+        return;
       }
+
+      // 检查非法字符
+      const illegalCharsRegex = /\D/g;
+      for (const field of Object.keys(this.personForm)) {
+        if (illegalCharsRegex.test(this.personForm[field])) {
+          // 如果找到非法字符，弹出警告
+          this.$message.error(
+            `字段 "${field}" 包含非法字符，请检查后重新输入！`
+          );
+          return;
+        }
+      }
+
       // alert("提交成功");
       let formData = new FormData();
 
@@ -296,7 +308,6 @@ export default {
       // 将列表存储在 featuredata 键中
       dictionary["featuredata"] = featuredata;
 
-   
       postRequest("/runtime_bus/runmodel", dictionary)
         .then((res) => {
           this.loading = true;
@@ -321,6 +332,9 @@ export default {
         });
       // postRequest("/ten/data/update_person2", formData)
       this.loading = true;
+    },
+    claerForm() {
+      this.personForm = {};
     },
     backStep() {
       this.m_changeStep(1);

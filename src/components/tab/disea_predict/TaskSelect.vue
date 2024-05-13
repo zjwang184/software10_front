@@ -432,9 +432,8 @@
           <div class="taskInfoBox use_features">
             <el-icon class="el-icon-notebook-2 el-icon"></el-icon
             ><span>所用特征：</span>
-            <span>{{ result.feature.toString() }}</span>
+            <span>{{ featureString }}</span>
           </div>
-
           <span slot="footer" class="dialog-footer">
             <el-button @click="resultDialogShow = false">关 闭</el-button>
           </span>
@@ -536,6 +535,16 @@ export default {
       const startIndex = (this.currentPage - 1) * this.pageSize;
       const endIndex = startIndex + this.pageSize;
       return filteredAndSortedList.slice(startIndex, endIndex);
+    },
+    featureString() {
+      if (this.result && this.result.feature) {
+        return this.result.feature
+          .toString()
+          .replace(/[\[\"\]]+/g, "")
+          .replace(/,/g, ", ");
+      } else {
+        return "";
+      }
     },
   },
 

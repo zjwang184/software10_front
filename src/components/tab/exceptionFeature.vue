@@ -1,47 +1,57 @@
 <template>
   <div class="main">
     <div class="treeArea">
-        <!-- =========================================私有数据集树 --------------------------->
-        <el-tree
-          ref="tree1"
-          :data="treeData1"
-          :show-checkbox="false"
-          node-key="id"
-          :default-expanded-keys="['1']"
-          :expand-on-click-node="false"
-          :highlight-current="true"
-          @node-click="changeData"
-          :filter-node-method="filterNode"
-        >
-          <span class="custom-tree-node" slot-scope="{ node, data }">
-            <span class="left_span">
-              <i
-                class="el-icon-document tree_icon"
-                v-if="data.isLeafs == 1 && data.uid != loginUserID"
-              ></i>
-              <i
-                class="el-icon-document tree_icon"
-                v-if="data.isLeafs == 1 && data.uid == loginUserID"
-                style="color: rgb(40, 207, 18)"
-              ></i>
-              <span
-                v-if="data.catLevel == 1"
-                style="font-weight: bold; font-size: 16px; color: #252525"
-                >{{ node.label }}</span
+      <div class="tree-top">
+        <div class="tipInfo">
+          <h3>病种、数据集选择</h3>
+          <span class="statistic"> 一级病种: {{ diseaseNum }} 个 </span>
+          <span class="statistic"> 数据表: {{ datasetNum }} 个 </span>
+        </div>
+        <hr class="hr-dashed" />
+        <el-input placeholder="输入关键字进行过滤" v-model="filterText">
+        </el-input>
+      </div>
+      <!-- =========================================私有数据集树 --------------------------->
+      <el-tree
+        ref="tree1"
+        :data="treeData1"
+        :show-checkbox="false"
+        node-key="id"
+        :default-expanded-keys="['1']"
+        :expand-on-click-node="false"
+        :highlight-current="true"
+        @node-click="changeData1"
+        :filter-node-method="filterNode"
+      >
+        <span class="custom-tree-node" slot-scope="{ node, data }">
+          <span class="left_span">
+            <i
+              class="el-icon-document tree_icon"
+              v-if="data.isLeafs == 1 && data.uid != loginUserID"
+            ></i>
+            <i
+              class="el-icon-document tree_icon"
+              v-if="data.isLeafs == 1 && data.uid == loginUserID"
+              style="color: rgb(40, 207, 18)"
+            ></i>
+            <span
+              v-if="data.catLevel == 1"
+              style="font-weight: bold; font-size: 16px; color: #252525"
+              >{{ node.label }}</span
+            >
+            <span
+              v-else
+              :class="{
+                nodeLabel: node.label.length <= 12,
+                'scrolling-nodeLabel': node.label.length > 12,
+              }"
+              >{{ node.label }}
+              <span v-if="data.isLeafs == 1 && data.uid == loginUserID">
+                （我）</span
               >
-              <span
-                v-else
-                :class="{
-                  nodeLabel: node.label.length <= 12,
-                  'scrolling-nodeLabel': node.label.length > 12,
-                }"
-                >{{ node.label }}
-                <span v-if="data.isLeafs == 1 && data.uid == loginUserID">
-                  （我）</span
-                >
-              </span>
             </span>
-            <!-- <span>
+          </span>
+          <!-- <span>
               <el-popconfirm
                 confirm-button-text="上传数据集"
                 cancel-button-text="纳排数据集"
@@ -84,51 +94,51 @@
                 </el-button>
               </el-popconfirm>
             </span> -->
-          </span>
-        </el-tree>
+        </span>
+      </el-tree>
 
-        <!-- =========================================共享数据集树 -->
-        <el-tree
-          ref="tree2"
-          :data="treeData2"
-          :show-checkbox="false"
-          node-key="id"
-          :default-expanded-keys="['1']"
-          :expand-on-click-node="false"
-          :highlight-current="true"
-          @node-click="changeData"
-          :filter-node-method="filterNode"
-        >
-          <span class="custom-tree-node" slot-scope="{ node, data }">
-            <span class="left_span">
-              <i
-                class="el-icon-document tree_icon"
-                v-if="data.isLeafs == 1 && data.uid != loginUserID"
-              ></i>
-              <i
-                class="el-icon-document tree_icon"
-                v-if="data.isLeafs == 1 && data.uid == loginUserID"
-                style="color: rgb(40, 207, 18)"
-              ></i>
-              <span
-                v-if="data.catLevel == 1"
-                style="font-weight: bold; font-size: 16px; color: #252525"
-                >{{ node.label }}</span
+      <!-- =========================================共享数据集树 -->
+      <el-tree
+        ref="tree2"
+        :data="treeData2"
+        :show-checkbox="false"
+        node-key="id"
+        :default-expanded-keys="['1']"
+        :expand-on-click-node="false"
+        :highlight-current="true"
+        @node-click="changeData2"
+        :filter-node-method="filterNode"
+      >
+        <span class="custom-tree-node" slot-scope="{ node, data }">
+          <span class="left_span">
+            <i
+              class="el-icon-document tree_icon"
+              v-if="data.isLeafs == 1 && data.uid != loginUserID"
+            ></i>
+            <i
+              class="el-icon-document tree_icon"
+              v-if="data.isLeafs == 1 && data.uid == loginUserID"
+              style="color: rgb(40, 207, 18)"
+            ></i>
+            <span
+              v-if="data.catLevel == 1"
+              style="font-weight: bold; font-size: 16px; color: #252525"
+              >{{ node.label }}</span
+            >
+            <span
+              v-else
+              :class="{
+                nodeLabel: node.label.length <= 12,
+                'scrolling-nodeLabel': node.label.length > 12,
+              }"
+              >{{ node.label }}
+              <span v-if="data.isLeafs == 1 && data.uid == loginUserID">
+                （我）</span
               >
-              <span
-                v-else
-                :class="{
-                  nodeLabel: node.label.length <= 12,
-                  'scrolling-nodeLabel': node.label.length > 12,
-                }"
-                >{{ node.label }}
-                <span v-if="data.isLeafs == 1 && data.uid == loginUserID">
-                  （我）</span
-                >
-              </span>
             </span>
+          </span>
 
-            <!-- <span>
+          <!-- <span>
               <el-popconfirm
                 confirm-button-text="上传数据集"
                 cancel-button-text="纳排数据集"
@@ -171,43 +181,40 @@
                 </el-button>
               </el-popconfirm>
             </span> -->
+        </span>
+      </el-tree>
+
+      <!-- =========================================公共数据集树 -->
+      <el-tree
+        ref="tree3"
+        :data="treeData3"
+        :show-checkbox="false"
+        node-key="id"
+        :default-expanded-keys="['1']"
+        :expand-on-click-node="false"
+        :highlight-current="true"
+        @node-click="changeData3"
+        :filter-node-method="filterNode"
+      >
+        <span class="custom-tree-node" slot-scope="{ node, data }">
+          <span class="left_span">
+            <i class="el-icon-document tree_icon" v-if="data.isLeafs == 1"></i>
+            <span
+              v-if="data.catLevel == 1"
+              style="font-weight: bold; font-size: 16px; color: #252525"
+              >{{ node.label }}</span
+            >
+            <span
+              v-else
+              :class="{
+                nodeLabel: node.label.length <= 12,
+                'scrolling-nodeLabel': node.label.length > 12,
+              }"
+              >{{ node.label }}</span
+            >
           </span>
-        </el-tree>
 
-        <!-- =========================================公共数据集树 -->
-        <el-tree
-          ref="tree3"
-          :data="treeData3"
-          :show-checkbox="false"
-          node-key="id"
-          :default-expanded-keys="['1']"
-          :expand-on-click-node="false"
-          :highlight-current="true"
-          @node-click="changeData"
-          :filter-node-method="filterNode"
-        >
-          <span class="custom-tree-node" slot-scope="{ node, data }">
-            <span class="left_span">
-              <i
-                class="el-icon-document tree_icon"
-                v-if="data.isLeafs == 1"
-              ></i>
-              <span
-                v-if="data.catLevel == 1"
-                style="font-weight: bold; font-size: 16px; color: #252525"
-                >{{ node.label }}</span
-              >
-              <span
-                v-else
-                :class="{
-                  nodeLabel: node.label.length <= 12,
-                  'scrolling-nodeLabel': node.label.length > 12,
-                }"
-                >{{ node.label }}</span
-              >
-            </span>
-
-            <!-- <span>
+          <!-- <span>
               <el-popconfirm confirm-button-text="上传数据集" cancel-button-text="纳排数据集" title="请选择添加数据集方式"
                 cancel-button-type="primary" @confirm="importData" @cancel="openAddDataForm(data.label)">
                 <el-button v-if="data.catLevel == 3 && data.status != 2 && data.isLeafs == 0" icon="el-icon-circle-plus-outline" size="mini"
@@ -223,9 +230,9 @@
                 </el-button>
               </el-popconfirm>
             </span> -->
-          </span>
-        </el-tree>
-      </div>
+        </span>
+      </el-tree>
+    </div>
 
     <div class="right">
       <!--===============================  头部按钮   ======================================================================-->
@@ -249,7 +256,12 @@
 
         <div id="model_type">
           <span>危险因素：</span>
-          <el-select v-model="risk" :clearable="true" filterable placeholder="请选择">
+          <el-select
+            v-model="risk"
+            :clearable="true"
+            filterable
+            placeholder="请选择"
+          >
             <el-option
               v-for="item in risks"
               :key="item"
@@ -259,13 +271,9 @@
             </el-option>
           </el-select>
         </div>
-        <el-popover placement="right" trigger="hover">
+        <el-popover placement="top" trigger="hover">
           <div>根据左侧高亮病种及危险因素进行搜索</div>
-          <el-button
-            slot="reference"
-            size="small"
-            @click="cancelSelect()"
-            
+          <el-button slot="reference" size="small" @click="cancelSelect()"
             >清除</el-button
           >
           <el-button
@@ -292,7 +300,10 @@
       <div id="table">
         <el-table
           :data="knowledges"
+          v-loading="loading"
           style="width: 100%; text-align: center"
+          ref="scrollTable"
+          height="75vh"
           stripe
           :cell-style="{ padding: '8px 0', textAlign: 'center' }"
           row-key="id"
@@ -356,7 +367,7 @@
             </template>
           </el-table-column>
         </el-table>
-        <el-pagination
+        <!-- <el-pagination
           style="float: right"
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
@@ -365,7 +376,7 @@
           layout="total, prev, pager, next"
           :total="total"
         >
-        </el-pagination>
+        </el-pagination> -->
       </div>
 
       <!--===============================     编辑表单   ===================================================================-->
@@ -463,7 +474,7 @@
     </div>
   </div>
 </template>
-  
+
 <script>
 import { getRequest, postRequest } from "@/api/user";
 import { getCategory, addDisease, removeCate } from "@/api/category";
@@ -476,6 +487,8 @@ export default {
         pageNum: 1,
         pageSize: 10,
       },
+      datasetNum: "",
+      filterText: "",
       activeName: "first",
       treeData: [],
       treeData1: [],
@@ -485,7 +498,7 @@ export default {
       // 异常指标知识
       knowledges: [],
       disease: [],
-      disease_name: "",      
+      disease_name: "",
       risk: "",
 
       risks: [],
@@ -643,6 +656,23 @@ export default {
       },
     };
   },
+  watch: {
+    length(val) {
+      this.$refs.listWrap.style.height = "720px";
+      // // 超过10行数据，就按照最大40*10 400px高度的列表就行
+      // if (val >= 10) {
+      //   this.$refs.listWrap.style.height = '800px';
+      // } else {
+      // // 不足10行数据，这边 加57是因为表头的高度，具体情况
+      //   this.$refs.listWrap.style.height = this.itemHeight * val + 80 + 'px'
+      // }
+    },
+    filterText(val) {
+      this.$refs.tree1?.filter(val);
+      this.$refs.tree2?.filter(val);
+      this.$refs.tree3?.filter(val);
+    },
+  },
   mounted() {
     this.getList();
     this.getCatgory();
@@ -689,7 +719,9 @@ export default {
     },
     getCatgory() {
       // console.log("uid", this.loginUserID)
-      getCategory(`/api/category?uid=${sessionStorage.getItem("userid")-0}`).then((response) => {
+      getCategory(
+        `/api/category?uid=${sessionStorage.getItem("userid") - 0}`
+      ).then((response) => {
         this.treeData1 = response.data.slice(0, 1);
         this.treeData2 = response.data.slice(1, 2);
         this.treeData3 = response.data.slice(2, 3);
@@ -705,10 +737,48 @@ export default {
       });
     },
 
-    changeData(...theArgs) {
-      this.disease_name = theArgs[0].label; //点击的节点的名字 `?diseaseName=${disease}`
-      this.knowledges =  this.searchByDisease(this.disease_name, this.risk)
-      console.log("this.disease_name", this.disease_name);
+    // changeData(...theArgs) {
+    //   this.disease_name = theArgs[0].label; //点击的节点的名字 `?diseaseName=${disease}`
+    //   this.knowledges =  this.searchByDisease(this.disease_name, this.risk)
+    //   console.log("this.disease_name", this.disease_name);
+    // },
+    changeData(treeRef, node) {
+      if (this.currentHighlightedTree === treeRef) {
+        // 如果当前节点属于已高亮的树，则取消高亮
+        this.$refs[treeRef].setCurrentKey(null);
+        this.lastClickedNode = null;
+        this.currentHighlightedTree = null;
+        this.disease_name = "";
+        this.searchByDisease(this.disease_name, this.risk);
+      } else if (
+        !this.currentHighlightedTree ||
+        this.currentHighlightedTree !== treeRef
+      ) {
+        // 如果不在限制内或者切换到新的树
+        if (this.currentHighlightedTree) {
+          // 取消之前高亮的树
+          this.$refs[this.currentHighlightedTree].setCurrentKey(null);
+        }
+        // 高亮当前节点
+        this.$refs[treeRef].setCurrentKey(node.id);
+        this.lastClickedNode = node;
+        this.currentHighlightedTree = treeRef;
+
+        this.disease_name = node.label; //点击的节点的名字 `?diseaseName=${disease}`
+        this.knowledges = this.searchByDisease(this.disease_name, this.risk);
+        console.log("this.disease_name", this.disease_name);
+      }
+    },
+    changeData1(node) {
+      this.changeData("tree1", node);
+    },
+
+    changeData2(node) {
+      this.changeData("tree2", node);
+    },
+
+    changeData3(node) {
+      this.changeData("tree3", node);
     },
 
     handleCheckChange(data, checked) {
@@ -733,10 +803,10 @@ export default {
           console.log(error);
         });
     },
-    cancelSelect(){
-      this.disease_name=''; 
-      this.risk='';
-      this.searchByDisease()
+    cancelSelect() {
+      this.disease_name = "";
+      this.risk = "";
+      this.searchByDisease();
     },
 
     handleEdit(index, row) {
@@ -879,12 +949,12 @@ export default {
   },
 };
 </script>
-  
+
 <style scoped>
 .main {
   display: grid;
   grid-template-columns: 15% 85%;
-  height: auto;
+  height: 100%;
   overflow-y: hidden; /* 隐藏垂直滚动条 */
   overflow-x: hidden;
 }
@@ -900,10 +970,21 @@ export default {
   scrollbar-width: none; /* 隐藏 Firefox 的滚动条 */
   -ms-overflow-style: none; /* 隐藏 IE/Edge 的滚动条 */
 }
+.tipInfo {
+  background-color: rgba(124, 124, 124, 0.1);
+  height: 50px;
+  text-align: center;
+}
+
+.tipInfo .statistic {
+  font-size: 13px;
+  color: #585858;
+}
 
 .right {
   /* display: grid; */
   /* grid-template-rows: auto 15% auto auto; */
+  height: 90vh;
   margin-left: 30px;
 }
 
@@ -940,4 +1021,3 @@ export default {
   margin-right: 1vw;
 }
 </style>
-  

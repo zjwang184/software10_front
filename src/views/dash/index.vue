@@ -149,7 +149,7 @@
           </div>
           <div id="chartBox">
             <Bar
-              style="height: 40vh; width: 39vw; margin-right: 3vh"
+              style="height: 40vh; width: 38vw"
               :data="Bar_data"
               :date="Bar_date"
               :modelnames="modelnames"

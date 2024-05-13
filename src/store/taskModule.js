@@ -102,9 +102,12 @@ export default {
         algorithm_select:{
           source: "",   // 数据来源  “数据库”，“前端”
           selected_algorithms: [],  // 选择的算法集合 例如[svm, dqn]
-          algorithm_infos:[],       // 算法各参数信息
-          res: []                   // 算法结果
-        }       
+          algorithm_infos:[
+            
+          ],       // 算法各参数信息以及模型的名字，是否被选择，模型类型    
+          
+        },
+        res: []   // 算法结果      
       },
 
       // 风险预测
@@ -331,9 +334,7 @@ export default {
         use_features: [],
         use_labels: [],
         target_features: [],
-
         models: [],
-
       };
 
       state = Object.assign(state.train_model, defaultValue);
