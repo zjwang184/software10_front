@@ -21,7 +21,7 @@ import TableManage from "@/components/tab/TableManage.vue";
 import exceptionFeature from "@/components/tab/exceptionFeature";
 import DiseaPredict from "@/components/tab/disea_predict/DiseaPredict.vue";
 // import Login from "@/views/LogIn.vue";
-import SoftwareIntro from "@/components/tab/SoftwareIntro.vue";
+// import SoftwareIntro from "@/components/tab/SoftwareIntro.vue";
 import TaskCheck from "@/components/tab/createModel/model_manage/TaskCheck.vue";
 
 // 系统管理的几个功能模块
@@ -31,6 +31,11 @@ import AdminDataManage from "@/components/tab/sysManage/AdminDataManage.vue";
 import Inform from "@/components/tab/sysManage/Inform.vue";
 import LogManage from "@/components/tab/sysManage/LogManage.vue";
 import SettingDisease from "@/components/tab/sysManage/SettingDisease.vue";
+
+// 软件介绍
+import operation from "@/components/tab/flooter/operation.vue";
+import SoftwareIntro from "@/components/tab/flooter/SoftwareIntro.vue";
+
 Vue.use(VueRouter);
 
 const routes = [
@@ -105,6 +110,12 @@ const routes = [
         path: "SoftwareIntro",
         name: "SoftwareIntro",
         component: SoftwareIntro,
+        meta: { roles: ["1", "0"] },
+      },
+      {
+        path: "operation",
+        name: "operation",
+        component: operation,
         meta: { roles: ["1", "0"] },
       },
       {

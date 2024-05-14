@@ -124,7 +124,7 @@
                 <i class="el-icon-s-data"></i>
                 <span slot="title"> 软件介绍</span>
               </el-menu-item>
-              <el-menu-item width="220px">
+              <el-menu-item index="/sideBar/operation" width="220px">
                 <i class="el-icon-s-help"></i
                 ><span slot="title"> 操作手册</span></el-menu-item
               >
