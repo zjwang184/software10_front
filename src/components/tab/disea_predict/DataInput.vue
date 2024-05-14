@@ -262,7 +262,7 @@ export default {
       }
 
       // 检查非法字符
-      const illegalCharsRegex = /\D/g;
+      const illegalCharsRegex = /\D\.+/g;
       for (const field of Object.keys(this.personForm)) {
         if (illegalCharsRegex.test(this.personForm[field])) {
           // 如果找到非法字符，弹出警告

@@ -27,7 +27,7 @@
           :default-expanded-keys="expandedKeys"
           :expand-on-click-node="false"
           :highlight-current="true"
-          @node-click="changeData"
+          @node-click="changeData1"
           :filter-node-method="filterNode"
         >
           <span class="custom-tree-node" slot-scope="{ node, data }">
@@ -70,7 +70,7 @@
           :default-expanded-keys="['1']"
           :expand-on-click-node="false"
           :highlight-current="true"
-          @node-click="changeData"
+          @node-click="changeData2"
           :filter-node-method="filterNode"
         >
           <span class="custom-tree-node" slot-scope="{ node, data }">
@@ -113,7 +113,7 @@
           :default-expanded-keys="['1']"
           :expand-on-click-node="false"
           :highlight-current="true"
-          @node-click="changeData"
+          @node-click="changeData3"
           :filter-node-method="filterNode"
         >
           <span class="custom-tree-node" slot-scope="{ node, data }">
@@ -464,21 +464,67 @@ export default {
           console.log(error, "getLabelBypid");
         });
     },
-    changeData(data) {
-      if (data.isLeafs == 1) {
+
+    changeData(treeRef, node) {
+      if (this.currentHighlightedTree === treeRef) {
+        // 如果当前节点属于已高亮的树，则取消高亮
+        this.$refs[treeRef].setCurrentKey(null);
+        this.lastClickedNode = null;
+        this.currentHighlightedTree = null;
+      } else if (
+        !this.currentHighlightedTree ||
+        this.currentHighlightedTree !== treeRef
+      ) {
+        // 如果不在限制内或者切换到新的树
+        if (this.currentHighlightedTree) {
+          // 取消之前高亮的树
+          this.$refs[this.currentHighlightedTree].setCurrentKey(null);
+        }
+        // 高亮当前节点
+        this.$refs[treeRef].setCurrentKey(node.id);
+        this.lastClickedNode = node;
+        this.currentHighlightedTree = treeRef;
+      }
+      if (node.isLeafs == 1) {
         //数据获取前显示骨架屏
         this.dataLoaded = false;
         //获取描述信息
-        console.log("选择的结点数据", data);
-        this.getParentLabel(data.parentId);
-        this.getTableDescribe(data.id, data.label);
+        console.log("选择的结点数据", node);
+        this.getParentLabel(node.parentId);
+        this.getTableDescribe(node.id, node.label);
         //获取数据信息
-        this.getTableData(data.id, data.label);
+        this.getTableData(node.id, node.label);
         //显示表数据
         this.selectedDataset = true;
-        this.nodeId = data.id;
+        this.nodeId = node.id;
       }
     },
+    changeData1(node) {
+      this.changeData("tree1", node);
+    },
+
+    changeData2(node) {
+      this.changeData("tree2", node);
+    },
+
+    changeData3(node) {
+      this.changeData("tree3", node);
+    },
+    // changeData(data) {
+    //   if (data.isLeafs == 1) {
+    //     //数据获取前显示骨架屏
+    //     this.dataLoaded = false;
+    //     //获取描述信息
+    //     console.log("选择的结点数据", data);
+    //     this.getParentLabel(data.parentId);
+    //     this.getTableDescribe(data.id, data.label);
+    //     //获取数据信息
+    //     this.getTableData(data.id, data.label);
+    //     //显示表数据
+    //     this.selectedDataset = true;
+    //     this.nodeId = data.id;
+    //   }
+    // },
 
     async next(name) {
       if (!name) {

@@ -1542,6 +1542,7 @@ export default {
       all_uid_list: [],
       share_uid_list: [],
       dialogDiseaseVisible2: false,
+      dialogSelectItemsVisible: false,
       selectedFields: [],
       nodeData: {},
       // 新增纳排按钮
@@ -2094,6 +2095,17 @@ export default {
       console.log(this.uid_list);
       console.log(this.share_uid_list);
       this.share_username = username_list.join(",");
+    },
+    handleFilterClick(row) {
+      console.log("row.filterCondition", row.filterCondition);
+      const tempColumn = row.filterCondition.map((item) => {
+        return {
+          ...item,
+          opt: item.showOpt,
+        };
+      });
+      this.addDataForm.characterList = tempColumn;
+      this.dialogSelectItemsVisible = false;
     },
     closeDialog() {
       this.uploadDataDialogVisible = false;
@@ -2905,6 +2917,7 @@ export default {
           const final_data = [];
           final_data.push(this.selectedFields);
           const data = res.data;
+          console.log("data", data);
           // 构建数据行
           const rows = data.map((row) => {
             const values = this.selectedFields.map((field) => {
@@ -2925,6 +2938,16 @@ export default {
           this.selectedFields = [];
         }
       );
+    },
+    formatCSVValue(value) {
+      // 处理特殊字符
+      if (
+        typeof value === "string" &&
+        (value.includes(",") || value.includes("\n"))
+      ) {
+        return `"${value.replace(/"/g, '""')}"`;
+      }
+      return value;
     },
     //导出CSV文件
     exportCSV() {
@@ -3189,6 +3212,9 @@ export default {
   row-gap: 10px;
 }
 
+.addDataClass .el-input {
+  width: 200px;
+}
 .addDataClass .addDataBaseInfo .titleText {
   font-weight: 600;
   margin-left: 5px;
