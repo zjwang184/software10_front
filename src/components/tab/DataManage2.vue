@@ -1472,6 +1472,7 @@ export default {
 
   data() {
     return {
+      optValueMap:{},
       // 获取虚拟树形结构数据
       // treeData: JSON.parse(JSON.stringify(treeData)),
       treeData: [],
