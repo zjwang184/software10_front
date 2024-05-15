@@ -2,10 +2,6 @@
   <div class="main">
     <div id="pdf_1">
       <div class="top">
-        <!-- 风险预测 -->
-        <!-- <div>
-          <h1 style="color: red; font-size: 40px" align="center">高风险</h1>
-        </div> -->
         <el-card>
           <h2 v-if="predValue == 1" style="color: red" align="center">
             <span style="color: black">患病风险：</span> 高风险
@@ -18,16 +14,6 @@
             <span style="color: black">患病风险：</span>低风险
           </h2>
           <h3>患者信息：</h3>
-          <!-- <div
-            v-for="(item, index) in cardItems"
-            :key="index"
-            class="text item"
-          >
-            <el-card shadow="hover">
-
-              {{ item }}
-            </el-card>
-          </div> -->
         </el-card>
         <!-- 特征信息 -->
         <div class="tableData">
@@ -71,24 +57,28 @@
           各特征对结果的影响
         </div>
         <div class="box">
-          <div>这里是展示结果介绍</div>
+          <div class="description">
+            下图为瀑布图，横轴为SHAP值，纵轴是该样本各个特征的取值；
+            蓝色代表该特征对预测有负向影响（箭头朝左，SHAP值减少），红色代表该特征对预测有正向影响（箭头超右，SHAP值增加）；
+          </div>
           <div>
             <img :src="imgurl1" alt="Image" />
+          </div>
+          <div class="description">
+            下图为力图，蓝色代表该特征对预测有负向影响（箭头朝左，SHAP值减少），红色代表该特征对预测有正向影响（箭头超右，SHAP值增加）
           </div>
           <div>
             <img :src="imgurl2" alt="Image" />
           </div>
-          <!-- <img src="http://10.16.97.233:8088/fig/shap2.png" alt="Image" style="margin-left: 25%;"/>
-            <img src="http://10.16.97.233:8088/fig/shap1.png" alt="Image" style="margin-left: 5%;"/> -->
-
-          <!-- <PlusAndMinusBarVue /> -->
         </div>
       </div>
     </div>
 
     <div class="buttonGroup">
       <el-button @click="backStep()" round>上一步</el-button>
-      <el-button type="success" @click="exportRes()" round>导出结果</el-button>
+      <!-- <el-button type="success" @click="exportToPDF()" round
+        >导出结果</el-button
+      > -->
     </div>
   </div>
 </template>
@@ -160,44 +150,14 @@ export default {
       console.log("this.predValue   ", this.predValue);
     },
 
-    exportExcel() {
-      /* 从表生成工作簿对象 */
-      this.type = "";
-      setTimeout(() => {
-        var wb = XLSX?.utils.table_to_book(
-          document.querySelector("#out-table")
-        );
-        /* 获取二进制字符串作为输出 */
-        var wbout = XLSX?.write(wb, {
-          bookType: "xlsx",
-          bookSST: true,
-          type: "array",
-        });
-        try {
-          FileSaver.saveAs(
-            //Blob 对象表示一个不可变、原始数据的类文件对象。
-            //Blob 表示的不一定是JavaScript原生格式的数据。
-            //File 接口基于Blob，继承了 blob 的功能并将其扩展使其支持用户系统上的文件。
-            //返回一个新创建的 Blob 对象，其内容由参数中给定的数组串联组成。
-            new Blob([wbout], { type: "application/octet-stream" }),
-            //设置导出文件名称
-            `${this.m_taskName}-特征分布表格.xlsx`
-          );
-        } catch (e) {
-          if (typeof console !== "undefined") console.log(e, wbout);
-        }
-        return wbout;
-      }, 1000);
-    },
     async exportRes() {
-      this.exportExcel();
+      // this.exportExcel();
       const divsToExport = ["pdf_1", "pdf_2"];
       const pdf_positions = [
         { x: 5, y: 10 },
-        { x: 5, y: 100 },
+        { x: 5, y: 55 },
       ];
       const pdf = new jsPDF();
-
       const renderPromises = divsToExport.map((divId, index) => {
         const div = document.getElementById(divId);
         return html2canvas(div).then((canvas) => {
@@ -218,7 +178,8 @@ export default {
       });
 
       await Promise.all(renderPromises);
-      pdf.save(`${this.m_taskName}.pdf`);
+      // pdf.save(`${this.m_taskName}.pdf`);
+      pdf.save("预测报告.pdf");
     },
     next() {
       console.log("1111111");
@@ -283,11 +244,11 @@ export default {
   align-items: center;
 }
 
-.box div:first-child {
+.description {
   background-color: rgba(99, 97, 97, 0.1);
   margin-bottom: 10px;
   padding: 10px;
-  height: 40px;
+  height: auto;
   text-align: center;
 }
 
