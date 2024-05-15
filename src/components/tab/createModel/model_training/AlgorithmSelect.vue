@@ -24,29 +24,7 @@
                 </el-switch>
               </el-row>
 
-              <el-row :gutter="20">
-                <div class="buttonBox">
-                  <el-col :span="10">
-                    <el-button round @click="backStep()" style="margin-top: 20%"
-                      >上一步</el-button
-                    >
-                  </el-col>
-                  <!-- <el-button round @click="printForm()">测试</el-button> -->
-                  <!-- <el-row :gutter="20">                
-                  <el-button round @click="resetForm('DQN_ref')"  style="margin-top: 10%"
-                    >恢复默认</el-button>
-                </el-row> -->
-                  <el-col :span="10">
-                    <el-button
-                      style="margin-top: 20%"
-                      type="primary"
-                      round
-                      @click="submit('/runtime_bus/submitAlg')"
-                      >提交运算</el-button
-                    >
-                  </el-col>
-                </div>
-              </el-row>
+     
             </div>
           </div>
         </div></el-col
@@ -108,6 +86,27 @@
         </div></el-col
       >
     </el-container>
+    <div class="buttonGroup">
+                  <el-col :span="10">
+                    <el-button round @click="backStep()" style="margin-top: 20%"
+                      >上一步</el-button
+                    >
+                  </el-col>
+                  <!-- <el-button round @click="printForm()">测试</el-button> -->
+                  <!-- <el-row :gutter="20">                
+                  <el-button round @click="resetForm('DQN_ref')"  style="margin-top: 10%"
+                    >恢复默认</el-button>
+                </el-row> -->
+                  <el-col :span="10">
+                    <el-button
+                      style="margin-top: 20%"
+                      type="primary"
+                      round
+                      @click="submit('/runtime_bus/submitAlg')"
+                      >提交运算</el-button
+                    >
+                  </el-col>
+                </div>
   </div>
 </template>
 
@@ -158,7 +157,7 @@ export default {
     };
   },
 
-  created() {
+  mounted() {
     this.init();
   },
 
@@ -245,10 +244,14 @@ export default {
       if (checked) {
         this.editableTabsValue = name;
       } else {
-        for (var i in this.filteredEditableTabs) {
-          this.editableTabsValue = this.filteredEditableTabs[i].name;
-          console.log("关闭按钮后editableTabsValue:", this.editableTabsValue);
-          return;
+        for (var i in this.model_froms) {
+          console.log(this.model_froms)
+          if (this.model_froms[i].name == name){
+            this.model_froms[i].isSelect=false;            
+          }
+          if (this.model_froms[i].isSelect){
+            this.editableTabsValue=this.model_froms[i].modelname;            
+          }          
         }
       }
     },
@@ -450,6 +453,17 @@ export default {
 .el-icon-warning-outline:hover {
   color: #368ce7;
 }
+
+.buttonGroup {
+  position: fixed;
+  bottom: 2%;
+  left: 55%;
+  transform: translateX(-50%); /* 水平居中 */
+  width: 200px;
+  z-index: 9999; /* 置于最顶层 */
+  margin-left: 6%;
+}
+
 
 .buttonBox {
   width: 35vh;
