@@ -88,7 +88,7 @@
 
     <div class="buttonGroup">
       <el-button @click="backStep()" round>上一步</el-button>
-      <el-button type="success" @click="exportRes()" round>导出结果</el-button>
+      <!-- <el-button type="success" @click="exportRes()" round>导出结果</el-button> -->
     </div>
   </div>
 </template>
