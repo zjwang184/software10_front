@@ -36,13 +36,17 @@ import SettingDisease from "@/components/tab/sysManage/SettingDisease.vue";
 import operation from "@/components/tab/flooter/operation.vue";
 import SoftwareIntro from "@/components/tab/flooter/SoftwareIntro.vue";
 
+import { getRequest } from '@/api/user'
+import { log } from "@antv/g2plot/lib/utils";
+
 Vue.use(VueRouter);
 
 const routes = [
   {
     path: "/",
-    name: "LogIn",
-    component: Login,
+    // name: "LogIn",
+    // component: Login,
+    redirect: "/siderBar",
   },
   {
     path: "/register",
@@ -177,34 +181,212 @@ const routes = [
 ];
 
 const router = new VueRouter({
+  base:'/software10/',
   routes,
 });
-router.beforeEach((to, from, next) => {
-  //to将要访问的路径
-  //from代表从哪个路径跳转而来
-  //next是一个函数，表示放行
-  //next() 放行 next('/login')强制跳转
 
-  if (to.path === "/") return next();
-  if (to.path === "/forget") return next();
-  if (to.path === "/register") return next();
 
-  //获取userRole
-  const restrictedPathsForUserRole = [
-    "/sideBar/UserManage",
-    "/sideBar/AdminDataManage",
-    "/sideBar/Inform",
-    "/sideBar/LogManage",
-    "/sideBar/SettingDisease",
-  ];
-  const userRole = window.sessionStorage.getItem("userRole");
-  if (userRole === "1" && restrictedPathsForUserRole.includes(to.path)) {
-    return next("/");
+// router.beforeEach((to, from, next) => {
+//   //to将要访问的路径
+//   //from代表从哪个路径跳转而来
+//   //next是一个函数，表示放行
+//   //next() 放行 next('/login')强制跳转
+
+//   if (to.path === "/") return next();
+//   if (to.path === "/forget") return next();
+//   if (to.path === "/register") return next();
+
+//   //获取userRole
+//   const restrictedPathsForUserRole = [
+//     "/sideBar/UserManage",
+//     "/sideBar/AdminDataManage",
+//     "/sideBar/Inform",
+//     "/sideBar/LogManage",
+//     "/sideBar/SettingDisease",
+//   ];
+//   const userRole = window.sessionStorage.getItem("userRole");
+//   if (userRole === "1" && restrictedPathsForUserRole.includes(to.path)) {
+//     return next("/");
+//   }
+
+//   //获取token
+//   const uid = window.sessionStorage.getItem("userid");
+//   if (!uid) return next("/");
+//   next();
+// });
+// export default router;
+
+
+// const router = new VueRouter({
+//   routes,
+// });/l
+
+router.beforeEach(async (to, from, next) => {
+   // 解析全局的查询字符串
+   const queryString = window.location.search;
+   const params = new URLSearchParams(queryString);
+  //to将要访问的路径  //from代表从哪个路径跳转而来  //next是一个函数，表示放行  //next() 放行 next('/login')强制跳转
+  console.log("111", queryString, params)
+  try {
+    //无权限页面不需要判断用户信息就放行
+    if (to.path == '/unauthorized') {
+      console.log("222")
+      return next();
+    }
+
+    // 检查 session 里的用户信息
+    const username = sessionStorage.getItem('username');
+    console.log("username:"+username)
+    // 如果没有用户信息
+    if (!username) {
+      console.log("333")
+      console.log("to:"+JSON.stringify(to)+"   from:"+JSON.stringify(from))
+      // 检查 URL 参数
+      let repKey = to.query?.repKey;
+      if(!repKey){
+        repKey = from.query?.repKey;
+      }
+      console.log("repKey:", repKey);
+
+      // 获取repKey参数
+      if(!repKey){
+        repKey = params.get('repKey');
+        console.log("repKey params:", repKey);
+      }
+
+      if (repKey) {
+        // 绵阳单点登录
+        // 使用 Promise 处理异步请求
+        // getRequest(`/login?repKey=${repKey}`).then(resp => {
+        //   if (resp) {
+        //     console.log("后台回复的code", resp.code);
+        //     console.log("后台回复的UserName", resp.data.username);
+        //     console.log("后台回复的UserCode", resp.data.uid);
+        //     if (resp.code == "200") {
+        //       sessionStorage.setItem("username", resp.data.username);
+        //       sessionStorage.setItem("userid", resp.data.uid);
+        //       sessionStorage.setItem("userrole", resp.data.role);
+        //       return next('/SoftwareIntro'); // 跳转到 SoftwareIntro 页面
+        //     } else {
+        //       return next('/unauthorized');
+        //     }
+        //   } else {
+        //     return next('/unauthorized');
+        //   }}).catch(error => {
+        //     console.error('获取用户信息时出错:', error);
+        //     return next('/unauthorized');
+        //   });
+        // const resp = await getRequest(`/login?repKey=${repKey}`);
+        // if (resp) {
+        //   console.log("后台回复的code", resp.code);
+        //   console.log("后台回复的UserName", resp.data.username);
+        //   console.log("后台回复的UserCode", resp.data.uid);
+        //   if (resp.code == "200") {
+        //     sessionStorage.setItem("username", resp.data.username);
+        //     sessionStorage.setItem("userid", resp.data.uid);
+        //     sessionStorage.setItem("userrole", resp.data.role);
+        //     return next('/SoftwareIntro'); // 跳转到 SoftwareIntro 页面
+        //   } else {
+        //     return next('/unauthorized');
+        //   }
+        // } else {
+        //   return next('/unauthorized');
+        // }
+        const resp = await getRequest(`/user/login?key=${repKey}`);
+        if (resp) {
+          console.log("444")
+          console.log("后台回复的code", resp.code);
+          console.log("后台回复的UserName", resp.data.username);
+          console.log("后台回复的UserCode", resp.data.uid);
+          if (resp.code == "200") {
+            sessionStorage.setItem("username", resp.data.username);
+            sessionStorage.setItem("userid", resp.data.uid);
+            sessionStorage.setItem("userrole", resp.data.role);
+            return next('/sideBar/dash'); // 跳转到 SoftwareIntro 页面
+          } else {
+            console.log("555")
+            return next('/unauthorized');
+          }
+        } else {
+          console.log("666")
+          return next('/unauthorized');
+        }
+      } else {
+        // 跳转到未授权页面
+        console.log("777")
+        return next({ path: '/unauthorized' });
+      }
+    } else {
+      console.log("888")
+      //这里写你原来的路由逻辑，下面是我的代码示例
+      // 如果有用户信息，检查白名单
+      const whiteList = ['/logIn', '/register', '/unauthorized', '/forget','/siderBar'];
+      if (whiteList.indexOf(to.path) !== -1) {
+        // 如果在白名单中，则直接放行
+        if (to.path === "/") return next();
+        if (to.path === "/forget") return next();
+        if (to.path === "/register") return next();
+
+        //获取userRole
+        const restrictedPathsForUserRole = [
+          "/sideBar/UserManage",
+          "/sideBar/AdminDataManage",
+          "/sideBar/Inform",
+          "/sideBar/LogManage",
+          "/sideBar/SettingDisease",
+        ];
+        const userRole = window.sessionStorage.getItem("userRole");
+        if (userRole === "1" && restrictedPathsForUserRole.includes(to.path)) {
+          return next("/");
+        }
+
+        //获取token
+        const uid = window.sessionStorage.getItem("userid");
+        if (!uid) return next("/");
+        // next();
+        return next();
+      } else {
+        console.log("999")
+        // const userRoles = sessionStorage.getItem('userrole'); // 从 sessionStorage 获取用户角色信息
+        // let record = to.matched[to.matched.length - 1]; // 获取当前匹配路由的最右侧路由
+        // let isAuthorized = false; // 初始化权限标志为 false
+
+        // if (record.meta.roles) {
+        //   // 检查用户角色是否在路由允许的角色列表中
+        //   if (record.meta.roles.includes(userRoles)) {
+        //     isAuthorized = true; // 如果找到匹配的角色，设置权限标志为 true
+        //   }
+        // }
+
+        // if (isAuthorized) {
+        //   if (to.path === "/TaskResult") {
+        //     store.commit("SetSideBarPath", "/taskManage");
+        //   } else {
+        //     store.commit("SetSideBarPath", to.path);
+        //   }
+        //   return next(); // 用户有权限，允许访问
+        // } else if (to.matched.some(record => record.meta.roles)) {
+        //   return next({ path: '/unauthorized' }); // 用户无权限，重定向到未授权页面
+        // } else {
+        //   if (to.path === "/TaskResult") {
+        //     store.commit("SetSideBarPath", "/taskManage");
+        //   } else {
+        //     store.commit("SetSideBarPath", to.path);
+        //   }
+        //   return next(); // 如果没有定义 roles 元数据，允许所有用户访问
+        // }
+        return next(); 
+      }
+    }
+  } catch (error) {
+    console.log("hyhyhyhy")
+    // 如果代码有问题，可以在这里捕获并处理错误
+    console.error('导航守卫出错:', error);
+    // 跳转到未授权页面
+    return next({ path: '/unauthorized' });
   }
-
-  //获取token
-  const uid = window.sessionStorage.getItem("userid");
-  if (!uid) return next("/");
-  next();
 });
+
+
+// });
 export default router;

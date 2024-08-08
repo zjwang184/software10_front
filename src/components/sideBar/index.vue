@@ -17,7 +17,7 @@
             >
           </span>
           <!--            <template slot="title">当前服务器：</template>-->
-          <el-dropdown style="float: right; margin-right: 30px">
+          <div style="float: right; margin-right: 30px">
             <span
               class="el-dropdown-link"
               style="
@@ -32,6 +32,9 @@
               class="el-icon-arrow-down el-icon--right"
             ></i>
             <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item @click.native="logout">退出登录</el-dropdown-item>
+            </el-dropdown-menu>
+            <!-- <el-dropdown-menu slot="dropdown">
               <el-dropdown-item @click.native="toUserCenter"
                 >个人信息</el-dropdown-item
               >
@@ -41,8 +44,8 @@
               <el-dropdown-item @click.native="logout"
                 >退出登录</el-dropdown-item
               >
-            </el-dropdown-menu>
-          </el-dropdown>
+            </el-dropdown-menu> -->
+          </div>
         </el-menu>
       </el-header>
       <el-container>
@@ -176,9 +179,15 @@ export default {
     changeMenu() {
       // this.dfChangeStep(1);
     },
+    // logout() {
+    //   sessionStorage.clear();
+    //   this.$router.replace("/");
+    // },
     logout() {
-      sessionStorage.clear();
-      this.$router.replace("/");
+      sessionStorage.removeItem('username');
+      sessionStorage.removeItem('userid');
+      sessionStorage.removeItem('userrole');
+      window.close();
     },
     toUserCenter() {
       this.$router.replace("/userCenter");

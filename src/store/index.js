@@ -60,14 +60,14 @@ export default new Vuex.Store({
 
   actions: {
     getDataList(context) {
-      getRequest("/DataTable/upall")
-        .then((res) => {
-          context.commit("SetDataList", res.reverse());
-        })
-        .catch((err) => {
-          console.log("数据列表获取错误，请联系管理员。");
-          console.log(err);
-        });
+      // getRequest("/DataTable/upall")
+      //   .then((res) => {
+      //     context.commit("SetDataList", res.reverse());
+      //   })
+      //   .catch((err) => {
+      //     console.log("数据列表获取错误，请联系管理员。");
+      //     console.log(err);
+      //   });
     },
 
     getTaskList(context) {
@@ -86,7 +86,7 @@ export default new Vuex.Store({
           context.commit("SetModelList", res);
         })
         .catch((err) => {
-          console.log("模型列表获取错误，请联系管理员。");
+          console.log("模型列表获取s错误，请联系管理员。");
           console.log(err);
         });
     },

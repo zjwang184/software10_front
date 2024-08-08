@@ -2,7 +2,7 @@ import axios from 'axios'
 import { Message } from 'element-ui'
 import router from '../router'
 
-axios.defaults.baseURL='/api'
+axios.defaults.baseURL='/software10/api'
 
 
 // 请求拦截器

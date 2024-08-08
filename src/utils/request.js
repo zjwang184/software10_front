@@ -10,7 +10,7 @@ const server = axios.create({
   },
 })
 
-server.defaults.baseURL = '/api'
+server.defaults.baseURL = '/software10/api'
 
 // 请求拦截器
 server.interceptors.request.use(

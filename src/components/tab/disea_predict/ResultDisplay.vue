@@ -142,8 +142,9 @@ export default {
       delete this.tableData.taskname;
       this.predValue = this.m_predValue;
       // this.getImageFromBackend();
-      this.imgurl1 = `http://10.16.97.233:8088/fig/${this.m_predict_task_name}_${this.m_predict_model_name}_shap2.png`;
-      this.imgurl2 = `http://10.16.97.233:8088/fig/${this.m_predict_task_name}_${this.m_predict_model_name}_shap1.png`;
+      this.imgurl1 = `/software10/static/fig/${this.m_predict_task_name}_${this.m_predict_model_name}_shap2.png`;
+      // this.imgurl2 = `/home/data/WorkSpace/Backend/software10/alg/fig/${this.m_predict_task_name}_${this.m_predict_model_name}_shap1.png`;
+      this.imgurl2 = `/software10/static/fig/${this.m_predict_task_name}_${this.m_predict_model_name}_shap1.png`;
       console.log("imgurl:", this.imgurl1, this.imgurl2);
       console.log("this.tableData   ", this.tableData);
       console.log("this.m_patient_form2222222   ", this.m_patient_form);

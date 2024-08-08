@@ -3157,7 +3157,7 @@ export default {
   width: 100%;
   height: 15vh;
   color: #585858;
-  background-color: rgba(124, 124, 124, 0.1);
+  background-color: rgba(124, 124, 124, 0.2);
 }
 .describe_content i {
   margin: 0 5px;
@@ -3272,8 +3272,9 @@ export default {
   transform: scaleX(1);
 }
 .custom-table {
-  width: 100%;
-  height: auto;
+  /* width: 100%;
+  height: auto; */
+  width:70vw;
 }
 .custom-table tr {
   background-color: #dcf3fc !important;

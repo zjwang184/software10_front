@@ -17,6 +17,13 @@ export default {
     }
   },
 
+  mounted() {
+    window.addEventListener('beforeunload', this.handleBeforeUnload);
+  },
+  beforeDestroy() {
+    window.removeEventListener('beforeunload', this.handleBeforeUnload);
+  },
+
   created() {
     this.init();
   },
@@ -29,6 +36,13 @@ export default {
       //因为用户登录后只展示登录用户所创建的任务，所以getTaskList在登录后跳转组件时调用
       //this.getTaskList();
       this.getModelList();
+    },
+
+    handleBeforeUnload() {
+      // 在这里清空sessionStorage
+      sessionStorage.removeItem('username');
+      sessionStorage.removeItem('userid');
+      sessionStorage.removeItem('userrole');
     }
   }
 }
